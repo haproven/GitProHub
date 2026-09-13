@@ -1,0 +1,16 @@
+{
+  "title": "awesome-ai",
+  "developer": {
+    "name": "Rahul",
+    "username": "rahul"
+  },
+  "github": "https://github.com/rahul/awesome-ai",
+  "category": "AI",
+  "status": "Beta",
+  "stack": ["JavaScript", "Python"],
+  "live": "https://awesome-ai.com",
+  "tags": ["ai", "automation", "developer-tools"],
+  "stars": 245,
+  "forks": 31,
+  "open_source": true
+}
