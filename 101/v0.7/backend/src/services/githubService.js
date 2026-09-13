@@ -1,0 +1,137 @@
+const API_URL = "https://api.github.com";
+
+// GitHub User
+async function getUser(username) {
+const response = await fetch(`${API_URL}/users/${username}`, {
+headers: {
+Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+Accept: "application/vnd.github+json"
+}
+});
+
+ 
+if (!response.ok) {
+    throw new Error(`GitHub API Error: ${response.status}`);
+}
+
+return response.json();
+ 
+
+}
+
+// GitProHub File
+async function getGitProHubFile(username, repo) {
+const response = await fetch(
+`${API_URL}/repos/${username}/${repo}/contents/gitprohub.md`,
+{
+headers: {
+Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+Accept: "application/vnd.github+json"
+}
+}
+);
+
+ 
+if (!response.ok) {
+    if (response.status === 404) {
+        return null;
+    }
+
+    throw new Error(`GitHub API Error: ${response.status}`);
+}
+
+const file = await response.json();
+
+return Buffer.from(file.content, "base64").toString("utf-8");
+ 
+
+}
+
+// GitHub Repository
+async function getRepository(username, repo) {
+const response = await fetch(
+`${API_URL}/repos/${username}/${repo}`,
+{
+headers: {
+Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+Accept: "application/vnd.github+json"
+}
+}
+);
+
+ 
+if (!response.ok) {
+    throw new Error(`GitHub API Error: ${response.status}`);
+}
+
+return response.json();
+ 
+
+}
+
+// GitHub README
+async function getReadme(username, repo) {
+const response = await fetch(
+`${API_URL}/repos/${username}/${repo}/readme`,
+{
+headers: {
+Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+Accept: "application/vnd.github+json"
+}
+}
+);
+
+ 
+if (!response.ok) {
+    if (response.status === 404) {
+        return null;
+    }
+
+    throw new Error(`GitHub API Error: ${response.status}`);
+}
+
+const file = await response.json();
+
+return Buffer.from(file.content, "base64").toString("utf-8");
+ 
+
+}
+
+// Get Image From README
+function getImageFromReadme(readme) {
+if (!readme) {
+return null;
+}
+
+ 
+// Markdown image
+const markdownImage = readme.match(
+    /!\[[^\]]*\]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/i
+);
+
+if (markdownImage) {
+    return markdownImage[1];
+}
+
+// HTML image
+const htmlImage = readme.match(
+    /<img[^>]+src=["'](https?:\/\/[^"']+)["']/i
+);
+
+if (htmlImage) {
+    return htmlImage[1];
+}
+
+return null;
+ 
+
+}
+
+// Export
+module.exports = {
+getUser,
+getGitProHubFile,
+getRepository,
+getReadme,
+getImageFromReadme
+};
