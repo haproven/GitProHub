@@ -65,6 +65,7 @@ if (!response.ok) {
 }
 
 return response.json();
+ 
 
 }
 
@@ -80,6 +81,7 @@ Accept: "application/vnd.github+json"
 }
 );
 
+ 
 if (!response.ok) {
     if (response.status === 404) {
         return null;
@@ -91,6 +93,37 @@ if (!response.ok) {
 const file = await response.json();
 
 return Buffer.from(file.content, "base64").toString("utf-8");
+ 
+
+}
+
+// Get Image From README
+function getImageFromReadme(readme) {
+if (!readme) {
+return null;
+}
+
+ 
+// Markdown image
+const markdownImage = readme.match(
+    /!\[[^\]]*\]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/i
+);
+
+if (markdownImage) {
+    return markdownImage[1];
+}
+
+// HTML image
+const htmlImage = readme.match(
+    /<img[^>]+src=["'](https?:\/\/[^"']+)["']/i
+);
+
+if (htmlImage) {
+    return htmlImage[1];
+}
+
+return null;
+ 
 
 }
 
@@ -99,5 +132,6 @@ module.exports = {
 getUser,
 getGitProHubFile,
 getRepository,
-getReadme
+getReadme,
+getImageFromReadme
 };
