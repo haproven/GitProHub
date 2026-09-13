@@ -1,9 +1,15 @@
-//  js
-const { getGitProHubFile } = require("./githubService");
+const {
+    getGitProHubFile,
+    getUserRepositories
+} = require("./githubService");
 
-const { getProject } = require("./projectService");
+const {
+    getProject
+} = require("./projectService");
 
-const { saveProject } = require("./projectIndexService");
+const {
+    saveProject
+} = require("./projectIndexService");
 
 
 const GITHUB_API = "https://api.github.com";
@@ -21,7 +27,10 @@ function getHeaders() {
 
 
 // Search GitHub Repositories
-async function searchGitProHubProjects(page = 1, perPage = 30) {
+async function searchGitProHubProjects(
+    page = 1,
+    perPage = 30
+) {
 
     const query = encodeURIComponent(
         "filename:gitprohub.md"
@@ -48,9 +57,7 @@ async function searchGitProHubProjects(page = 1, perPage = 30) {
     }
 
 
-    const data = await response.json();
-
-    return data;
+    return response.json();
 
 }
 
@@ -58,10 +65,11 @@ async function searchGitProHubProjects(page = 1, perPage = 30) {
 // Check GitProHub File
 async function hasGitProHubFile(owner, repo) {
 
-    const content = await getGitProHubFile(
-        owner,
-        repo
-    );
+    const content =
+        await getGitProHubFile(
+            owner,
+            repo
+        );
 
 
     return content !== null;
@@ -69,8 +77,85 @@ async function hasGitProHubFile(owner, repo) {
 }
 
 
+// Discover Projects By Username
+async function discoverProjectsByUser(username) {
+
+    const repositories =
+        await getUserRepositories(
+            username
+        );
+
+
+    const projects = [];
+
+
+    for (const repository of repositories) {
+
+        const owner =
+            repository.owner.login;
+
+        const repo =
+            repository.name;
+
+
+        try {
+
+            // Check gitprohub.md
+            const hasFile =
+                await hasGitProHubFile(
+                    owner,
+                    repo
+                );
+
+
+            if (!hasFile) {
+                continue;
+            }
+
+
+            // Get complete project
+            const project =
+                await getProject(
+                    owner,
+                    repo
+                );
+
+
+            if (!project) {
+                continue;
+            }
+
+
+            // Save / Update Index
+            saveProject(project);
+
+
+            // Add project
+            projects.push(project);
+
+
+        } catch (error) {
+
+            console.error(
+                `Project discovery failed: ${owner}/${repo}`,
+                error.message
+            );
+
+        }
+
+    }
+
+
+    return projects;
+
+}
+
+
 // Discover GitProHub Projects
-async function discoverProjects(page = 1, perPage = 30) {
+async function discoverProjects(
+    page = 1,
+    perPage = 30
+) {
 
     const searchResult =
         await searchGitProHubProjects(
@@ -101,7 +186,6 @@ async function discoverProjects(page = 1, perPage = 30) {
                 item.repository.name;
 
 
-            // Check gitprohub.md
             const hasFile =
                 await hasGitProHubFile(
                     owner,
@@ -114,7 +198,6 @@ async function discoverProjects(page = 1, perPage = 30) {
             }
 
 
-            // Get complete project
             const project =
                 await getProject(
                     owner,
@@ -127,11 +210,8 @@ async function discoverProjects(page = 1, perPage = 30) {
             }
 
 
-            // Save / Update Project Index
             saveProject(project);
 
-
-            // Add to current discovery result
             projects.push(project);
 
 
@@ -149,18 +229,22 @@ async function discoverProjects(page = 1, perPage = 30) {
 
     return {
 
-        total: projects.length,
+        total:
+            projects.length,
 
-        projects: projects,
+        projects:
+            projects,
 
         search: {
 
             total_count:
                 searchResult.total_count || 0,
 
-            page: page,
+            page:
+                page,
 
-            per_page: perPage
+            per_page:
+                perPage
 
         }
 
@@ -176,7 +260,9 @@ module.exports = {
 
     hasGitProHubFile,
 
-    discoverProjects
+    discoverProjects,
+
+    discoverProjectsByUser
 
 };
  

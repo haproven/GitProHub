@@ -1,4 +1,3 @@
-//  js id="h4p8xk"
 const express = require("express");
 
 const {
@@ -9,23 +8,106 @@ const {
 } = require("../services/projectIndexService");
 
 const {
-    discoverProjects
+    discoverProjects,
+    discoverProjectsByUser
 } = require("../services/discoveryService");
 
 
 const router = express.Router();
 
 
-// Discover GitHub Projects
+// ==========================================
+// Discover Projects By GitHub Username
+// ==========================================
+
+router.get("/discover/:username", async (req, res) => {
+
+    try {
+
+        const username =
+            req.params.username.trim();
+
+
+        if (!username) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "GitHub username is required"
+
+            });
+
+        }
+
+
+        const result =
+            await discoverProjectsByUser(
+                username
+            );
+
+
+        res.json({
+
+            success: true,
+
+            username: username,
+
+            total:
+                result.length,
+
+            projects:
+                result
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Username discovery error:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            error:
+                error.message
+
+        });
+
+    }
+
+});
+
+
+// ==========================================
+// Global GitProHub Discovery
+// ==========================================
+
 router.get("/discover", async (req, res) => {
 
     try {
 
         const page =
-            Number(req.query.page) || 1;
+            Math.max(
+                Number(req.query.page) || 1,
+                1
+            );
+
 
         const perPage =
-            Number(req.query.per_page) || 30;
+            Math.min(
+                Math.max(
+                    Number(req.query.per_page) || 30,
+                    1
+                ),
+                100
+            );
 
 
         const result =
@@ -46,14 +128,18 @@ router.get("/discover", async (req, res) => {
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "Global discovery error:",
+            error
+        );
 
 
         res.status(500).json({
 
             success: false,
 
-            error: error.message
+            error:
+                error.message
 
         });
 
@@ -62,7 +148,10 @@ router.get("/discover", async (req, res) => {
 });
 
 
+// ==========================================
 // Featured Projects
+// ==========================================
+
 router.get("/featured", (req, res) => {
 
     const projects =
@@ -87,11 +176,15 @@ router.get("/featured", (req, res) => {
 });
 
 
+// ==========================================
 // Projects By Category
+// ==========================================
+
 router.get("/category/:category", (req, res) => {
 
     const category =
         req.params.category
+            .trim()
             .toLowerCase();
 
 
@@ -121,11 +214,57 @@ router.get("/category/:category", (req, res) => {
 });
 
 
+// ==========================================
+// Projects By Tag
+// ==========================================
+
+router.get("/tag/:tag", (req, res) => {
+
+    const tag =
+        req.params.tag
+            .trim()
+            .toLowerCase();
+
+
+    const projects =
+        getAllProjects().filter(
+            project =>
+                Array.isArray(project.tags) &&
+                project.tags.some(
+                    item =>
+                        item
+                            .toLowerCase()
+                            === tag
+                )
+        );
+
+
+    res.json({
+
+        success: true,
+
+        tag:
+            req.params.tag,
+
+        total:
+            projects.length,
+
+        projects:
+            projects
+
+    });
+
+});
+
+
+// ==========================================
 // Search Projects
+// ==========================================
+
 router.get("/search", (req, res) => {
 
     const query =
-        req.query.q || "";
+        (req.query.q || "").trim();
 
 
     const projects =
@@ -150,11 +289,14 @@ router.get("/search", (req, res) => {
 });
 
 
+// ==========================================
 // Single Project
+// ==========================================
+
 router.get("/project", (req, res) => {
 
     const url =
-        req.query.url;
+        (req.query.url || "").trim();
 
 
     if (!url) {
@@ -201,7 +343,10 @@ router.get("/project", (req, res) => {
 });
 
 
+// ==========================================
 // All Projects
+// ==========================================
+
 router.get("/", (req, res) => {
 
     const projects =
@@ -223,11 +368,14 @@ router.get("/", (req, res) => {
 });
 
 
+// ==========================================
 // Remove Project
+// ==========================================
+
 router.delete("/", (req, res) => {
 
     const url =
-        req.query.url;
+        (req.query.url || "").trim();
 
 
     if (!url) {
@@ -275,4 +423,3 @@ router.delete("/", (req, res) => {
 
 
 module.exports = router;
- 
