@@ -1,0 +1,12 @@
+{
+  "name": "gitprohub-backend",
+  "version": "1.0.0",
+  "description": "GitProHub Backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
+  }
+}
