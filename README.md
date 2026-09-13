@@ -28,3 +28,7 @@ http://localhost:3000/github-project/codersusheel/haprocard
      "message": "gitprohub.md not found"
   }
 ]
+
+
+http://localhost:3000/github-project/haproven/Haproven
+http://localhost:3000/github-project/codersusheel/codersusheel
