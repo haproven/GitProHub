@@ -1,44 +1,67 @@
-//  js
 require("dotenv").config();
 
 const express = require("express");
 
 
+// ==========================================
 // Services
+// ==========================================
+
 const {
     getUser,
     getGitProHubFile
 } = require("./services/githubService");
 
+
 const {
     parseGitProHub
 } = require("./services/gitprohubParser");
+
 
 const {
     getProject
 } = require("./services/projectService");
 
 
+// Automatic Discovery
+const {
+    startAutoDiscovery
+} = require("./services/autoDiscoveryService");
+
+
+// ==========================================
 // Routes
+// ==========================================
+
 const projectsRouter =
     require("./routes/projects");
+
 
 const developersRouter =
     require("./routes/developers");
 
 
+// ==========================================
 // App
+// ==========================================
+
 const app = express();
 
 const PORT =
     process.env.PORT || 3000;
 
 
+// ==========================================
 // JSON Middleware
+// ==========================================
+
 app.use(express.json());
 
 
+// ==========================================
 // Home
+// ==========================================
+
 app.get("/", (req, res) => {
 
     res.send(
@@ -48,7 +71,10 @@ app.get("/", (req, res) => {
 });
 
 
+// ==========================================
 // GitHub User
+// ==========================================
+
 app.get(
     "/github/:username",
     async (req, res) => {
@@ -65,13 +91,17 @@ app.get(
 
                 success: true,
 
-                username: user.login,
+                username:
+                    user.login,
 
-                name: user.name,
+                name:
+                    user.name,
 
-                avatar: user.avatar_url,
+                avatar:
+                    user.avatar_url,
 
-                github: user.html_url,
+                github:
+                    user.html_url,
 
                 public_repos:
                     user.public_repos
@@ -88,7 +118,8 @@ app.get(
 
                 success: false,
 
-                error: error.message
+                error:
+                    error.message
 
             });
 
@@ -98,7 +129,10 @@ app.get(
 );
 
 
+// ==========================================
 // GitProHub Parser Test
+// ==========================================
+
 app.get(
     "/test-parser",
     (req, res) => {
@@ -115,14 +149,17 @@ open_source: true
 
 
         const data =
-            parseGitProHub(content);
+            parseGitProHub(
+                content
+            );
 
 
         res.json({
 
             success: true,
 
-            data: data
+            data:
+                data
 
         });
 
@@ -130,7 +167,10 @@ open_source: true
 );
 
 
+// ==========================================
 // GitProHub File Test
+// ==========================================
+
 app.get(
     "/test-gitprohub/:username/:repo",
     async (req, res) => {
@@ -151,7 +191,8 @@ app.get(
                 found:
                     content !== null,
 
-                content: content
+                content:
+                    content
 
             });
 
@@ -165,7 +206,8 @@ app.get(
 
                 success: false,
 
-                error: error.message
+                error:
+                    error.message
 
             });
 
@@ -175,7 +217,10 @@ app.get(
 );
 
 
+// ==========================================
 // GitProHub Project
+// ==========================================
+
 app.get(
     "/github-project/:username/:repo",
     async (req, res) => {
@@ -208,7 +253,8 @@ app.get(
 
                 success: true,
 
-                project: project
+                project:
+                    project
 
             });
 
@@ -222,7 +268,8 @@ app.get(
 
                 success: false,
 
-                error: error.message
+                error:
+                    error.message
 
             });
 
@@ -232,26 +279,39 @@ app.get(
 );
 
 
+// ==========================================
 // Projects API
+// ==========================================
+
 app.use(
     "/api/projects",
     projectsRouter
 );
 
 
+// ==========================================
 // Developers API
+// ==========================================
+
 app.use(
     "/api/developers",
     developersRouter
 );
 
 
+// ==========================================
 // Start Server
+// ==========================================
+
 app.listen(PORT, () => {
 
     console.log(
         `GitProHub Server running on http://localhost:${PORT}`
     );
+
+
+    // Start Automatic Discovery
+    startAutoDiscovery();
 
 });
  

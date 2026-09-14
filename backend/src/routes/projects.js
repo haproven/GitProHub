@@ -12,8 +12,55 @@ const {
     discoverProjectsByUser
 } = require("../services/discoveryService");
 
+const {
+    runAutoDiscovery
+} = require("../services/autoDiscoveryService");
+
 
 const router = express.Router();
+
+
+// ==========================================
+// Manual Automatic Discovery
+// ==========================================
+
+router.get("/auto-discover", async (req, res) => {
+
+    try {
+
+        await runAutoDiscovery();
+
+
+        res.json({
+
+            success: true,
+
+            message:
+                "Automatic discovery completed successfully"
+
+        });
+
+
+    } catch (error) {
+
+        console.error(
+            "Auto discovery error:",
+            error
+        );
+
+
+        res.status(500).json({
+
+            success: false,
+
+            error:
+                error.message
+
+        });
+
+    }
+
+});
 
 
 // ==========================================
@@ -52,7 +99,8 @@ router.get("/discover/:username", async (req, res) => {
 
             success: true,
 
-            username: username,
+            username:
+                username,
 
             total:
                 result.length,
@@ -423,3 +471,4 @@ router.delete("/", (req, res) => {
 
 
 module.exports = router;
+ 
