@@ -28,8 +28,15 @@ const {
     getAutoDiscoveryStatus
 } = require("./services/autoDiscoveryService");
 
-
 const app = express();
+
+const PORT =
+    Number(process.env.PORT) || 3000;
+
+const SERVER_START_TIME =
+    new Date();
+
+app.disable("x-powered-by");
 
 app.use(cors());
 
@@ -37,47 +44,91 @@ app.use(
     express.json()
 );
 
-
 app.get(
     "/",
     (req, res) => {
 
-        const discoveryStatus =
-            getAutoDiscoveryStatus();
+        try {
 
-        res.json({
+            const discoveryStatus =
+                getAutoDiscoveryStatus();
 
-            success: true,
+            res.setHeader(
+                "Cache-Control",
+                "no-store, no-cache, must-revalidate, proxy-revalidate"
+            );
 
-            name:
-                "GitProHub API",
+            res.setHeader(
+                "Pragma",
+                "no-cache"
+            );
 
-            message:
-                "GitProHub is running",
+            res.setHeader(
+                "Expires",
+                "0"
+            );
 
-            discovery: {
-                running:
-                    discoveryStatus.running,
+            res.json({
 
-                scheduled:
-                    discoveryStatus.scheduled,
+                success: true,
 
-                interval:
-                    discoveryStatus.interval
-            },
+                name:
+                    "GitProHub API",
 
-            endpoints: [
-                "/api/projects",
-                "/api/projects/stats",
-                "/api/project/:username/:repo",
-                "/api/github/:username",
-                "/api/discovery/run",
-                "/api/discovery/status"
-            ]
-        });
+                message:
+                    "GitProHub is running",
+
+                discovery: {
+
+                    running:
+                        discoveryStatus.running,
+
+                    scheduled:
+                        discoveryStatus.scheduled,
+
+                    interval:
+                        discoveryStatus.interval
+                },
+
+                endpoints: [
+
+                    "/api/projects",
+
+                    "/api/projects/stats",
+
+                    "/api/project/:username/:repo",
+
+                    "/api/github/:username",
+
+                    "/api/discovery/run",
+
+                    "/api/discovery/status"
+                ]
+            });
+
+        } catch (error) {
+
+            console.error(
+                "❌ API status error:",
+                error.message
+            );
+
+            res.status(500).json({
+
+                success: false,
+
+                name:
+                    "GitProHub API",
+
+                message:
+                    "Unable to get API status",
+
+                error:
+                    error.message
+            });
+        }
     }
 );
-
 
 app.get(
     "/api/projects",
@@ -88,6 +139,21 @@ app.get(
             const projects =
                 getProjects();
 
+            res.setHeader(
+                "Cache-Control",
+                "no-store, no-cache, must-revalidate, proxy-revalidate"
+            );
+
+            res.setHeader(
+                "Pragma",
+                "no-cache"
+            );
+
+            res.setHeader(
+                "Expires",
+                "0"
+            );
+
             res.json({
 
                 success: true,
@@ -96,7 +162,6 @@ app.get(
                     projects.length,
 
                 projects
-
             });
 
         } catch (error) {
@@ -116,12 +181,10 @@ app.get(
 
                 error:
                     error.message
-
             });
         }
     }
 );
-
 
 app.get(
     "/api/projects/stats",
@@ -132,15 +195,34 @@ app.get(
             const stats =
                 getIndexStats();
 
+            res.setHeader(
+                "Cache-Control",
+                "no-store, no-cache, must-revalidate, proxy-revalidate"
+            );
+
+            res.setHeader(
+                "Pragma",
+                "no-cache"
+            );
+
+            res.setHeader(
+                "Expires",
+                "0"
+            );
+
             res.json({
 
                 success: true,
 
                 ...stats
-
             });
 
         } catch (error) {
+
+            console.error(
+                "❌ Failed to load project stats:",
+                error.message
+            );
 
             res.status(500).json({
 
@@ -148,12 +230,10 @@ app.get(
 
                 error:
                     error.message
-
             });
         }
     }
 );
-
 
 app.get(
     "/api/project/:username/:repo",
@@ -164,7 +244,6 @@ app.get(
             repo
         } = req.params;
 
-
         try {
 
             const indexed =
@@ -172,7 +251,6 @@ app.get(
                     username,
                     repo
                 );
-
 
             if (indexed) {
 
@@ -186,17 +264,14 @@ app.get(
 
                     project:
                         indexed
-
                 });
             }
-
 
             const project =
                 await getProject(
                     username,
                     repo
                 );
-
 
             if (!project) {
 
@@ -206,27 +281,22 @@ app.get(
 
                     message:
                         "GitProHub project not found"
-
                 });
             }
-
 
             registerKnownAccount(
                 username
             );
 
-
             saveProject(
                 project
             );
-
 
             res.json({
 
                 success: true,
 
                 project
-
             });
 
         } catch (error) {
@@ -242,12 +312,10 @@ app.get(
 
                 error:
                     error.message
-
             });
         }
     }
 );
-
 
 app.get(
     "/api/github/:username",
@@ -257,7 +325,6 @@ app.get(
             username
         } = req.params;
 
-
         if (!username) {
 
             return res.status(400).json({
@@ -266,15 +333,12 @@ app.get(
 
                 message:
                     "GitHub username is required"
-
             });
         }
-
 
         registerKnownAccount(
             username
         );
-
 
         console.log("");
 
@@ -290,14 +354,12 @@ app.get(
             "=========================================="
         );
 
-
         try {
 
             const repositories =
                 await getUserRepositories(
                     username
                 );
-
 
             if (!Array.isArray(repositories)) {
 
@@ -309,15 +371,12 @@ app.get(
 
                     error:
                         "Invalid repositories response"
-
                 });
             }
-
 
             console.log(
                 `📦 Public repositories found: ${repositories.length}`
             );
-
 
             const projects = [];
 
@@ -326,7 +385,6 @@ app.get(
             let updated = 0;
             let errors = 0;
 
-
             for (
                 const repository
                 of repositories
@@ -334,11 +392,9 @@ app.get(
 
                 checked++;
 
-
                 console.log(
                     `🔍 [${checked}/${repositories.length}] ${username}/${repository.name}`
                 );
-
 
                 try {
 
@@ -348,24 +404,20 @@ app.get(
                             repository.name
                         );
 
-
                     if (project) {
 
                         projects.push(
                             project
                         );
 
-
                         registerKnownAccount(
                             username
                         );
-
 
                         const result =
                             saveProject(
                                 project
                             );
-
 
                         if (result?.added) {
 
@@ -396,7 +448,6 @@ app.get(
                 }
             }
 
-
             console.log("");
 
             console.log(
@@ -415,6 +466,10 @@ app.get(
                 `⚠️ Repository check errors: ${errors}`
             );
 
+            res.setHeader(
+                "Cache-Control",
+                "no-store"
+            );
 
             res.json({
 
@@ -437,9 +492,7 @@ app.get(
                 errors,
 
                 projects
-
             });
-
 
         } catch (error) {
 
@@ -447,7 +500,6 @@ app.get(
                 `❌ GitHub account check failed: ${username}`,
                 error.message
             );
-
 
             res.status(500).json({
 
@@ -457,12 +509,10 @@ app.get(
 
                 error:
                     error.message
-
             });
         }
     }
 );
-
 
 app.post(
     "/api/discovery/run",
@@ -473,6 +523,10 @@ app.post(
             const result =
                 await runAutoDiscovery();
 
+            res.setHeader(
+                "Cache-Control",
+                "no-store"
+            );
 
             res.json({
 
@@ -480,7 +534,6 @@ app.post(
                     result?.success !== false,
 
                 ...result
-
             });
 
         } catch (error) {
@@ -490,19 +543,16 @@ app.post(
                 error.message
             );
 
-
             res.status(500).json({
 
                 success: false,
 
                 error:
                     error.message
-
             });
         }
     }
 );
-
 
 app.get(
     "/api/discovery/status",
@@ -513,16 +563,24 @@ app.get(
             const status =
                 getAutoDiscoveryStatus();
 
+            res.setHeader(
+                "Cache-Control",
+                "no-store"
+            );
 
             res.json({
 
                 success: true,
 
                 ...status
-
             });
 
         } catch (error) {
+
+            console.error(
+                "❌ Failed to get discovery status:",
+                error.message
+            );
 
             res.status(500).json({
 
@@ -530,21 +588,10 @@ app.get(
 
                 error:
                     error.message
-
             });
         }
     }
 );
-
-
-const PORT =
-    Number(process.env.PORT) ||
-    3000;
-
-
-const SERVER_START_TIME =
-    new Date();
-
 
 const server =
     app.listen(
@@ -615,30 +662,37 @@ const server =
 
             console.log("");
 
+            try {
 
-            const discovery =
-                startAutoDiscovery(
-                    1 * 60 * 1000
-                );
+                const discovery =
+                    startAutoDiscovery(
+                        1 * 60 * 1000
+                    );
 
+                if (discovery?.success) {
 
-            if (discovery?.success) {
+                    console.log(
+                        "✅ Automatic discovery timer: ON"
+                    );
 
-                console.log(
-                    "✅ Automatic discovery timer: ON"
-                );
+                    console.log(
+                        "⏱️ Discovery interval: 1 minute"
+                    );
 
-                console.log(
-                    "⏱️ Discovery interval: 1 minute"
-                );
+                } else {
 
-            } else {
+                    console.log(
+                        "⚠️ Automatic discovery timer: NOT STARTED"
+                    );
+                }
 
-                console.log(
-                    "⚠️ Automatic discovery timer: NOT STARTED"
+            } catch (error) {
+
+                console.error(
+                    "❌ Failed to start automatic discovery:",
+                    error.message
                 );
             }
-
 
             console.log("");
 
@@ -662,50 +716,36 @@ const server =
         }
     );
 
+function shutdown(signal) {
+
+    console.log("");
+
+    console.log(
+        `🛑 ${signal} received. Shutting down GitProHub...`
+    );
+
+    server.close(
+        () => {
+
+            console.log(
+                "✅ GitProHub server stopped."
+            );
+
+            process.exit(0);
+        }
+    );
+}
 
 process.on(
     "SIGINT",
     () => {
-
-        console.log("");
-
-        console.log(
-            "🛑 Shutting down GitProHub..."
-        );
-
-        server.close(
-            () => {
-
-                console.log(
-                    "✅ GitProHub server stopped."
-                );
-
-                process.exit(0);
-            }
-        );
+        shutdown("SIGINT");
     }
 );
-
 
 process.on(
     "SIGTERM",
     () => {
-
-        console.log("");
-
-        console.log(
-            "🛑 Shutting down GitProHub..."
-        );
-
-        server.close(
-            () => {
-
-                console.log(
-                    "✅ GitProHub server stopped."
-                );
-
-                process.exit(0);
-            }
-        );
+        shutdown("SIGTERM");
     }
 );

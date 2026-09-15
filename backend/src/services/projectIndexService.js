@@ -28,16 +28,13 @@ const INDEX_FILE = path.join(
 // =========================================================
 
 function ensureDataDirectory() {
-
     if (!fs.existsSync(DATA_DIR)) {
-
         fs.mkdirSync(
             DATA_DIR,
             {
                 recursive: true
             }
         );
-
     }
 }
 
@@ -46,7 +43,6 @@ function ensureDataDirectory() {
 // =========================================================
 
 function readProjects() {
-
     ensureDataDirectory();
 
     if (!fs.existsSync(INDEX_FILE)) {
@@ -54,26 +50,21 @@ function readProjects() {
     }
 
     try {
-
-        const content =
-            fs.readFileSync(
-                INDEX_FILE,
-                "utf8"
-            );
+        const content = fs.readFileSync(
+            INDEX_FILE,
+            "utf8"
+        );
 
         if (!content.trim()) {
             return [];
         }
 
-        const data =
-            JSON.parse(content);
+        const data = JSON.parse(content);
 
-        // Normal array format
         if (Array.isArray(data)) {
             return data;
         }
 
-        // Object format support
         if (
             data &&
             Array.isArray(data.projects)
@@ -82,9 +73,7 @@ function readProjects() {
         }
 
         return [];
-
     } catch (error) {
-
         console.error(
             "❌ Project index read error:",
             error.message
@@ -99,45 +88,63 @@ function readProjects() {
 // =========================================================
 
 function writeProjects(projects = []) {
-
     ensureDataDirectory();
 
-    const tempFile =
-        `${INDEX_FILE}.tmp`;
+    const tempFile = `${INDEX_FILE}.tmp`;
+
+    const content = JSON.stringify(
+        projects,
+        null,
+        2
+    );
 
     fs.writeFileSync(
         tempFile,
-        JSON.stringify(
-            projects,
-            null,
-            2
-        ),
+        content,
         "utf8"
     );
 
-    fs.renameSync(
-        tempFile,
-        INDEX_FILE
-    );
+    try {
+        fs.renameSync(
+            tempFile,
+            INDEX_FILE
+        );
+    } catch (error) {
+        try {
+            if (fs.existsSync(INDEX_FILE)) {
+                fs.unlinkSync(INDEX_FILE);
+            }
+
+            fs.renameSync(
+                tempFile,
+                INDEX_FILE
+            );
+        } catch (renameError) {
+            if (fs.existsSync(tempFile)) {
+                try {
+                    fs.unlinkSync(tempFile);
+                } catch {}
+            }
+
+            throw renameError;
+        }
+    }
 }
 
 // =========================================================
 // PROJECT KEY
 // =========================================================
-//
+
 // Unique project:
-//
 // username/repository
-//
+
 // Example:
-//
 // codersusheel/haprobase
-//
+
 // Haproven/HaproID
 // =========================================================
 
 function getProjectKey(project) {
-
     const username =
         project?.developer?.username ||
         project?.github?.owner?.login ||
@@ -165,13 +172,11 @@ function getProjectKey(project) {
 // =========================================================
 
 function normalizeProject(project) {
-
     if (!project) {
         return null;
     }
 
-    const key =
-        getProjectKey(project);
+    const key = getProjectKey(project);
 
     if (!key) {
         return null;
@@ -183,36 +188,22 @@ function normalizeProject(project) {
 // =========================================================
 // REMOVE DUPLICATE PROJECTS
 // =========================================================
-//
-// Agar kisi reason se projects.json me same
-// username/repo multiple times aa gaya ho,
-// to sirf ek record rakha jayega.
-//
-// Existing first record preserve hota hai.
-// =========================================================
 
-function removeDuplicateProjects(
-    projects
-) {
-
+function removeDuplicateProjects(projects) {
     const unique = new Map();
 
     for (const project of projects) {
-
-        const key =
-            getProjectKey(project);
+        const key = getProjectKey(project);
 
         if (!key) {
             continue;
         }
 
         if (!unique.has(key)) {
-
             unique.set(
                 key,
                 project
             );
-
         }
     }
 
@@ -224,7 +215,7 @@ function removeDuplicateProjects(
 // =========================================================
 // SAVE / UPDATE PROJECT
 // =========================================================
-//
+
 // Return:
 //
 // {
@@ -237,12 +228,10 @@ function removeDuplicateProjects(
 // =========================================================
 
 function saveProject(project) {
-
     const normalizedProject =
         normalizeProject(project);
 
     if (!normalizedProject) {
-
         console.error(
             "❌ Cannot save project: invalid project key"
         );
@@ -259,8 +248,7 @@ function saveProject(project) {
     // Read current index
     // -----------------------------------------
 
-    let projects =
-        readProjects();
+    let projects = readProjects();
 
     // -----------------------------------------
     // Clean accidental duplicates first
@@ -313,13 +301,10 @@ function saveProject(project) {
     // -----------------------------------------
 
     if (index === -1) {
-
         const newProject = {
-
             ...normalizedProject,
 
             sync: {
-
                 ...(normalizedProject.sync || {}),
 
                 firstSeenAt:
@@ -332,9 +317,7 @@ function saveProject(project) {
 
                 lastUpdatedAt:
                     now
-
             }
-
         };
 
         projects.push(
@@ -350,16 +333,10 @@ function saveProject(project) {
         );
 
         return {
-
             added: true,
-
             updated: false,
-
-            project:
-                newProject,
-
+            project: newProject,
             key
-
         };
     }
 
@@ -368,15 +345,11 @@ function saveProject(project) {
     // -----------------------------------------
 
     const updatedProject = {
-
         ...projects[index],
-
         ...normalizedProject,
 
         sync: {
-
             ...oldSync,
-
             ...(normalizedProject.sync || {}),
 
             firstSeenAt:
@@ -388,14 +361,9 @@ function saveProject(project) {
             lastCheckedAt:
                 now,
 
-            // IMPORTANT:
-            // Every successful fresh GitHub
-            // sync gets a new lastUpdatedAt.
             lastUpdatedAt:
                 now
-
         }
-
     };
 
     projects[index] =
@@ -419,16 +387,10 @@ function saveProject(project) {
     );
 
     return {
-
         added: false,
-
         updated: true,
-
-        project:
-            updatedProject,
-
+        project: updatedProject,
         key
-
     };
 }
 
@@ -440,7 +402,6 @@ function removeProject(
     username,
     repo
 ) {
-
     if (!username || !repo) {
         return false;
     }
@@ -463,7 +424,6 @@ function removeProject(
         filtered.length ===
         projects.length
     ) {
-
         return false;
     }
 
@@ -481,7 +441,7 @@ function removeProject(
 // =========================================================
 // REMOVE PROJECTS NOT FOUND DURING SYNC
 // =========================================================
-//
+
 // IMPORTANT:
 //
 // Is function ko global discovery ke baad
@@ -497,7 +457,6 @@ function removeProject(
 function removeMissingProjects(
     discoveredKeys = []
 ) {
-
     const projects =
         readProjects();
 
@@ -517,14 +476,12 @@ function removeMissingProjects(
     const filtered =
         projects.filter(
             project => {
-
                 const key =
                     getProjectKey(
                         project
                     );
 
                 if (!key) {
-
                     return false;
                 }
 
@@ -533,7 +490,6 @@ function removeMissingProjects(
                         key
                     )
                 ) {
-
                     return true;
                 }
 
@@ -548,7 +504,6 @@ function removeMissingProjects(
     if (
         removed.length > 0
     ) {
-
         writeProjects(
             filtered
         );
@@ -557,11 +512,9 @@ function removeMissingProjects(
             const key
             of removed
         ) {
-
             console.log(
                 `🗑️ Missing/Removed: ${key}`
             );
-
         }
     }
 
@@ -573,9 +526,7 @@ function removeMissingProjects(
 // =========================================================
 
 function getProjects() {
-
     return readProjects();
-
 }
 
 // =========================================================
@@ -586,7 +537,6 @@ function getProjectFromIndex(
     username,
     repo
 ) {
-
     if (!username || !repo) {
         return null;
     }
@@ -613,7 +563,6 @@ function getProjectFromIndex(
 // =========================================================
 
 function getIndexStats() {
-
     const projects =
         readProjects();
 
@@ -624,7 +573,6 @@ function getIndexStats() {
         const project
         of projects
     ) {
-
         const date =
             project?.sync?.lastCheckedAt ||
             project?.sync?.lastUpdatedAt ||
@@ -638,24 +586,20 @@ function getIndexStats() {
             !lastUpdated ||
             date > lastUpdated
         ) {
-
             lastUpdated =
                 date;
-
         }
     }
 
     return {
-
-        // IMPORTANT:
         // Actual unique projects
+
         total:
             removeDuplicateProjects(
                 projects
             ).length,
 
         lastUpdated
-
     };
 }
 
@@ -664,7 +608,6 @@ function getIndexStats() {
 // =========================================================
 
 function getProjectCount() {
-
     const projects =
         readProjects();
 
@@ -678,25 +621,14 @@ function getProjectCount() {
 // =========================================================
 
 module.exports = {
-
     saveProject,
-
     removeProject,
-
     removeMissingProjects,
-
     getProjects,
-
     getProjectCount,
-
     getProjectFromIndex,
-
     getIndexStats,
-
     readProjects,
-
     writeProjects,
-
     getProjectKey
-
 };
