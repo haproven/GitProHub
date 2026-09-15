@@ -3,7 +3,8 @@
 // =========================================================
 
 const {
-    crawlGitHubGitProHubFiles
+    crawlGitHubGitProHubFiles,
+    getUserRepositories
 } = require("./githubService");
 
 const {
@@ -32,6 +33,7 @@ const {
 //
 // Network/API error:
 //      → DELETE NAHI karega
+//
 // =========================================================
 
 async function checkExistingProjects() {
@@ -49,9 +51,7 @@ async function checkExistingProjects() {
     );
 
 
-    for (
-        const project of projects
-    ) {
+    for (const project of projects) {
 
         const key =
             getProjectKey(project);
@@ -66,9 +66,7 @@ async function checkExistingProjects() {
             key.split("/");
 
 
-        if (
-            parts.length !== 2
-        ) {
+        if (parts.length !== 2) {
             continue;
         }
 
@@ -110,8 +108,8 @@ async function checkExistingProjects() {
                     console.log(
                         `🗑️ Removed: ${username}/${repo}`
                     );
-                }
 
+                }
 
                 continue;
             }
@@ -125,8 +123,11 @@ async function checkExistingProjects() {
                 freshProject
             );
 
-
             updated++;
+
+            console.log(
+                `🔄 Updated: ${username}/${repo}`
+            );
 
 
         } catch (error) {
@@ -142,12 +143,13 @@ async function checkExistingProjects() {
                 `⚠️ Could not check ${username}/${repo}:`,
                 error.message
             );
+
         }
+
     }
 
 
     return {
-
         checked:
             projects.length,
 
@@ -161,27 +163,294 @@ async function checkExistingProjects() {
 
 
 // =========================================================
-// DISCOVER NEW GITPROHUB PROJECTS
+// SAVE / UPDATE ONE PROJECT
+// =========================================================
+
+function saveDiscoveredProject(
+    project
+) {
+
+    if (!project) {
+        return {
+            added: false,
+            updated: false
+        };
+    }
+
+
+    const username =
+        project?.developer?.username ||
+        project?.github?.owner?.login ||
+        null;
+
+
+    const repo =
+        project?.github?.name ||
+        null;
+
+
+    if (!username || !repo) {
+
+        console.log(
+            "⚠️ Project username/repository missing."
+        );
+
+        return {
+            added: false,
+            updated: false
+        };
+    }
+
+
+    const projects =
+        getProjects();
+
+
+    const newKey =
+        getProjectKey(project);
+
+
+    const exists =
+        projects.some(
+            existing =>
+                getProjectKey(existing) ===
+                newKey
+        );
+
+
+    saveProject(project);
+
+
+    if (exists) {
+
+        console.log(
+            `🔄 Existing project updated: ${username}/${repo}`
+        );
+
+        return {
+            added: false,
+            updated: true
+        };
+
+    }
+
+
+    console.log(
+        `🆕 NEW GitProHub project added: ${username}/${repo}`
+    );
+
+
+    return {
+        added: true,
+        updated: false
+    };
+}
+
+
+// =========================================================
+// SCAN ONE GITHUB ACCOUNT
 // =========================================================
 //
-// GitHub par:
+// Account ke ALL PUBLIC repositories check honge.
 //
-//      filename:gitprohub.md
+// Root gitprohub.md:
+//      → ADD / UPDATE
 //
-// search hoga.
+// =========================================================
+
+async function scanGitHubAccount(
+    username
+) {
+
+    if (!username) {
+        return {
+            username,
+            repositories: 0,
+            checked: 0,
+            found: 0,
+            added: 0,
+            updated: 0,
+            errors: 0
+        };
+    }
+
+
+    console.log("");
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        `🔎 Checking GitHub account: ${username}`
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    let repositories;
+
+
+    try {
+
+        repositories =
+            await getUserRepositories(
+                username
+            );
+
+
+    } catch (error) {
+
+        console.error(
+            `❌ Could not load account ${username}:`,
+            error.message
+        );
+
+
+        return {
+            username,
+
+            repositories: 0,
+
+            checked: 0,
+
+            found: 0,
+
+            added: 0,
+
+            updated: 0,
+
+            errors: 1
+        };
+    }
+
+
+    console.log(
+        `📦 Public repositories found: ${repositories.length}`
+    );
+
+
+    let checked = 0;
+    let found = 0;
+    let added = 0;
+    let updated = 0;
+    let errors = 0;
+
+
+    for (
+        const repository
+        of repositories
+    ) {
+
+        checked++;
+
+
+        console.log(
+            `🔍 [${checked}/${repositories.length}] ${username}/${repository.name}`
+        );
+
+
+        try {
+
+            const project =
+                await getProject(
+                    username,
+                    repository.name
+                );
+
+
+            // =================================================
+            // gitprohub.md FOUND
+            // =================================================
+
+            if (project) {
+
+                found++;
+
+
+                const result =
+                    saveDiscoveredProject(
+                        project
+                    );
+
+
+                if (result.added) {
+                    added++;
+                }
+
+
+                if (result.updated) {
+                    updated++;
+                }
+
+            }
+
+
+        } catch (error) {
+
+            errors++;
+
+
+            console.error(
+                `⚠️ Could not check ${username}/${repository.name}:`,
+                error.message
+            );
+
+        }
+
+    }
+
+
+    console.log("");
+
+    console.log(
+        `🎯 GitProHub projects found in ${username}: ${found}`
+    );
+
+
+    return {
+
+        username,
+
+        repositories:
+            repositories.length,
+
+        checked,
+
+        found,
+
+        added,
+
+        updated,
+
+        errors
+
+    };
+}
+
+
+// =========================================================
+// DISCOVER NEW GITPROHUB PROJECTS - GLOBAL SEARCH
+// =========================================================
+//
+// GitHub global Code Search:
+//
+//     filename:gitprohub.md
 //
 // Koi username hardcode nahi hai.
 //
-// New project:
-//      → ADD
+// NOTE:
+// GitHub Code Search complete global database guarantee
+// nahi karta. Isliye account scanning bhi use ki ja rahi hai.
 //
-// Existing:
-//      → UPDATE
 // =========================================================
 
 async function discoverNewGitProHubProjects() {
 
     console.log("");
+
     console.log(
         "🔎 Searching GitHub for new GitProHub projects..."
     );
@@ -213,6 +482,7 @@ async function discoverNewGitProHubProjects() {
             updated: 0,
 
             repositories: []
+
         };
     }
 
@@ -222,10 +492,12 @@ async function discoverNewGitProHubProjects() {
     ) {
 
         repositories = [];
+
     }
 
 
     console.log("");
+
     console.log(
         `🌐 GitHub repositories discovered: ${repositories.length}`
     );
@@ -235,12 +507,9 @@ async function discoverNewGitProHubProjects() {
     let updated = 0;
 
 
-    // =========================================================
-    // PROCESS EVERY DISCOVERED REPOSITORY
-    // =========================================================
-
     for (
-        const repository of repositories
+        const repository
+        of repositories
     ) {
 
         const username =
@@ -254,7 +523,6 @@ async function discoverNewGitProHubProjects() {
             !username ||
             !repo
         ) {
-
             continue;
         }
 
@@ -273,10 +541,6 @@ async function discoverNewGitProHubProjects() {
                 );
 
 
-            // =================================================
-            // gitprohub.md NOT FOUND
-            // =================================================
-
             if (!project) {
 
                 console.log(
@@ -287,75 +551,31 @@ async function discoverNewGitProHubProjects() {
             }
 
 
-            // =================================================
-            // CHECK WHETHER ALREADY EXISTS
-            // =================================================
-
-            const existingProjects =
-                getProjects();
-
-
-            const newKey =
-                getProjectKey(
+            const result =
+                saveDiscoveredProject(
                     project
                 );
 
 
-            const alreadyExists =
-                existingProjects.some(
-                    existing =>
-                        getProjectKey(existing) ===
-                        newKey
-                );
-
-
-            // =================================================
-            // NEW PROJECT
-            // =================================================
-
-            if (!alreadyExists) {
-
-                saveProject(
-                    project
-                );
-
+            if (result.added) {
                 added++;
-
-
-                console.log(
-                    `🆕 NEW GitProHub project added: ${username}/${repo}`
-                );
-
-
-                continue;
             }
 
 
-            // =================================================
-            // EXISTING PROJECT
-            // =================================================
-
-            saveProject(
-                project
-            );
-
-            updated++;
-
-
-            console.log(
-                `🔄 Existing project updated: ${username}/${repo}`
-            );
+            if (result.updated) {
+                updated++;
+            }
 
 
         } catch (error) {
-
-            // API/network error par crawler continue karega.
 
             console.error(
                 `⚠️ Failed: ${username}/${repo}`,
                 error.message
             );
+
         }
+
     }
 
 
@@ -369,6 +589,175 @@ async function discoverNewGitProHubProjects() {
         updated,
 
         repositories
+
+    };
+}
+
+
+// =========================================================
+// GET KNOWN GITHUB ACCOUNTS
+// =========================================================
+//
+// Existing projects ke developer usernames nikalega.
+//
+// Example:
+//
+// haproven/haproven
+// haproven/HaproID
+// codersusheel/haproglob
+//
+// Accounts:
+//
+// haproven
+// codersusheel
+//
+// =========================================================
+
+function getKnownGitHubAccounts() {
+
+    const projects =
+        getProjects();
+
+
+    const accounts =
+        new Set();
+
+
+    for (
+        const project
+        of projects
+    ) {
+
+        const key =
+            getProjectKey(project);
+
+
+        if (!key) {
+            continue;
+        }
+
+
+        const parts =
+            key.split("/");
+
+
+        if (parts.length !== 2) {
+            continue;
+        }
+
+
+        const username =
+            parts[0];
+
+
+        if (username) {
+
+            accounts.add(
+                username
+            );
+
+        }
+
+    }
+
+
+    return Array.from(
+        accounts
+    );
+}
+
+
+// =========================================================
+// SCAN ALL KNOWN ACCOUNTS
+// =========================================================
+//
+// Har known GitHub account ke ALL public repositories
+// scan karega.
+//
+// =========================================================
+
+async function discoverKnownGitHubAccounts() {
+
+    const accounts =
+        getKnownGitHubAccounts();
+
+
+    console.log("");
+
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "👥 KNOWN GITHUB ACCOUNT SCANNER"
+    );
+
+    console.log(
+        `👤 Accounts to scan: ${accounts.length}`
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    let repositories = 0;
+    let checked = 0;
+    let found = 0;
+    let added = 0;
+    let updated = 0;
+    let errors = 0;
+
+
+    for (
+        const username
+        of accounts
+    ) {
+
+        const result =
+            await scanGitHubAccount(
+                username
+            );
+
+
+        repositories +=
+            result.repositories;
+
+        checked +=
+            result.checked;
+
+        found +=
+            result.found;
+
+        added +=
+            result.added;
+
+        updated +=
+            result.updated;
+
+        errors +=
+            result.errors;
+
+    }
+
+
+    return {
+
+        accounts:
+            accounts.length,
+
+        repositories,
+
+        checked,
+
+        found,
+
+        added,
+
+        updated,
+
+        errors
+
     };
 }
 
@@ -380,6 +769,7 @@ async function discoverNewGitProHubProjects() {
 async function discoverAllGitProHubProjects() {
 
     console.log("");
+
     console.log(
         "=========================================="
     );
@@ -393,33 +783,61 @@ async function discoverAllGitProHubProjects() {
     );
 
 
-    // =========================================================
+    // =================================================
     // STEP 1
     // CHECK OLD PROJECTS
-    // =========================================================
+    // =================================================
 
     const existing =
         await checkExistingProjects();
 
 
-    // =========================================================
+    // =================================================
     // STEP 2
-    // FIND NEW PROJECTS
-    // =========================================================
+    // GLOBAL GITHUB SEARCH
+    // =================================================
 
     const discovered =
         await discoverNewGitProHubProjects();
 
 
-    // =========================================================
+    // =================================================
+    // STEP 3
+    // SCAN KNOWN GITHUB ACCOUNTS
+    // =================================================
+    //
+    // Ye important part hai.
+    //
+    // Jo account projects.json me known hai,
+    // uske ALL public repositories check honge.
+    //
+    // =================================================
+
+    const accounts =
+        await discoverKnownGitHubAccounts();
+
+
+    // =================================================
     // FINAL PROJECT LIST
-    // =========================================================
+    // =================================================
 
     const projects =
         getProjects();
 
 
+    const totalAdded =
+        discovered.added +
+        accounts.added;
+
+
+    const totalUpdated =
+        existing.updated +
+        discovered.updated +
+        accounts.updated;
+
+
     console.log("");
+
     console.log(
         "=========================================="
     );
@@ -429,11 +847,11 @@ async function discoverAllGitProHubProjects() {
     );
 
     console.log(
-        `🆕 New projects added: ${discovered.added}`
+        `🆕 New projects added: ${totalAdded}`
     );
 
     console.log(
-        `🔄 Projects updated: ${existing.updated}`
+        `🔄 Projects updated: ${totalUpdated}`
     );
 
     console.log(
@@ -441,7 +859,7 @@ async function discoverAllGitProHubProjects() {
     );
 
     console.log(
-        `⚠️ Existing check errors: ${existing.errors}`
+        `⚠️ Errors: ${existing.errors + accounts.errors}`
     );
 
     console.log(
@@ -458,24 +876,43 @@ async function discoverAllGitProHubProjects() {
 
         projects,
 
+        // Global search
         discovered:
             discovered.discovered,
 
+        // New projects
         added:
-            discovered.added,
+            totalAdded,
 
+        // Updates
         updated:
-            existing.updated,
+            totalUpdated,
 
+        // Removed
         removed:
             existing.removed,
 
+        // Existing projects checked
         checked:
             existing.checked,
 
+        // Errors
         errors:
-            existing.errors
+            existing.errors +
+            accounts.errors,
+
+        // Account scanner information
+        accounts:
+            accounts.accounts,
+
+        accountRepositories:
+            accounts.repositories,
+
+        accountProjectsFound:
+            accounts.found
+
     };
+
 }
 
 
@@ -488,6 +925,10 @@ module.exports = {
     checkExistingProjects,
 
     discoverNewGitProHubProjects,
+
+    scanGitHubAccount,
+
+    discoverKnownGitHubAccounts,
 
     discoverAllGitProHubProjects
 
