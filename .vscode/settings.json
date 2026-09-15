@@ -1,3 +1,9 @@
 {
+    "liveServer.settings.ignoreFiles": [
+        "**/backend/data/**",
+        "**/backend/data/projects.json",
+        "**/backend/data/projects.json.tmp",
+        "**/backend/**/*.log"
+    ],
     "liveServer.settings.port": 5501
 }

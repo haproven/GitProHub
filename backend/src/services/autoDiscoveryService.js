@@ -2,8 +2,8 @@ const {
     discoverAllGitProHubProjects
 } = require("./discoveryService");
 
-const DEFAULT_INTERVAL = 5 * 60 * 1000;
-const MIN_INTERVAL = 1 * 10 * 1000;
+const DEFAULT_INTERVAL = 30 * 60 * 1000;
+const MIN_INTERVAL = 1 * 60 * 1000;
 
 let isRunning = false;
 let timeoutId = null;

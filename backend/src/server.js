@@ -33,6 +33,9 @@ const app = express();
 const PORT =
     Number(process.env.PORT) || 3000;
 
+const DISCOVERY_INTERVAL =
+    30 * 60 * 1000;
+
 const SERVER_START_TIME =
     new Date();
 
@@ -44,6 +47,28 @@ app.use(
     express.json()
 );
 
+app.use(
+    (req, res, next) => {
+
+        res.setHeader(
+            "Cache-Control",
+            "no-store, no-cache, must-revalidate, proxy-revalidate"
+        );
+
+        res.setHeader(
+            "Pragma",
+            "no-cache"
+        );
+
+        res.setHeader(
+            "Expires",
+            "0"
+        );
+
+        next();
+    }
+);
+
 app.get(
     "/",
     (req, res) => {
@@ -52,21 +77,6 @@ app.get(
 
             const discoveryStatus =
                 getAutoDiscoveryStatus();
-
-            res.setHeader(
-                "Cache-Control",
-                "no-store, no-cache, must-revalidate, proxy-revalidate"
-            );
-
-            res.setHeader(
-                "Pragma",
-                "no-cache"
-            );
-
-            res.setHeader(
-                "Expires",
-                "0"
-            );
 
             res.json({
 
@@ -78,6 +88,18 @@ app.get(
                 message:
                     "GitProHub is running",
 
+                server: {
+
+                    port:
+                        PORT,
+
+                    startedAt:
+                        SERVER_START_TIME.toISOString(),
+
+                    uptime:
+                        process.uptime()
+                },
+
                 discovery: {
 
                     running:
@@ -87,7 +109,13 @@ app.get(
                         discoveryStatus.scheduled,
 
                     interval:
-                        discoveryStatus.interval
+                        discoveryStatus.interval,
+
+                    intervalMs:
+                        discoveryStatus.intervalMs,
+
+                    timerActive:
+                        discoveryStatus.timerActive
                 },
 
                 endpoints: [
@@ -139,21 +167,6 @@ app.get(
             const projects =
                 getProjects();
 
-            res.setHeader(
-                "Cache-Control",
-                "no-store, no-cache, must-revalidate, proxy-revalidate"
-            );
-
-            res.setHeader(
-                "Pragma",
-                "no-cache"
-            );
-
-            res.setHeader(
-                "Expires",
-                "0"
-            );
-
             res.json({
 
                 success: true,
@@ -194,21 +207,6 @@ app.get(
 
             const stats =
                 getIndexStats();
-
-            res.setHeader(
-                "Cache-Control",
-                "no-store, no-cache, must-revalidate, proxy-revalidate"
-            );
-
-            res.setHeader(
-                "Pragma",
-                "no-cache"
-            );
-
-            res.setHeader(
-                "Expires",
-                "0"
-            );
 
             res.json({
 
@@ -466,11 +464,6 @@ app.get(
                 `⚠️ Repository check errors: ${errors}`
             );
 
-            res.setHeader(
-                "Cache-Control",
-                "no-store"
-            );
-
             res.json({
 
                 success: true,
@@ -523,11 +516,6 @@ app.post(
             const result =
                 await runAutoDiscovery();
 
-            res.setHeader(
-                "Cache-Control",
-                "no-store"
-            );
-
             res.json({
 
                 success:
@@ -562,11 +550,6 @@ app.get(
 
             const status =
                 getAutoDiscoveryStatus();
-
-            res.setHeader(
-                "Cache-Control",
-                "no-store"
-            );
 
             res.json({
 
@@ -666,7 +649,7 @@ const server =
 
                 const discovery =
                     startAutoDiscovery(
-                        1 * 60 * 1000
+                        DISCOVERY_INTERVAL
                     );
 
                 if (discovery?.success) {
@@ -676,7 +659,7 @@ const server =
                     );
 
                     console.log(
-                        "⏱️ Discovery interval: 1 minute"
+                        "⏱️ Discovery interval: 30 minutes"
                     );
 
                 } else {
