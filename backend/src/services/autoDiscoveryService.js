@@ -3,7 +3,14 @@ const {
 } = require("./discoveryService");
 
 let isRunning = false;
-let intervalId = null;
+
+// setInterval ki jagah setTimeout use hoga.
+// Next discovery previous discovery complete hone ke baad schedule hogi.
+let timeoutId = null;
+
+let schedulerRunning = false;
+
+let currentInterval = 1 * 60 * 1000;
 
 let lastResult = {
     success: null,
@@ -13,6 +20,7 @@ let lastResult = {
     removed: 0,
     newAccounts: [],
     errors: [],
+    projects: [],
     startedAt: null,
     completedAt: null
 };
@@ -42,13 +50,27 @@ async function runAutoDiscovery() {
 
     isRunning = true;
 
-    const startedAt = new Date().toISOString();
+    const startedAt =
+        new Date().toISOString();
 
     console.log("");
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    console.log("🔄 GitProHub automatic discovery started");
-    console.log(`🕐 Started: ${startedAt}`);
-    console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+    console.log(
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    );
+
+    console.log(
+        "🔄 GitProHub automatic discovery started"
+    );
+
+    console.log(
+        `🕐 Started: ${startedAt}`
+    );
+
+    console.log(
+        "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    );
+
 
     try {
 
@@ -58,9 +80,11 @@ async function runAutoDiscovery() {
         const completedAt =
             new Date().toISOString();
 
+
         /*
          * Save latest successful result.
          */
+
         lastResult = {
 
             success: true,
@@ -90,29 +114,45 @@ async function runAutoDiscovery() {
                 ),
 
             newAccounts:
-                Array.isArray(result?.newAccounts)
+                Array.isArray(
+                    result?.newAccounts
+                )
                     ? result.newAccounts
                     : [],
 
             errors:
-                Array.isArray(result?.errors)
+                Array.isArray(
+                    result?.errors
+                )
                     ? result.errors
                     : [],
 
             projects:
-                Array.isArray(result?.projects)
+                Array.isArray(
+                    result?.projects
+                )
                     ? result.projects
                     : [],
 
             startedAt,
+
             completedAt
         };
 
 
         console.log("");
-        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-        console.log("✅ Automatic discovery completed");
-        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+        console.log(
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        );
+
+        console.log(
+            "✅ Automatic discovery completed"
+        );
+
+        console.log(
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        );
 
         console.log(
             `📦 Total projects : ${lastResult.total}`
@@ -127,7 +167,7 @@ async function runAutoDiscovery() {
         );
 
         console.log(
-            `🗑️ Removed         : ${lastResult.removed}`
+            `🗑️ Removed        : ${lastResult.removed}`
         );
 
         console.log(
@@ -135,51 +175,83 @@ async function runAutoDiscovery() {
         );
 
         console.log(
-            `⚠️ Errors          : ${lastResult.errors.length}`
+            `⚠️ Errors         : ${lastResult.errors.length}`
         );
 
 
         /*
          * Show newly discovered accounts.
          */
-        if (lastResult.newAccounts.length > 0) {
+
+        if (
+            lastResult.newAccounts.length > 0
+        ) {
 
             console.log("");
-            console.log("👤 New GitHub accounts discovered:");
+
+            console.log(
+                "👤 New GitHub accounts discovered:"
+            );
 
             lastResult.newAccounts.forEach(
                 username => {
+
                     console.log(
                         `   ➕ ${username}`
                     );
+
                 }
             );
+
         }
 
 
         /*
          * Show discovery errors.
          */
-        if (lastResult.errors.length > 0) {
+
+        if (
+            lastResult.errors.length > 0
+        ) {
 
             console.log("");
-            console.log("⚠️ Discovery errors:");
+
+            console.log(
+                "⚠️ Discovery errors:"
+            );
 
             lastResult.errors.forEach(
                 error => {
 
-                    if (typeof error === "string") {
-                        console.log(`   • ${error}`);
-                    } else {
+                    if (
+                        typeof error === "string"
+                    ) {
+
                         console.log(
-                            `   • ${error?.message || JSON.stringify(error)}`
+                            `   • ${error}`
                         );
+
+                    } else {
+
+                        console.log(
+                            `   • ${
+                                error?.message ||
+                                JSON.stringify(error)
+                            }`
+                        );
+
                     }
+
                 }
             );
+
         }
 
-        console.log("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+
+        console.log(
+            "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        );
+
         console.log("");
 
 
@@ -191,32 +263,41 @@ async function runAutoDiscovery() {
     } catch (error) {
 
         console.error("");
+
         console.error(
             "❌ Automatic discovery failed:",
             error.message
         );
 
+
         /*
          * IMPORTANT:
-         * Discovery failure should NOT reset the
-         * previous project count to zero.
+         *
+         * Discovery failure should NOT reset
+         * the previous project count to zero.
          */
+
+        const completedAt =
+            new Date().toISOString();
+
+
         lastResult = {
 
             ...lastResult,
 
             success: false,
 
-            error: error.message,
+            error:
+                error.message,
 
             startedAt,
 
-            completedAt:
-                new Date().toISOString()
+            completedAt
         };
 
 
         return {
+
             success: false,
 
             skipped: false,
@@ -236,21 +317,98 @@ async function runAutoDiscovery() {
                 error.message
             ],
 
-            error: error.message,
+            error:
+                error.message,
 
             startedAt,
 
-            completedAt:
-                lastResult.completedAt
+            completedAt
+
         };
 
 
     } finally {
 
         isRunning = false;
+
     }
+
 }
 
+
+/* =========================================================
+   SCHEDULE NEXT DISCOVERY
+   ========================================================= */
+
+function scheduleNextDiscovery() {
+
+    // Scheduler stop ho chuka hai
+    if (!schedulerRunning) {
+        return;
+    }
+
+
+    // Existing timer ko clear karo
+    if (timeoutId) {
+
+        clearTimeout(
+            timeoutId
+        );
+
+        timeoutId = null;
+
+    }
+
+
+    /*
+     * IMPORTANT:
+     *
+     * setInterval() use nahi kar rahe.
+     *
+     * Next discovery previous discovery complete
+     * hone ke baad schedule hogi.
+     */
+
+    timeoutId = setTimeout(
+        async () => {
+
+            timeoutId = null;
+
+            if (!schedulerRunning) {
+                return;
+            }
+
+
+            try {
+
+                await runAutoDiscovery();
+
+            } catch (error) {
+
+                console.error(
+                    "❌ Scheduled discovery error:",
+                    error.message
+                );
+
+            }
+
+
+            /*
+             * Discovery complete hone ke baad
+             * next run schedule karo.
+             */
+
+            if (schedulerRunning) {
+
+                scheduleNextDiscovery();
+
+            }
+
+        },
+        currentInterval
+    );
+
+}
 
 
 /* =========================================================
@@ -264,22 +422,29 @@ function startAutoDiscovery(
     /*
      * Already scheduled.
      */
-    if (intervalId) {
+
+    if (schedulerRunning) {
 
         console.log(
             "⚠️ Auto discovery is already running."
         );
 
         return {
+
             success: false,
-            message: "Auto discovery is already running"
+
+            message:
+                "Auto discovery is already running"
+
         };
+
     }
 
 
     /*
      * Validate interval.
      */
+
     if (
         !Number.isFinite(interval) ||
         interval < 10 * 1000
@@ -291,50 +456,24 @@ function startAutoDiscovery(
 
         interval =
             1 * 60 * 1000;
+
     }
 
 
-    /*
-     * Run immediately when server starts.
-     *
-     * Do not await here because startAutoDiscovery()
-     * should not block server startup.
-     */
-    runAutoDiscovery().catch(error => {
+    currentInterval =
+        interval;
 
-        console.error(
-            "❌ Initial auto discovery error:",
-            error.message
-        );
-
-    });
-
-
-    /*
-     * Schedule next discovery.
-     */
-    intervalId =
-        setInterval(
-            () => {
-
-                runAutoDiscovery()
-                    .catch(error => {
-
-                        console.error(
-                            "❌ Scheduled discovery error:",
-                            error.message
-                        );
-
-                    });
-
-            },
-            interval
-        );
+    schedulerRunning = true;
 
 
     console.log("");
+
     console.log(
-        `⏱️ Auto discovery interval: ${formatInterval(interval)}`
+        "🚀 Auto discovery scheduler started"
+    );
+
+    console.log(
+        `⏱️ Discovery interval: ${formatInterval(currentInterval)}`
     );
 
     console.log(
@@ -356,13 +495,53 @@ function startAutoDiscovery(
     console.log("");
 
 
-    return {
-        success: true,
-        interval,
-        message: "Auto discovery started"
-    };
-}
+    /*
+     * Run immediately when server starts.
+     *
+     * Do not await here because server startup
+     * should not be blocked.
+     */
 
+    runAutoDiscovery()
+        .catch(error => {
+
+            console.error(
+                "❌ Initial auto discovery error:",
+                error.message
+            );
+
+        })
+        .finally(() => {
+
+            /*
+             * IMPORTANT:
+             *
+             * First discovery complete hone ke baad
+             * hi next timer start hoga.
+             */
+
+            if (schedulerRunning) {
+
+                scheduleNextDiscovery();
+
+            }
+
+        });
+
+
+    return {
+
+        success: true,
+
+        interval:
+            currentInterval,
+
+        message:
+            "Auto discovery started"
+
+    };
+
+}
 
 
 /* =========================================================
@@ -371,24 +550,44 @@ function startAutoDiscovery(
 
 function stopAutoDiscovery() {
 
-    if (!intervalId) {
+    if (!schedulerRunning) {
 
         console.log(
             "⚠️ Auto discovery is not running."
         );
 
         return {
+
             success: false,
-            message: "Auto discovery is not running"
+
+            message:
+                "Auto discovery is not running"
+
         };
+
     }
 
 
-    clearInterval(
-        intervalId
-    );
+    /*
+     * Stop scheduler.
+     */
 
-    intervalId = null;
+    schedulerRunning = false;
+
+
+    /*
+     * Cancel pending timer.
+     */
+
+    if (timeoutId) {
+
+        clearTimeout(
+            timeoutId
+        );
+
+        timeoutId = null;
+
+    }
 
 
     console.log(
@@ -397,11 +596,15 @@ function stopAutoDiscovery() {
 
 
     return {
-        success: true,
-        message: "Auto discovery stopped"
-    };
-}
 
+        success: true,
+
+        message:
+            "Auto discovery stopped"
+
+    };
+
+}
 
 
 /* =========================================================
@@ -416,34 +619,51 @@ function getAutoDiscoveryStatus() {
             isRunning,
 
         scheduled:
-            Boolean(intervalId),
+            schedulerRunning,
 
         interval:
-            intervalId
-                ? "1 minute"
+            schedulerRunning
+                ? formatInterval(
+                    currentInterval
+                )
                 : null,
+
+        intervalMs:
+            schedulerRunning
+                ? currentInterval
+                : null,
+
+        timerActive:
+            Boolean(timeoutId),
 
         lastRun:
             lastResult
-    };
-}
 
+    };
+
+}
 
 
 /* =========================================================
    FORMAT INTERVAL
    ========================================================= */
 
-function formatInterval(milliseconds) {
+function formatInterval(
+    milliseconds
+) {
 
     const seconds =
         Math.floor(
             milliseconds / 1000
         );
 
+
     if (seconds < 60) {
 
-        return `${seconds} seconds`;
+        return (
+            `${seconds} seconds`
+        );
+
     }
 
 
@@ -452,9 +672,17 @@ function formatInterval(milliseconds) {
             seconds / 60
         );
 
+
     if (minutes < 60) {
 
-        return `${minutes} minute${minutes === 1 ? "" : "s"}`;
+        return (
+            `${minutes} minute${
+                minutes === 1
+                    ? ""
+                    : "s"
+            }`
+        );
+
     }
 
 
@@ -463,9 +691,16 @@ function formatInterval(milliseconds) {
             minutes / 60
         );
 
-    return `${hours} hour${hours === 1 ? "" : "s"}`;
-}
 
+    return (
+        `${hours} hour${
+            hours === 1
+                ? ""
+                : "s"
+        }`
+    );
+
+}
 
 
 /* =========================================================
