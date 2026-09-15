@@ -23,10 +23,13 @@ const {
 } = require("./services/githubService");
 
 const {
+    registerKnownAccount
+} = require("./services/discoveryService");
+
+const {
     runAutoDiscovery,
     startAutoDiscovery
 } = require("./services/autoDiscoveryService");
-
 
 // =========================================================
 // App
@@ -40,7 +43,6 @@ app.use(
     express.json()
 );
 
-
 // =========================================================
 // Health
 // =========================================================
@@ -50,6 +52,7 @@ app.get(
     (req, res) => {
 
         res.json({
+
             success: true,
 
             name:
@@ -66,10 +69,8 @@ app.get(
                 "/api/discovery/run"
             ]
         });
-
     }
 );
-
 
 // =========================================================
 // Get All Projects
@@ -85,6 +86,7 @@ app.get(
                 getProjects();
 
             res.json({
+
                 success: true,
 
                 total:
@@ -101,6 +103,7 @@ app.get(
             );
 
             res.status(500).json({
+
                 success: false,
 
                 total: 0,
@@ -110,12 +113,9 @@ app.get(
                 error:
                     error.message
             });
-
         }
-
     }
 );
-
 
 // =========================================================
 // Project Stats
@@ -131,24 +131,24 @@ app.get(
                 getIndexStats();
 
             res.json({
+
                 success: true,
+
                 ...stats
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
 
                 error:
                     error.message
             });
-
         }
-
     }
 );
-
 
 // =========================================================
 // Get Single Project
@@ -165,7 +165,10 @@ app.get(
 
         try {
 
+            // =================================================
             // First check local project index
+            // =================================================
+
             const indexed =
                 getProjectFromIndex(
                     username,
@@ -174,18 +177,25 @@ app.get(
 
             if (indexed) {
 
+                // Register owner
+                registerKnownAccount(
+                    username
+                );
+
                 return res.json({
+
                     success: true,
 
                     project:
                         indexed
                 });
-
             }
 
-
+            // =================================================
             // If not found locally,
             // check GitHub directly
+            // =================================================
+
             const project =
                 await getProject(
                     username,
@@ -195,20 +205,32 @@ app.get(
             if (!project) {
 
                 return res.status(404).json({
+
                     success: false,
 
                     message:
                         "GitProHub project not found"
                 });
-
             }
 
+            // =================================================
+            // Register GitHub account
+            // =================================================
 
+            registerKnownAccount(
+                username
+            );
+
+            // =================================================
             // Save newly discovered project
-            saveProject(project);
+            // =================================================
 
+            saveProject(
+                project
+            );
 
             res.json({
+
                 success: true,
 
                 project
@@ -222,17 +244,15 @@ app.get(
             );
 
             res.status(500).json({
+
                 success: false,
 
                 error:
                     error.message
             });
-
         }
-
     }
 );
-
 
 // =========================================================
 // Check GitHub Account
@@ -246,11 +266,12 @@ app.get(
 // and finds repositories containing root gitprohub.md.
 //
 // IMPORTANT:
-// Every discovered GitProHub project is also saved
-// into data/projects.json.
-// Therefore it will appear in:
 //
-// http://localhost:3000/api/projects
+// The username is automatically registered into:
+// data/knownAccounts.json
+//
+// Therefore future automatic discovery will also scan
+// this account.
 //
 // =========================================================
 
@@ -262,18 +283,29 @@ app.get(
             username
         } = req.params;
 
-
         if (!username) {
 
             return res.status(400).json({
+
                 success: false,
 
                 message:
                     "GitHub username is required"
             });
-
         }
 
+        // =================================================
+        // Register account immediately
+        // =================================================
+        //
+        // Even if later GitHub API request fails,
+        // the account is remembered.
+        //
+        // =================================================
+
+        registerKnownAccount(
+            username
+        );
 
         console.log("");
 
@@ -289,23 +321,33 @@ app.get(
             "=========================================="
         );
 
-
         try {
 
-            // =====================================================
+            // =================================================
             // Get all public repositories
-            // =====================================================
+            // =================================================
 
             const repositories =
                 await getUserRepositories(
                     username
                 );
 
+            if (!Array.isArray(repositories)) {
+
+                return res.status(500).json({
+
+                    success: false,
+
+                    username,
+
+                    error:
+                        "Invalid repositories response"
+                });
+            }
 
             console.log(
                 `📦 Public repositories found: ${repositories.length}`
             );
-
 
             const projects = [];
 
@@ -315,10 +357,11 @@ app.get(
 
             let updated = 0;
 
+            let errors = 0;
 
-            // =====================================================
+            // =================================================
             // Check every repository
-            // =====================================================
+            // =================================================
 
             for (
                 const repository
@@ -327,11 +370,9 @@ app.get(
 
                 checked++;
 
-
                 console.log(
                     `🔍 [${checked}/${repositories.length}] ${username}/${repository.name}`
                 );
-
 
                 try {
 
@@ -340,7 +381,6 @@ app.get(
                             username,
                             repository.name
                         );
-
 
                     // =================================================
                     // gitprohub.md found
@@ -352,6 +392,13 @@ app.get(
                             project
                         );
 
+                        // =============================================
+                        // Register owner
+                        // =============================================
+
+                        registerKnownAccount(
+                            username
+                        );
 
                         // =============================================
                         // Save project to projects.json
@@ -361,7 +408,6 @@ app.get(
                             saveProject(
                                 project
                             );
-
 
                         if (result?.added) {
 
@@ -378,26 +424,23 @@ app.get(
                             console.log(
                                 `🔄 GitProHub project UPDATED: ${username}/${repository.name}`
                             );
-
                         }
-
                     }
 
                 } catch (error) {
+
+                    errors++;
 
                     console.error(
                         `⚠️ Could not check ${username}/${repository.name}:`,
                         error.message
                     );
-
                 }
-
             }
 
-
-            // =====================================================
+            // =================================================
             // Final result
-            // =====================================================
+            // =================================================
 
             console.log("");
 
@@ -413,6 +456,9 @@ app.get(
                 `🔄 Existing projects updated: ${updated}`
             );
 
+            console.log(
+                `⚠️ Repository check errors: ${errors}`
+            );
 
             res.json({
 
@@ -432,10 +478,10 @@ app.get(
 
                 updated,
 
+                errors,
+
                 projects
-
             });
-
 
         } catch (error) {
 
@@ -443,7 +489,6 @@ app.get(
                 `❌ GitHub account check failed: ${username}`,
                 error.message
             );
-
 
             res.status(500).json({
 
@@ -453,14 +498,10 @@ app.get(
 
                 error:
                     error.message
-
             });
-
         }
-
     }
 );
-
 
 // =========================================================
 // Manual Discovery
@@ -480,7 +521,6 @@ app.post(
                 success: true,
 
                 ...result
-
             });
 
         } catch (error) {
@@ -496,14 +536,10 @@ app.post(
 
                 error:
                     error.message
-
             });
-
         }
-
     }
 );
-
 
 // =========================================================
 // Server
@@ -512,7 +548,6 @@ app.post(
 const PORT =
     process.env.PORT ||
     3000;
-
 
 app.listen(
     PORT,
@@ -532,7 +567,6 @@ app.listen(
             "=========================================="
         );
 
-
         // =====================================================
         // Start automatic discovery
         // =====================================================
@@ -540,6 +574,6 @@ app.listen(
         startAutoDiscovery(
             1 * 60 * 1000
         );
-
     }
 );
+

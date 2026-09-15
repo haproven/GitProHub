@@ -5,7 +5,6 @@
 const GITHUB_API =
     "https://api.github.com";
 
-
 // =========================================================
 // GITHUB HEADERS
 // =========================================================
@@ -19,19 +18,18 @@ function getHeaders() {
 
         "X-GitHub-Api-Version":
             "2022-11-28"
-    };
 
+    };
 
     if (process.env.GITHUB_TOKEN) {
 
         headers.Authorization =
             `Bearer ${process.env.GITHUB_TOKEN}`;
-    }
 
+    }
 
     return headers;
 }
-
 
 // =========================================================
 // GITHUB REQUEST
@@ -48,37 +46,30 @@ async function githubRequest(url) {
             }
         );
 
-
     if (!response.ok) {
 
         const text =
             await response.text();
-
 
         throw new Error(
             `GitHub API ${response.status}: ${text}`
         );
     }
 
-
     return response.json();
 }
-
 
 // =========================================================
 // GET USER
 // =========================================================
 
-async function getUser(
-    username
-) {
+async function getUser(username) {
 
     return githubRequest(
         `${GITHUB_API}/users/` +
         `${encodeURIComponent(username)}`
     );
 }
-
 
 // =========================================================
 // GET REPOSITORY
@@ -96,12 +87,11 @@ async function getRepository(
     );
 }
 
-
 // =========================================================
-// GET USER REPOSITORIES
+// GET USER REPOSITORIES - ONE PAGE
 // =========================================================
 
-async function getUserRepositories(
+async function getUserRepositoriesPage(
     username,
     page = 1,
     perPage = 100
@@ -111,13 +101,125 @@ async function getUserRepositories(
 
         `${GITHUB_API}/users/` +
         `${encodeURIComponent(username)}/repos` +
-
         `?per_page=${perPage}` +
         `&page=${page}` +
-        `&sort=updated`
+        `&sort=updated` +
+        `&direction=desc`
+
     );
 }
 
+// =========================================================
+// GET ALL USER REPOSITORIES
+// =========================================================
+//
+// IMPORTANT:
+//
+// 100 se zyada repositories hone par bhi
+// sab repositories fetch hongi.
+//
+// =========================================================
+
+async function getUserRepositories(
+    username
+) {
+
+    if (!username) {
+        return [];
+    }
+
+    const allRepositories = [];
+
+    let page = 1;
+
+    const perPage = 100;
+
+    while (true) {
+
+        const repositories =
+            await getUserRepositoriesPage(
+                username,
+                page,
+                perPage
+            );
+
+        if (
+            !Array.isArray(
+                repositories
+            )
+        ) {
+            break;
+        }
+
+        allRepositories.push(
+            ...repositories
+        );
+
+        console.log(
+            `📦 ${username} repositories page ${page}: ${repositories.length}`
+        );
+
+        // -----------------------------------------
+        // Last page
+        // -----------------------------------------
+
+        if (
+            repositories.length < perPage
+        ) {
+            break;
+        }
+
+        page++;
+
+        // -----------------------------------------
+        // Safety protection
+        // -----------------------------------------
+
+        if (page > 100) {
+
+            console.log(
+                `⚠️ Repository pagination safety limit reached for ${username}.`
+            );
+
+            break;
+        }
+    }
+
+    // -----------------------------------------
+    // Remove duplicate repositories
+    // -----------------------------------------
+
+    const unique =
+        new Map();
+
+    for (
+        const repository
+        of allRepositories
+    ) {
+
+        if (!repository?.name) {
+            continue;
+        }
+
+        const key =
+            String(
+                repository.name
+            ).toLowerCase();
+
+        if (!unique.has(key)) {
+
+            unique.set(
+                key,
+                repository
+            );
+
+        }
+    }
+
+    return Array.from(
+        unique.values()
+    );
+}
 
 // =========================================================
 // GET ROOT gitprohub.md
@@ -136,8 +238,8 @@ async function getGitProHubFile(
                 `${GITHUB_API}/repos/` +
                 `${encodeURIComponent(username)}/` +
                 `${encodeURIComponent(repo)}/contents/gitprohub.md`
-            );
 
+            );
 
         if (
             !data ||
@@ -145,8 +247,8 @@ async function getGitProHubFile(
         ) {
 
             return null;
-        }
 
+        }
 
         return Buffer
             .from(
@@ -155,10 +257,12 @@ async function getGitProHubFile(
             )
             .toString("utf8");
 
-
     } catch (error) {
 
-        // 404 = gitprohub.md does not exist
+        // -----------------------------------------
+        // 404 means root gitprohub.md not found
+        // -----------------------------------------
+
         if (
             error.message.includes(
                 "GitHub API 404"
@@ -166,15 +270,16 @@ async function getGitProHubFile(
         ) {
 
             return null;
+
         }
 
+        // -----------------------------------------
+        // Other errors must propagate
+        // -----------------------------------------
 
-        // Network/API error must be
-        // passed to discoveryService.
         throw error;
     }
 }
-
 
 // =========================================================
 // GET README
@@ -193,8 +298,8 @@ async function getReadme(
                 `${GITHUB_API}/repos/` +
                 `${encodeURIComponent(username)}/` +
                 `${encodeURIComponent(repo)}/readme`
-            );
 
+            );
 
         if (
             !data ||
@@ -204,7 +309,6 @@ async function getReadme(
             return "";
         }
 
-
         return Buffer
             .from(
                 data.content,
@@ -212,8 +316,11 @@ async function getReadme(
             )
             .toString("utf8");
 
-
     } catch (error) {
+
+        // README optional hai.
+        // README missing hone par project
+        // fail nahi hona chahiye.
 
         if (
             error.message.includes(
@@ -224,11 +331,9 @@ async function getReadme(
             return "";
         }
 
-
         return "";
     }
 }
-
 
 // =========================================================
 // GET IMAGE FROM README
@@ -239,16 +344,17 @@ function getImageFromReadme(
 ) {
 
     if (!readme) {
-
         return null;
     }
 
+    // -----------------------------------------
+    // Markdown image
+    // -----------------------------------------
 
     const markdownImage =
         readme.match(
             /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i
         );
-
 
     if (
         markdownImage &&
@@ -256,14 +362,17 @@ function getImageFromReadme(
     ) {
 
         return markdownImage[1];
+
     }
 
+    // -----------------------------------------
+    // HTML image
+    // -----------------------------------------
 
     const htmlImage =
         readme.match(
             /<img[^>]+src=["'](https?:\/\/[^"']+)["']/i
         );
-
 
     if (
         htmlImage &&
@@ -271,12 +380,11 @@ function getImageFromReadme(
     ) {
 
         return htmlImage[1];
-    }
 
+    }
 
     return null;
 }
-
 
 // =========================================================
 // GET FILE METADATA
@@ -296,15 +404,16 @@ async function getFileMetadata(
             `${encodeURIComponent(username)}/` +
             `${encodeURIComponent(repo)}/contents/` +
             `${filePath}`
-        );
 
+        );
 
     } catch (error) {
 
+        // Metadata optional hai.
         return null;
+
     }
 }
-
 
 // =========================================================
 // GET gitprohub.md METADATA
@@ -322,7 +431,6 @@ async function getGitProHubFileMetadata(
     );
 }
 
-
 // =========================================================
 // GITHUB CODE SEARCH
 // =========================================================
@@ -338,22 +446,26 @@ async function searchGitHubCode(
             query
         );
 
-
     return githubRequest(
 
         `${GITHUB_API}/search/code` +
-
         `?q=${encodedQuery}` +
-
         `&per_page=${perPage}` +
-
         `&page=${page}`
+
     );
 }
 
-
 // =========================================================
 // SEARCH gitprohub.md
+// =========================================================
+//
+// Root-level gitprohub.md.
+//
+// GitHub search:
+//
+// filename:gitprohub.md
+//
 // =========================================================
 
 async function searchGitProHubFiles(
@@ -368,24 +480,140 @@ async function searchGitProHubFiles(
     );
 }
 
+// =========================================================
+// GET SEARCH RESULT OWNER
+// =========================================================
+
+function getSearchResultOwner(
+    item
+) {
+
+    if (!item) {
+        return null;
+    }
+
+    // -----------------------------------------
+    // item.repository.owner.login
+    // -----------------------------------------
+
+    if (
+        item.repository?.owner?.login
+    ) {
+
+        return String(
+            item.repository.owner.login
+        ).trim();
+
+    }
+
+    // -----------------------------------------
+    // item.repository.full_name
+    // -----------------------------------------
+
+    if (
+        item.repository?.full_name
+    ) {
+
+        const parts =
+            String(
+                item.repository.full_name
+            ).split("/");
+
+        if (parts.length >= 2) {
+
+            return parts[0].trim();
+
+        }
+    }
+
+    // -----------------------------------------
+    // item.repository.name
+    // -----------------------------------------
+
+    if (
+        item.repository?.name &&
+        String(
+            item.repository.name
+        ).includes("/")
+    ) {
+
+        const parts =
+            String(
+                item.repository.name
+            ).split("/");
+
+        return parts[0].trim();
+
+    }
+
+    return null;
+}
+
+// =========================================================
+// GET SEARCH RESULT REPOSITORY
+// =========================================================
+
+function getSearchResultRepository(
+    item
+) {
+
+    if (!item) {
+        return null;
+    }
+
+    // -----------------------------------------
+    // repository.name
+    // -----------------------------------------
+
+    if (
+        item.repository?.name
+    ) {
+
+        return String(
+            item.repository.name
+        ).trim();
+
+    }
+
+    // -----------------------------------------
+    // item.repository.full_name
+    // -----------------------------------------
+
+    if (
+        item.repository?.full_name
+    ) {
+
+        const parts =
+            String(
+                item.repository.full_name
+            ).split("/");
+
+        if (parts.length >= 2) {
+
+            return parts
+                .slice(1)
+                .join("/")
+                .trim();
+
+        }
+    }
+
+    return null;
+}
 
 // =========================================================
 // GLOBAL GITHUB CRAWLER
 // =========================================================
 //
-// IMPORTANT:
-//
-// Sirf:
+// Search:
 //     filename:gitprohub.md
 //
-// Koi username hardcode nahi hai.
+// Result:
+//     username
+//     repo
 //
-// GitHub search result se automatically:
+// No username hardcoded.
 //
-//     owner → username
-//     repository → repo
-//
-// milega.
 // =========================================================
 
 async function crawlGitHubGitProHubFiles() {
@@ -393,100 +621,126 @@ async function crawlGitHubGitProHubFiles() {
     const repositories =
         new Map();
 
-
     console.log("");
+
     console.log(
         "🔎 Global GitHub search: filename:gitprohub.md"
     );
 
+    console.log(
+        "🌍 Searching across public GitHub repositories..."
+    );
+
+    const perPage = 100;
 
     let page = 1;
 
+    let searchCompleted =
+        false;
 
-    while (true) {
+    // -----------------------------------------
+    // GitHub Code Search currently exposes
+    // a finite searchable result window.
+    //
+    // Safety limit prevents endless requests.
+    // -----------------------------------------
+
+    const MAX_SEARCH_PAGES = 10;
+
+    while (
+        page <= MAX_SEARCH_PAGES
+    ) {
 
         let result;
-
 
         try {
 
             result =
                 await searchGitProHubFiles(
                     page,
-                    100
+                    perPage
                 );
-
 
         } catch (error) {
 
             console.error(
-                "❌ GitHub global search failed:",
+                `❌ GitHub global search failed on page ${page}:`,
                 error.message
             );
 
-
-            // IMPORTANT:
+            // -----------------------------------------
+            // IMPORTANT
             //
-            // Search error par existing projects
-            // delete nahi honge.
-            //
-            // Jo results already mile hain
-            // unko return karenge.
+            // Already discovered results preserve.
+            // Existing projects are NOT deleted.
+            // -----------------------------------------
 
             break;
         }
 
-
         const items =
-            result?.items || [];
-
+            Array.isArray(
+                result?.items
+            )
+                ? result.items
+                : [];
 
         console.log(
-            `📦 Page ${page}: ${items.length} result(s)`
+            `📦 Global search page ${page}: ${items.length} result(s)`
         );
 
+        // -----------------------------------------
+        // No more results
+        // -----------------------------------------
 
         if (
             items.length === 0
         ) {
 
+            searchCompleted =
+                true;
+
             break;
         }
 
-
-        // =====================================================
-        // GET REPOSITORIES FROM SEARCH RESULTS
-        // =====================================================
+        // -----------------------------------------
+        // Process every result
+        // -----------------------------------------
 
         for (
-            const item of items
+            const item
+            of items
         ) {
 
-            const repository =
-                item?.repository;
-
-
             const username =
-                repository?.owner?.login;
-
+                getSearchResultOwner(
+                    item
+                );
 
             const repo =
-                repository?.name;
-
+                getSearchResultRepository(
+                    item
+                );
 
             if (
                 !username ||
                 !repo
             ) {
 
+                console.log(
+                    "⚠️ Could not determine owner/repository from search result."
+                );
+
                 continue;
             }
-
 
             const key =
                 `${username}/${repo}`
                     .toLowerCase();
 
+            // -----------------------------------------
+            // Unique repository
+            // -----------------------------------------
 
             repositories.set(
                 key,
@@ -497,61 +751,126 @@ async function crawlGitHubGitProHubFiles() {
             );
         }
 
-
-        // =====================================================
-        // LAST PAGE
-        // =====================================================
+        // -----------------------------------------
+        // Less than 100 = last page
+        // -----------------------------------------
 
         if (
-            items.length < 100
+            items.length < perPage
         ) {
+
+            searchCompleted =
+                true;
 
             break;
         }
 
-
         page++;
+    }
 
+    // -----------------------------------------
+    // Safety limit
+    // -----------------------------------------
 
-        // Safety limit
-        //
-        // GitHub search API ko unlimited
-        // requests nahi bhejne hain.
+    if (
+        page > MAX_SEARCH_PAGES
+    ) {
+
+        console.log(
+            "⚠️ Global search page safety limit reached."
+        );
+
+    }
+
+    // -----------------------------------------
+    // Final result
+    // -----------------------------------------
+
+    const result =
+        Array.from(
+            repositories.values()
+        );
+
+    console.log("");
+
+    console.log(
+        `🌐 Unique GitHub repositories found: ${result.length}`
+    );
+
+    // -----------------------------------------
+    // Unique accounts
+    // -----------------------------------------
+
+    const accountMap =
+        new Map();
+
+    for (
+        const repository
+        of result
+    ) {
+
+        const key =
+            repository.username
+                .toLowerCase();
 
         if (
-            page > 10
+            !accountMap.has(key)
         ) {
 
-            console.log(
-                "⚠️ Search safety limit reached."
+            accountMap.set(
+                key,
+                repository.username
             );
 
-            break;
         }
     }
 
-
-    console.log("");
     console.log(
-        `🌐 Unique GitHub repositories found: ${repositories.size}`
+        `👥 Unique GitHub accounts discovered: ${accountMap.size}`
     );
 
+    for (
+        const username
+        of accountMap.values()
+    ) {
+
+        console.log(
+            `   👤 ${username}`
+        );
+
+    }
+
+    console.log("");
 
     for (
-        const repository of repositories.values()
+        const repository
+        of result
     ) {
 
         console.log(
             `   • ${repository.username}/${repository.repo}`
         );
+
     }
 
+    if (
+        searchCompleted
+    ) {
 
-    return [
-        ...repositories.values()
-    ];
+        console.log(
+            "✅ Global GitHub search completed."
+        );
+
+    } else {
+
+        console.log(
+            "⚠️ Global GitHub search stopped before complete pagination."
+        );
+
+    }
+
+    return result;
 }
-
 
 // =========================================================
 // EXPORTS
@@ -580,4 +899,5 @@ module.exports = {
     searchGitProHubFiles,
 
     crawlGitHubGitProHubFiles
+
 };
