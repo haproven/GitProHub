@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitProHub API</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f6f8fb;
+            color: #172033;
+            padding: 30px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: auto;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #effdf8, #f5fbff);
+            border: 1px solid #bce9df;
+            border-radius: 18px;
+            padding: 30px;
+            margin-bottom: 24px;
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .hero-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: #16b364;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            margin-bottom: 5px;
+        }
+
+        .hero p {
+            font-size: 17px;
+            color: #475569;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            margin-top: 16px;
+            background: #dcfce7;
+            color: #15803d;
+            border-radius: 30px;
+            padding: 7px 14px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #16a34a;
+            border-radius: 50%;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e3e8ef;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 20px 22px;
+            border-bottom: 1px solid #edf0f4;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .card-header h2 {
+            font-size: 22px;
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            color: white;
+            font-weight: 800;
+        }
+
+        .blue {
+            background: #1677ff;
+        }
+
+        .purple {
+            background: #7c3aed;
+        }
+
+        .green {
+            background: #10b981;
+        }
+
+        .orange {
+            background: #f59e0b;
+        }
+
+        .info-list {
+            padding: 8px 22px 18px;
+        }
+
+        .info-row {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .info-row:last-child {
+            border-bottom: 0;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #334155;
+            font-size: 16px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .true {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 7px 13px;
+            border-radius: 20px;
+        }
+
+        .interval {
+            background: #eaf2ff;
+            color: #2563eb;
+            padding: 7px 13px;
+            border-radius: 20px;
+        }
+
+        .endpoint-card {
+            margin-bottom: 24px;
+        }
+
+        .endpoint-list {
+            padding: 8px 22px 18px;
+        }
+
+        .endpoint {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            min-height: 58px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .endpoint:last-child {
+            border-bottom: 0;
+        }
+
+        .endpoint-number {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #dff7ed;
+            color: #166534;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .endpoint code {
+            font-family: Consolas, monospace;
+            font-size: 15px;
+            color: #172033;
+        }
+
+        .projects-card {
+            margin-bottom: 24px;
+        }
+
+        .projects-count {
+            margin-left: auto;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 7px 13px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .projects {
+            padding: 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .project {
+            border: 1px solid #e3e8ef;
+            border-radius: 16px;
+            padding: 20px;
+            background: #fff;
+            transition: 0.2s ease;
+        }
+
+        .project:hover {
+            transform: translateY(-3px);
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+        }
+
+        .project-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .project-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .project-status {
+            font-size: 12px;
+            font-weight: 700;
+            padding: 6px 9px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .project h3 {
+            font-size: 19px;
+            margin-bottom: 7px;
+            word-break: break-word;
+        }
+
+        .project-developer {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .project-description {
+            color: #475569;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 45px;
+            margin-bottom: 17px;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .project-links a {
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            padding: 8px 11px;
+            border-radius: 9px;
+            font-size: 13px;
+            font-weight: 700;
+            transition: 0.2s;
+        }
+
+        .project-links a:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .loading,
+        .empty,
+        .error {
+            grid-column: 1 / -1;
+            padding: 45px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        .refresh {
+            margin-left: auto;
+            border: 0;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 8px 13px;
+            border-radius: 9px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .refresh:hover {
+            background: #e0e7ff;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            padding: 10px 0 25px;
+        }
+
+        @media (max-width: 800px) {
+            body {
+                padding: 15px;
+            }
+
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero h1 {
+                font-size: 27px;
+            }
+
+            .hero-icon {
+                width: 54px;
+                height: 54px;
+                font-size: 27px;
+            }
+
+            .info-row {
+                align-items: flex-start;
+                flex-direction: column;
+                justify-content: center;
+                gap: 6px;
+                padding: 12px 0;
+            }
+
+            .info-value {
+                text-align: left;
+            }
+
+            .endpoint {
+                min-height: 65px;
+            }
+
+            .endpoint code {
+                font-size: 13px;
+                word-break: break-all;
+            }
+
+            .projects {
+                grid-template-columns: 1fr;
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <section class="hero">
+        <div class="hero-top">
+            <div class="hero-icon">✓</div>
+
+            <div>
+                <h1 id="apiName">GitProHub API</h1>
+                <p id="apiMessage">GitProHub is running</p>
+
+                <div class="status">
+                    <span class="status-dot"></span>
+                    <span>API Online</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="top-grid">
+
+        <div class="card">
+            <div class="card-header">
+                <div class="header-icon blue">⌕</div>
+                <h2>Discovery</h2>
+            </div>
+
+            <div class="info-list">
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>▶</span>
+                        <span>Running</span>
+                    </div>
+
+                    <div id="running" class="info-value true">
+                        true
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>◫</span>
+                        <span>Scheduled</span>
+                    </div>
+
+                    <div id="scheduled" class="info-value true">
+                        true
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>◷</span>
+                        <span>Interval</span>
+                    </div>
+
+                    <div id="interval" class="info-value interval">
+                        1 minute
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="header-icon purple">i</div>
+                <h2>API Information</h2>
+            </div>
+
+            <div class="info-list">
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>✓</span>
+                        <span>Success</span>
+                    </div>
+
+                    <div id="success" class="info-value true">
+                        true
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>▤</span>
+                        <span>Name</span>
+                    </div>
+
+                    <div id="name" class="info-value">
+                        GitProHub API
+                    </div>
+                </div>
+
+                <div class="info-row">
+                    <div class="info-label">
+                        <span>▣</span>
+                        <span>Message</span>
+                    </div>
+
+                    <div id="message" class="info-value">
+                        GitProHub is running
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </section>
+
+    <section class="card endpoint-card">
+
+        <div class="card-header">
+            <div class="header-icon green">&lt;/&gt;</div>
+            <h2>Endpoints</h2>
+        </div>
+
+        <div id="endpointList" class="endpoint-list">
+
+            <div class="endpoint">
+                <div class="endpoint-number">1</div>
+                <code>/api/projects</code>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-number">2</div>
+                <code>/api/projects/stats</code>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-number">3</div>
+                <code>/api/project/:username/:repo</code>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-number">4</div>
+                <code>/api/github/:username</code>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-number">5</div>
+                <code>/api/discovery/run</code>
+            </div>
+
+            <div class="endpoint">
+                <div class="endpoint-number">6</div>
+                <code>/api/discovery/status</code>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section class="card projects-card">
+
+        <div class="card-header">
+            <div class="header-icon orange">◆</div>
+
+            <h2>GitProHub Projects</h2>
+
+            <span id="projectCount" class="projects-count">
+                0 Projects
+            </span>
+
+            <button class="refresh" onclick="loadProjects()">
+                Refresh
+            </button>
+        </div>
+
+        <div id="projects" class="projects">
+            <div class="loading">
+                Loading projects...
+            </div>
+        </div>
+
+    </section>
+
+    <footer>
+        GitProHub API · Powered by Haproven
+    </footer>
+
+</div>
+
+<script>
+    async function loadApiStatus() {
+        try {
+            const response = await fetch("/");
+            const data = await response.json();
+
+            if (data.success !== undefined) {
+                document.getElementById("success").textContent = data.success;
+            }
+
+            if (data.name) {
+                document.getElementById("apiName").textContent = data.name;
+                document.getElementById("name").textContent = data.name;
+            }
+
+            if (data.message) {
+                document.getElementById("apiMessage").textContent = data.message;
+                document.getElementById("message").textContent = data.message;
+            }
+
+            if (data.discovery) {
+                document.getElementById("running").textContent =
+                    data.discovery.running ?? false;
+
+                document.getElementById("scheduled").textContent =
+                    data.discovery.scheduled ?? false;
+
+                document.getElementById("interval").textContent =
+                    data.discovery.interval ?? "Unknown";
+            }
+
+        } catch (error) {
+            document.getElementById("apiMessage").textContent =
+                "Unable to connect to API";
+        }
+    }
+
+    function getValue(project, keys, fallback = "") {
+        for (const key of keys) {
+            const parts = key.split(".");
+            let value = project;
+
+            for (const part of parts) {
+                if (value === null || value === undefined) {
+                    break;
+                }
+
+                value = value[part];
+            }
+
+            if (value !== undefined && value !== null && value !== "") {
+                return value;
+            }
+        }
+
+        return fallback;
+    }
+
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function createProjectCard(project) {
+
+        const name = getValue(
+            project,
+            [
+                "name",
+                "projectName",
+                "title",
+                "repository.name",
+                "repo"
+            ],
+            "Unnamed Project"
+        );
+
+        const developer = getValue(
+            project,
+            [
+                "developer.username",
+                "github.owner.login",
+                "username",
+                "owner.login",
+                "owner"
+            ],
+            "Unknown Developer"
+        );
+
+        const description = getValue(
+            project,
+            [
+                "description",
+                "project.description",
+                "about"
+            ],
+            "No description available."
+        );
+
+        const github = getValue(
+            project,
+            [
+                "github",
+                "githubUrl",
+                "repository.html_url",
+                "repoUrl",
+                "url"
+            ],
+            ""
+        );
+
+        const live = getValue(
+            project,
+            [
+                "live",
+                "liveUrl",
+                "website",
+                "demo",
+                "demoUrl",
+                "projectUrl"
+            ],
+            ""
+        );
+
+        const status = getValue(
+            project,
+            [
+                "status",
+                "projectStatus"
+            ],
+            "Active"
+        );
+
+        return `
+            <article class="project">
+
+                <div class="project-top">
+
+                    <div class="project-icon">
+                        ${escapeHtml(String(name).charAt(0).toUpperCase())}
+                    </div>
+
+                    <span class="project-status">
+                        ${escapeHtml(status)}
+                    </span>
+
+                </div>
+
+                <h3>
+                    ${escapeHtml(name)}
+                </h3>
+
+                <div class="project-developer">
+                    Developer: @${escapeHtml(developer)}
+                </div>
+
+                <div class="project-description">
+                    ${escapeHtml(description)}
+                </div>
+
+                <div class="project-links">
+
+                    ${
+                        github
+                            ? `<a href="${escapeHtml(github)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>`
+                            : ""
+                    }
+
+                    ${
+                        live
+                            ? `<a href="${escapeHtml(live)}" target="_blank" rel="noopener noreferrer">Live ↗</a>`
+                            : ""
+                    }
+
+                </div>
+
+            </article>
+        `;
+    }
+
+    async function loadProjects() {
+
+        const container = document.getElementById("projects");
+
+        container.innerHTML = `
+            <div class="loading">
+                Loading projects...
+            </div>
+        `;
+
+        try {
+
+            const response = await fetch("/api/projects");
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch projects");
+            }
+
+            const result = await response.json();
+
+            const projects =
+                Array.isArray(result)
+                    ? result
+                    : result.projects ||
+                      result.data ||
+                      result.items ||
+                      [];
+
+            document.getElementById("projectCount").textContent =
+                `${projects.length} ${projects.length === 1 ? "Project" : "Projects"}`;
+
+            if (!projects.length) {
+
+                container.innerHTML = `
+                    <div class="empty">
+                        No GitProHub projects found.
+                    </div>
+                `;
+
+                return;
+            }
+
+            container.innerHTML = projects
+                .map(createProjectCard)
+                .join("");
+
+        } catch (error) {
+
+            document.getElementById("projectCount").textContent =
+                "0 Projects";
+
+            container.innerHTML = `
+                <div class="error">
+                    Unable to load projects.
+                </div>
+            `;
+        }
+    }
+
+    loadApiStatus();
+    loadProjects();
+
+    setInterval(() => {
+        loadApiStatus();
+        loadProjects();
+    }, 60000);
+</script>
+
+</body>
+</html>

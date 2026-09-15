@@ -1,7 +1,3 @@
-// =========================================================
-// GitProHub Server
-// =========================================================
-
 require("dotenv").config();
 
 const express = require("express");
@@ -27,13 +23,11 @@ const {
 } = require("./services/discoveryService");
 
 const {
-    runAutoDiscovery
+    runAutoDiscovery,
+    startAutoDiscovery,
+    getAutoDiscoveryStatus
 } = require("./services/autoDiscoveryService");
 
-
-// =========================================================
-// App
-// =========================================================
 
 const app = express();
 
@@ -44,15 +38,15 @@ app.use(
 );
 
 
-// =========================================================
-// Health
-// =========================================================
-
 app.get(
     "/",
     (req, res) => {
 
+        const discoveryStatus =
+            getAutoDiscoveryStatus();
+
         res.json({
+
             success: true,
 
             name:
@@ -61,22 +55,29 @@ app.get(
             message:
                 "GitProHub is running",
 
+            discovery: {
+                running:
+                    discoveryStatus.running,
+
+                scheduled:
+                    discoveryStatus.scheduled,
+
+                interval:
+                    discoveryStatus.interval
+            },
+
             endpoints: [
                 "/api/projects",
                 "/api/projects/stats",
                 "/api/project/:username/:repo",
                 "/api/github/:username",
-                "/api/discovery/run"
+                "/api/discovery/run",
+                "/api/discovery/status"
             ]
         });
-
     }
 );
 
-
-// =========================================================
-// Get All Projects
-// =========================================================
 
 app.get(
     "/api/projects",
@@ -88,12 +89,14 @@ app.get(
                 getProjects();
 
             res.json({
+
                 success: true,
 
                 total:
                     projects.length,
 
                 projects
+
             });
 
         } catch (error) {
@@ -104,6 +107,7 @@ app.get(
             );
 
             res.status(500).json({
+
                 success: false,
 
                 total: 0,
@@ -112,17 +116,12 @@ app.get(
 
                 error:
                     error.message
+
             });
-
         }
-
     }
 );
 
-
-// =========================================================
-// Project Stats
-// =========================================================
 
 app.get(
     "/api/projects/stats",
@@ -134,28 +133,27 @@ app.get(
                 getIndexStats();
 
             res.json({
+
                 success: true,
+
                 ...stats
+
             });
 
         } catch (error) {
 
             res.status(500).json({
+
                 success: false,
 
                 error:
                     error.message
+
             });
-
         }
-
     }
 );
 
-
-// =========================================================
-// Get Single Project
-// =========================================================
 
 app.get(
     "/api/project/:username/:repo",
@@ -166,11 +164,8 @@ app.get(
             repo
         } = req.params;
 
-        try {
 
-            // =================================================
-            // First check local project index
-            // =================================================
+        try {
 
             const indexed =
                 getProjectFromIndex(
@@ -178,27 +173,23 @@ app.get(
                     repo
                 );
 
+
             if (indexed) {
 
-                // Register owner
                 registerKnownAccount(
                     username
                 );
 
                 return res.json({
+
                     success: true,
 
                     project:
                         indexed
-                });
 
+                });
             }
 
-
-            // =================================================
-            // If not found locally,
-            // check GitHub directly
-            // =================================================
 
             const project =
                 await getProject(
@@ -206,30 +197,24 @@ app.get(
                     repo
                 );
 
+
             if (!project) {
 
                 return res.status(404).json({
+
                     success: false,
 
                     message:
                         "GitProHub project not found"
-                });
 
+                });
             }
 
-
-            // =================================================
-            // Register GitHub account
-            // =================================================
 
             registerKnownAccount(
                 username
             );
 
-
-            // =================================================
-            // Save newly discovered project
-            // =================================================
 
             saveProject(
                 project
@@ -237,9 +222,11 @@ app.get(
 
 
             res.json({
+
                 success: true,
 
                 project
+
             });
 
         } catch (error) {
@@ -250,36 +237,17 @@ app.get(
             );
 
             res.status(500).json({
+
                 success: false,
 
                 error:
                     error.message
+
             });
-
         }
-
     }
 );
 
-
-// =========================================================
-// Check GitHub Account
-// =========================================================
-//
-// Example:
-//
-// http://localhost:3000/api/github/codersusheel
-//
-// This checks ALL PUBLIC repositories of the account
-// and finds repositories containing root gitprohub.md.
-//
-// The username is automatically registered into:
-// data/knownAccounts.json
-//
-// Therefore future manual discovery can also scan
-// this account.
-//
-// =========================================================
 
 app.get(
     "/api/github/:username",
@@ -293,18 +261,15 @@ app.get(
         if (!username) {
 
             return res.status(400).json({
+
                 success: false,
 
                 message:
                     "GitHub username is required"
-            });
 
+            });
         }
 
-
-        // =================================================
-        // Register account
-        // =================================================
 
         registerKnownAccount(
             username
@@ -328,10 +293,6 @@ app.get(
 
         try {
 
-            // =================================================
-            // Get all public repositories
-            // =================================================
-
             const repositories =
                 await getUserRepositories(
                     username
@@ -341,14 +302,15 @@ app.get(
             if (!Array.isArray(repositories)) {
 
                 return res.status(500).json({
+
                     success: false,
 
                     username,
 
                     error:
                         "Invalid repositories response"
-                });
 
+                });
             }
 
 
@@ -364,10 +326,6 @@ app.get(
             let updated = 0;
             let errors = 0;
 
-
-            // =================================================
-            // Check every repository
-            // =================================================
 
             for (
                 const repository
@@ -391,10 +349,6 @@ app.get(
                         );
 
 
-                    // =================================================
-                    // gitprohub.md found
-                    // =================================================
-
                     if (project) {
 
                         projects.push(
@@ -402,18 +356,10 @@ app.get(
                         );
 
 
-                        // =============================================
-                        // Register owner
-                        // =============================================
-
                         registerKnownAccount(
                             username
                         );
 
-
-                        // =============================================
-                        // Save project
-                        // =============================================
 
                         const result =
                             saveProject(
@@ -436,29 +382,20 @@ app.get(
                             console.log(
                                 `🔄 GitProHub project UPDATED: ${username}/${repository.name}`
                             );
-
                         }
-
                     }
 
                 } catch (error) {
 
                     errors++;
 
-
                     console.error(
                         `⚠️ Could not check ${username}/${repository.name}:`,
                         error.message
                     );
-
                 }
-
             }
 
-
-            // =================================================
-            // Final result
-            // =================================================
 
             console.log("");
 
@@ -522,24 +459,10 @@ app.get(
                     error.message
 
             });
-
         }
-
     }
 );
 
-
-// =========================================================
-// Manual Discovery
-// =========================================================
-//
-// Discovery automatic timer se nahi chalega.
-//
-// Manually run karne ke liye:
-//
-// POST /api/discovery/run
-//
-// =========================================================
 
 app.post(
     "/api/discovery/run",
@@ -550,9 +473,11 @@ app.post(
             const result =
                 await runAutoDiscovery();
 
+
             res.json({
 
-                success: true,
+                success:
+                    result?.success !== false,
 
                 ...result
 
@@ -574,47 +499,213 @@ app.post(
                     error.message
 
             });
-
         }
-
     }
 );
 
 
-// =========================================================
-// Server
-// =========================================================
+app.get(
+    "/api/discovery/status",
+    (req, res) => {
+
+        try {
+
+            const status =
+                getAutoDiscoveryStatus();
+
+
+            res.json({
+
+                success: true,
+
+                ...status
+
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+
+                success: false,
+
+                error:
+                    error.message
+
+            });
+        }
+    }
+);
+
 
 const PORT =
-    process.env.PORT ||
+    Number(process.env.PORT) ||
     3000;
 
 
-app.listen(
-    PORT,
+const SERVER_START_TIME =
+    new Date();
+
+
+const server =
+    app.listen(
+        PORT,
+        () => {
+
+            console.log("");
+
+            console.log(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            );
+
+            console.log(
+                "🚀 GitProHub Backend Server"
+            );
+
+            console.log(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            );
+
+            console.log(
+                `🌐 API: http://localhost:${PORT}`
+            );
+
+            console.log(
+                `🕐 Started: ${SERVER_START_TIME.toISOString()}`
+            );
+
+            console.log(
+                "🔐 GitHub API: READY"
+            );
+
+            console.log(
+                "📦 Project index: READY"
+            );
+
+            console.log(
+                "🔎 Global discovery: ENABLED"
+            );
+
+            console.log(
+                "👤 Account discovery: ENABLED"
+            );
+
+            console.log(
+                "🆕 New project detection: ENABLED"
+            );
+
+            console.log(
+                "🔄 Project auto-update: ENABLED"
+            );
+
+            console.log(
+                "🗑️ Removed project detection: ENABLED"
+            );
+
+            console.log(
+                "🛡️ Discovery error protection: ENABLED"
+            );
+
+            console.log(
+                "♾️ Continuous discovery: ENABLED"
+            );
+
+            console.log(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            );
+
+            console.log("");
+
+
+            const discovery =
+                startAutoDiscovery(
+                    1 * 60 * 1000
+                );
+
+
+            if (discovery?.success) {
+
+                console.log(
+                    "✅ Automatic discovery timer: ON"
+                );
+
+                console.log(
+                    "⏱️ Discovery interval: 1 minute"
+                );
+
+            } else {
+
+                console.log(
+                    "⚠️ Automatic discovery timer: NOT STARTED"
+                );
+            }
+
+
+            console.log("");
+
+            console.log(
+                "📡 Manual discovery: POST /api/discovery/run"
+            );
+
+            console.log(
+                "📊 Discovery status: GET /api/discovery/status"
+            );
+
+            console.log(
+                "📦 Projects API: GET /api/projects"
+            );
+
+            console.log(
+                "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            );
+
+            console.log("");
+        }
+    );
+
+
+process.on(
+    "SIGINT",
     () => {
 
         console.log("");
 
         console.log(
-            "=========================================="
+            "🛑 Shutting down GitProHub..."
         );
+
+        server.close(
+            () => {
+
+                console.log(
+                    "✅ GitProHub server stopped."
+                );
+
+                process.exit(0);
+            }
+        );
+    }
+);
+
+
+process.on(
+    "SIGTERM",
+    () => {
+
+        console.log("");
 
         console.log(
-            `GitProHub Server running on http://localhost:${PORT}`
+            "🛑 Shutting down GitProHub..."
         );
 
-        console.log(
-            "=========================================="
-        );
+        server.close(
+            () => {
 
-        console.log(
-            "🔹 Automatic discovery timer: OFF"
-        );
+                console.log(
+                    "✅ GitProHub server stopped."
+                );
 
-        console.log(
-            "🔹 Manual discovery: POST /api/discovery/run"
+                process.exit(0);
+            }
         );
-
     }
 );

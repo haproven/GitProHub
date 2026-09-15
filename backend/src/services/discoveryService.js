@@ -20,47 +20,67 @@ const {
     getProjectKey
 } = require("./projectIndexService");
 
+const DATA_DIR = path.join(process.cwd(), "data");
 
-// ============================================================
-// PATHS
-// ============================================================
-
-const DATA_DIR =
-    path.join(process.cwd(), "data");
-
-const KNOWN_ACCOUNTS_FILE =
-    path.join(
-        DATA_DIR,
-        "knownAccounts.json"
-    );
-
-
-// ============================================================
-// ENSURE DATA DIRECTORY
-// ============================================================
+const KNOWN_ACCOUNTS_FILE = path.join(
+    DATA_DIR,
+    "knownAccounts.json"
+);
 
 function ensureDataDirectory() {
-
     if (!fs.existsSync(DATA_DIR)) {
-
-        fs.mkdirSync(
-            DATA_DIR,
-            {
-                recursive: true
-            }
-        );
-
+        fs.mkdirSync(DATA_DIR, {
+            recursive: true
+        });
     }
-
 }
 
+function createDiscoveryStats() {
+    return {
+        processedProjects: new Set(),
+        addedKeys: new Set(),
+        updatedKeys: new Set(),
+        removedKeys: new Set(),
 
-// ============================================================
-// READ KNOWN ACCOUNTS
-// ============================================================
+        newAccountNames: new Set(),
+
+        newProjects: [],
+        updatedProjects: [],
+        removedProjects: [],
+
+        errors: [],
+
+        accountCache: new Map(),
+        accountVerificationErrors: new Map(),
+
+        repositoryCache: new Map(),
+        repositoryErrors: new Map(),
+
+        projectFileCache: new Map(),
+        projectDataCache: new Map()
+    };
+}
+
+function addError(stats, error) {
+    if (!stats || !error) {
+        return;
+    }
+
+    if (typeof error === "string") {
+        stats.errors.push({
+            message: error
+        });
+        return;
+    }
+
+    stats.errors.push({
+        username: error.username || null,
+        repo: error.repo || null,
+        message: error.message || String(error)
+    });
+}
 
 function readKnownAccounts() {
-
     ensureDataDirectory();
 
     if (!fs.existsSync(KNOWN_ACCOUNTS_FILE)) {
@@ -68,22 +88,18 @@ function readKnownAccounts() {
     }
 
     try {
-
-        const raw =
-            fs.readFileSync(
-                KNOWN_ACCOUNTS_FILE,
-                "utf8"
-            );
+        const raw = fs.readFileSync(
+            KNOWN_ACCOUNTS_FILE,
+            "utf8"
+        );
 
         if (!raw.trim()) {
             return [];
         }
 
-        const data =
-            JSON.parse(raw);
+        const data = JSON.parse(raw);
 
         if (!Array.isArray(data)) {
-
             console.log(
                 "⚠️ knownAccounts.json is not an array."
             );
@@ -92,9 +108,7 @@ function readKnownAccounts() {
         }
 
         return data;
-
     } catch (error) {
-
         console.error(
             "❌ Could not read knownAccounts.json:",
             error.message
@@ -102,203 +116,17 @@ function readKnownAccounts() {
 
         return [];
     }
-
 }
-
-
-// ============================================================
-// WRITE KNOWN ACCOUNTS
-// ============================================================
-
-function writeKnownAccounts(accounts) {
-
-    ensureDataDirectory();
-
-    const byId =
-        new Map();
-
-    const byLogin =
-        new Map();
-
-    for (const account of accounts) {
-
-        if (!account) {
-            continue;
-        }
-
-        let id = null;
-        let login = null;
-
-        // ----------------------------------------------------
-        // New format
-        // ----------------------------------------------------
-
-        if (
-            typeof account === "object"
-        ) {
-
-            id =
-                account.id ??
-                null;
-
-            login =
-                account.login ??
-                null;
-
-        }
-
-        // ----------------------------------------------------
-        // Old format
-        // ----------------------------------------------------
-
-        if (
-            typeof account === "string"
-        ) {
-
-            login =
-                account;
-
-        }
-
-        if (!login) {
-            continue;
-        }
-
-        login =
-            String(login).trim();
-
-        if (
-            !isValidUsername(login)
-        ) {
-            continue;
-        }
-
-        const normalizedLogin =
-            login.toLowerCase();
-
-        const cleanAccount = {
-            id:
-                id || null,
-
-            login
-        };
-
-        // ----------------------------------------------------
-        // GitHub ID has highest priority
-        // ----------------------------------------------------
-
-        if (id) {
-
-            byId.set(
-                String(id),
-                cleanAccount
-            );
-
-        } else if (
-            !byLogin.has(
-                normalizedLogin
-            )
-        ) {
-
-            byLogin.set(
-                normalizedLogin,
-                cleanAccount
-            );
-
-        }
-
-    }
-
-
-    // --------------------------------------------------------
-    // Merge login-only accounts that do not conflict with ID
-    // --------------------------------------------------------
-
-    for (const account of byLogin.values()) {
-
-        const alreadyExists =
-            Array.from(
-                byId.values()
-            ).some(
-                item =>
-                    item.login.toLowerCase() ===
-                    account.login.toLowerCase()
-            );
-
-        if (!alreadyExists) {
-
-            byLogin.set(
-                account.login.toLowerCase(),
-                account
-            );
-
-        }
-
-    }
-
-
-    const result =
-        Array.from(
-            new Map(
-                [
-                    ...Array.from(
-                        byId.values()
-                    ),
-                    ...Array.from(
-                        byLogin.values()
-                    )
-                ].map(
-                    account => [
-                        account.id
-                            ? `id:${account.id}`
-                            : `login:${account.login.toLowerCase()}`,
-                        account
-                    ]
-                )
-            ).values()
-        );
-
-
-    fs.writeFileSync(
-        KNOWN_ACCOUNTS_FILE,
-        JSON.stringify(
-            result,
-            null,
-            2
-        ),
-        "utf8"
-    );
-
-
-    return result;
-}
-
-
-// ============================================================
-// NORMALIZE ACCOUNT
-// ============================================================
 
 function normalizeAccount(account) {
-
     if (!account) {
         return null;
     }
 
+    if (typeof account === "string") {
+        const login = account.trim();
 
-    // --------------------------------------------------------
-    // Old string format
-    // --------------------------------------------------------
-
-    if (
-        typeof account === "string"
-    ) {
-
-        const login =
-            account.trim();
-
-        if (
-            !isValidUsername(login)
-        ) {
+        if (!isValidUsername(login)) {
             return null;
         }
 
@@ -306,282 +134,194 @@ function normalizeAccount(account) {
             id: null,
             login
         };
-
     }
 
+    if (typeof account === "object") {
+        const login = account.login
+            ? String(account.login).trim()
+            : "";
 
-    // --------------------------------------------------------
-    // New object format
-    // --------------------------------------------------------
-
-    if (
-        typeof account === "object"
-    ) {
-
-        const login =
-            account.login
-                ? String(
-                    account.login
-                ).trim()
-                : "";
-
-        if (
-            !isValidUsername(login)
-        ) {
+        if (!isValidUsername(login)) {
             return null;
         }
 
         return {
-            id:
-                account.id ??
-                null,
-
+            id: account.id ?? null,
             login
         };
-
     }
-
 
     return null;
 }
 
+function deduplicateAccounts(accounts) {
+    const result = [];
 
-// ============================================================
-// FIND ACCOUNT BY ID
-// ============================================================
+    const byId = new Map();
+    const byLogin = new Map();
 
-function findAccountById(
-    accounts,
-    id
-) {
+    for (const rawAccount of accounts) {
+        const account = normalizeAccount(rawAccount);
 
-    if (!id) {
+        if (!account) {
+            continue;
+        }
+
+        const loginKey = account.login.toLowerCase();
+
+        if (account.id !== null && account.id !== undefined) {
+            const idKey = String(account.id);
+
+            if (!byId.has(idKey)) {
+                byId.set(idKey, {
+                    id: account.id,
+                    login: account.login
+                });
+            }
+
+            continue;
+        }
+
+        if (!byLogin.has(loginKey)) {
+            byLogin.set(loginKey, {
+                id: null,
+                login: account.login
+            });
+        }
+    }
+
+    for (const account of byId.values()) {
+        result.push(account);
+    }
+
+    const idsByLogin = new Set(
+        result.map(account =>
+            account.login.toLowerCase()
+        )
+    );
+
+    for (const account of byLogin.values()) {
+        const loginKey = account.login.toLowerCase();
+
+        if (!idsByLogin.has(loginKey)) {
+            result.push(account);
+        }
+    }
+
+    return result;
+}
+
+function writeKnownAccounts(accounts) {
+    ensureDataDirectory();
+
+    const cleanAccounts = deduplicateAccounts(
+        Array.isArray(accounts)
+            ? accounts
+            : []
+    );
+
+    fs.writeFileSync(
+        KNOWN_ACCOUNTS_FILE,
+        JSON.stringify(
+            cleanAccounts,
+            null,
+            2
+        ),
+        "utf8"
+    );
+
+    return cleanAccounts;
+}
+
+function findAccountById(accounts, id) {
+    if (
+        id === null ||
+        id === undefined ||
+        id === ""
+    ) {
         return null;
     }
 
-    return accounts.find(
-        account => {
+    const targetId = String(id);
 
-            const normalized =
-                normalizeAccount(
-                    account
-                );
+    return (
+        accounts.find(account => {
+            const normalized = normalizeAccount(account);
 
-            if (!normalized) {
+            if (!normalized || !normalized.id) {
                 return false;
             }
 
-            return (
-                normalized.id &&
-                String(
-                    normalized.id
-                ) ===
-                String(id)
-            );
-
-        }
-    ) || null;
+            return String(normalized.id) === targetId;
+        }) || null
+    );
 }
 
-
-// ============================================================
-// FIND ACCOUNT BY LOGIN
-// ============================================================
-
-function findAccountByLogin(
-    accounts,
-    login
-) {
-
+function findAccountByLogin(accounts, login) {
     if (!login) {
         return null;
     }
 
-    const cleanLogin =
-        String(login)
-            .trim()
-            .toLowerCase();
+    const cleanLogin = String(login)
+        .trim()
+        .toLowerCase();
 
-    return accounts.find(
-        account => {
-
-            const normalized =
-                normalizeAccount(
-                    account
-                );
+    return (
+        accounts.find(account => {
+            const normalized = normalizeAccount(account);
 
             if (!normalized) {
                 return false;
             }
 
             return (
-                normalized.login
-                    .toLowerCase() ===
+                normalized.login.toLowerCase() ===
                 cleanLogin
             );
-
-        }
-    ) || null;
+        }) || null
+    );
 }
-
-
-// ============================================================
-// GET NORMALIZED KNOWN ACCOUNTS
-// ============================================================
 
 function getNormalizedKnownAccounts() {
-
-    const rawAccounts =
-        readKnownAccounts();
-
-    const normalized = [];
-
-    const seenIds =
-        new Set();
-
-    const seenLogins =
-        new Set();
-
-
-    for (
-        const account
-        of rawAccounts
-    ) {
-
-        const item =
-            normalizeAccount(
-                account
-            );
-
-        if (!item) {
-            continue;
-        }
-
-
-        // ----------------------------------------------------
-        // ID based duplicate protection
-        // ----------------------------------------------------
-
-        if (item.id) {
-
-            const idKey =
-                String(item.id);
-
-            if (
-                seenIds.has(idKey)
-            ) {
-                continue;
-            }
-
-            seenIds.add(idKey);
-
-        }
-
-
-        // ----------------------------------------------------
-        // Login based duplicate protection
-        // ----------------------------------------------------
-
-        const loginKey =
-            item.login.toLowerCase();
-
-        if (
-            seenLogins.has(loginKey)
-        ) {
-            continue;
-        }
-
-        seenLogins.add(loginKey);
-
-
-        normalized.push(item);
-
-    }
-
-
-    return normalized;
+    return deduplicateAccounts(
+        readKnownAccounts()
+    );
 }
 
-
-// ============================================================
-// GET KNOWN GITHUB ACCOUNTS
-// ============================================================
-//
-// Known accounts + existing project owners
-//
-// No GitHub API request is made here.
-// ============================================================
-
 function getKnownGitHubAccounts() {
-
     const accounts =
         getNormalizedKnownAccounts();
 
-    const mapById =
-        new Map();
+    const mapById = new Map();
+    const mapByLogin = new Map();
 
-    const mapByLogin =
-        new Map();
-
-
-    // --------------------------------------------------------
-    // Known accounts
-    // --------------------------------------------------------
-
-    for (
-        const account
-        of accounts
-    ) {
-
-        if (account.id) {
-
+    for (const account of accounts) {
+        if (account.id !== null && account.id !== undefined) {
             mapById.set(
                 String(account.id),
                 account
             );
-
         } else {
-
             mapByLogin.set(
                 account.login.toLowerCase(),
                 account
             );
-
         }
-
     }
-
-
-    // --------------------------------------------------------
-    // Existing project owners
-    // --------------------------------------------------------
 
     let projects = [];
 
     try {
-
-        projects =
-            getProjects();
-
+        projects = getProjects();
     } catch (error) {
-
         console.log(
             "⚠️ Could not read existing projects:",
             error.message
         );
-
     }
 
-
-    if (
-        Array.isArray(projects)
-    ) {
-
-        for (
-            const project
-            of projects
-        ) {
-
+    if (Array.isArray(projects)) {
+        for (const project of projects) {
             const username =
                 project?.developer?.username ||
                 project?.github?.owner?.login ||
@@ -592,67 +332,37 @@ function getKnownGitHubAccounts() {
                 continue;
             }
 
-            const login =
-                String(username).trim();
+            const login = String(username).trim();
 
-            if (
-                !isValidUsername(login)
-            ) {
+            if (!isValidUsername(login)) {
                 continue;
             }
 
-
-            const key =
-                login.toLowerCase();
-
+            const key = login.toLowerCase();
 
             if (
-                !mapByLogin.has(key)
+                !mapByLogin.has(key) &&
+                !Array.from(mapById.values()).some(
+                    account =>
+                        account.login.toLowerCase() === key
+                )
             ) {
-
-                mapByLogin.set(
-                    key,
-                    {
-                        id: null,
-                        login
-                    }
-                );
-
+                mapByLogin.set(key, {
+                    id: null,
+                    login
+                });
             }
-
         }
-
     }
 
-
     return [
-        ...Array.from(
-            mapById.values()
-        ),
-        ...Array.from(
-            mapByLogin.values()
-        )
+        ...Array.from(mapById.values()),
+        ...Array.from(mapByLogin.values())
     ];
-
 }
 
-
-// ============================================================
-// VERIFY GITHUB ACCOUNT
-// ============================================================
-//
-// IMPORTANT:
-// One caller should cache this result for the current cycle.
-// ============================================================
-
-async function verifyGitHubAccount(
-    username
-) {
-
-    if (
-        !isValidUsername(username)
-    ) {
-
+async function verifyGitHubAccount(username) {
+    if (!isValidUsername(username)) {
         console.log(
             `⏭️ Invalid GitHub username skipped: ${username}`
         );
@@ -660,162 +370,87 @@ async function verifyGitHubAccount(
         return {
             success: false,
             exists: false,
-            error:
-                "Invalid GitHub username"
+            error: "Invalid GitHub username"
         };
-
     }
 
-
-    const cleanUsername =
-        String(username).trim();
-
+    const cleanUsername = String(username).trim();
 
     try {
-
         console.log(
             `🔍 Verifying GitHub account: ${cleanUsername}`
         );
 
-
-        const user =
-            await getUser(
-                cleanUsername
-            );
-
+        const user = await getUser(cleanUsername);
 
         if (
             !user ||
             !user.id ||
             !user.login
         ) {
-
             return {
                 success: false,
                 exists: false,
-                error:
-                    "GitHub account not found"
+                error: "GitHub account not found"
             };
-
         }
 
-
         const verifiedLogin =
-            String(
-                user.login
-            ).trim();
-
+            String(user.login).trim();
 
         console.log(
             `✅ GitHub account verified: ${verifiedLogin} (ID: ${user.id})`
         );
 
-
         return {
-
             success: true,
-
             exists: true,
-
             user,
-
-            id:
-                user.id,
-
-            login:
-                verifiedLogin
-
+            id: user.id,
+            login: verifiedLogin
         };
-
-
     } catch (error) {
-
         console.log(
             `⚠️ GitHub account verification failed: ${cleanUsername} → ${error.message}`
         );
 
-
         return {
-
             success: false,
-
             exists: false,
-
-            error:
-                error.message,
-
-            status:
-                error.status ||
-                null
-
+            error: error.message,
+            status: error.status || null
         };
-
     }
-
 }
 
-
-// ============================================================
-// UPDATE KNOWN ACCOUNT FROM VERIFIED USER
-// ============================================================
-//
-// IMPORTANT:
-// No GitHub API call here.
-// User has already been verified.
-// ============================================================
-
-function saveVerifiedAccount(
-    user
-) {
-
+function saveVerifiedAccount(user) {
     if (
         !user ||
         !user.id ||
         !user.login
     ) {
-
         return {
             success: false,
             added: false,
             updated: false,
             newAccount: false
         };
-
     }
 
+    const githubId = user.id;
+    const githubLogin = String(user.login).trim();
 
-    const githubId =
-        user.id;
-
-    const githubLogin =
-        String(
-            user.login
-        ).trim();
-
-
-    if (
-        !isValidUsername(
-            githubLogin
-        )
-    ) {
-
+    if (!isValidUsername(githubLogin)) {
         return {
             success: false,
             added: false,
             updated: false,
             newAccount: false
         };
-
     }
-
 
     const accounts =
         getNormalizedKnownAccounts();
-
-
-    // --------------------------------------------------------
-    // Find by GitHub ID first
-    // --------------------------------------------------------
 
     const accountById =
         findAccountById(
@@ -823,86 +458,48 @@ function saveVerifiedAccount(
             githubId
         );
 
-
     if (accountById) {
-
         let changed = false;
 
-        const oldLogin =
-            accountById.login;
-
-
-        // ----------------------------------------------------
-        // Username rename
-        // ----------------------------------------------------
+        const oldLogin = accountById.login;
 
         if (
             oldLogin.toLowerCase() !==
             githubLogin.toLowerCase()
         ) {
-
             console.log(
                 `🔄 GitHub username changed: ${oldLogin} → ${githubLogin}`
             );
 
-            accountById.login =
-                githubLogin;
-
+            accountById.login = githubLogin;
             changed = true;
-
         }
-
 
         if (
             String(accountById.id) !==
             String(githubId)
         ) {
-
-            accountById.id =
-                githubId;
-
+            accountById.id = githubId;
             changed = true;
-
         }
 
-
         if (changed) {
-
-            writeKnownAccounts(
-                accounts
-            );
+            writeKnownAccounts(accounts);
 
             console.log(
                 `✅ Account record updated: ${githubLogin}`
             );
-
         }
 
-
         return {
-
             success: true,
-
             added: false,
-
             updated: changed,
-
             newAccount: false,
-
-            username:
-                githubLogin,
-
-            id:
-                githubId
-
+            username: githubLogin,
+            id: githubId
         };
-
     }
-
-
-    // --------------------------------------------------------
-    // Find by login
-    // --------------------------------------------------------
 
     const accountByLogin =
         findAccountByLogin(
@@ -910,1042 +507,583 @@ function saveVerifiedAccount(
             githubLogin
         );
 
-
     if (accountByLogin) {
+        accountByLogin.id = githubId;
+        accountByLogin.login = githubLogin;
 
-        accountByLogin.id =
-            githubId;
-
-        accountByLogin.login =
-            githubLogin;
-
-
-        writeKnownAccounts(
-            accounts
-        );
-
+        writeKnownAccounts(accounts);
 
         console.log(
             `🔗 GitHub ID attached to existing account: ${githubLogin}`
         );
 
-
         return {
-
             success: true,
-
             added: false,
-
             updated: true,
-
             newAccount: false,
-
-            username:
-                githubLogin,
-
-            id:
-                githubId
-
+            username: githubLogin,
+            id: githubId
         };
-
     }
 
-
-    // --------------------------------------------------------
-    // New account
-    // --------------------------------------------------------
-
     accounts.push({
-
-        id:
-            githubId,
-
-        login:
-            githubLogin
-
+        id: githubId,
+        login: githubLogin
     });
 
-
-    writeKnownAccounts(
-        accounts
-    );
-
+    writeKnownAccounts(accounts);
 
     console.log(
         `👤 NEW GitHub account added: ${githubLogin}`
     );
 
-
     return {
-
         success: true,
-
         added: true,
-
         updated: false,
-
         newAccount: true,
-
-        username:
-            githubLogin,
-
-        id:
-            githubId
-
+        username: githubLogin,
+        id: githubId
     };
-
 }
-
-
-// ============================================================
-// GET ACCOUNT REPOSITORIES
-// ============================================================
-//
-// Cached per discovery cycle.
-// ============================================================
 
 async function getAccountRepositories(
     username,
     stats
 ) {
+    const key = String(username)
+        .trim()
+        .toLowerCase();
 
-    const key =
-        String(username)
-            .trim()
-            .toLowerCase();
-
-
-    if (
-        stats.repositoryCache.has(key)
-    ) {
-
-        return (
-            stats.repositoryCache.get(key)
-        );
-
+    if (stats.repositoryCache.has(key)) {
+        return stats.repositoryCache.get(key);
     }
 
+    if (stats.repositoryErrors.has(key)) {
+        throw stats.repositoryErrors.get(key);
+    }
 
     try {
-
         const repositories =
-            await getUserRepositories(
-                username
-            );
-
+            await getUserRepositories(username);
 
         const result =
-            Array.isArray(
-                repositories
-            )
+            Array.isArray(repositories)
                 ? repositories
                 : [];
-
 
         stats.repositoryCache.set(
             key,
             result
         );
 
-
         return result;
-
-
     } catch (error) {
-
         stats.repositoryErrors.set(
             key,
             error
         );
 
         throw error;
-
     }
-
 }
 
+async function getCachedGitProHubFile(
+    username,
+    repo,
+    stats
+) {
+    const cacheKey =
+        `${String(username).trim().toLowerCase()}/${String(repo).trim().toLowerCase()}`;
 
-// ============================================================
-// CHECK ACCOUNT GITPROHUB PROJECTS
-// ============================================================
-//
-// This function does NOT verify account again.
-// It uses cached repositories.
-//
-// ============================================================
+    if (
+        stats.projectFileCache.has(cacheKey)
+    ) {
+        return stats.projectFileCache.get(cacheKey);
+    }
+
+    try {
+        const content =
+            await getGitProHubFile(
+                username,
+                repo
+            );
+
+        stats.projectFileCache.set(
+            cacheKey,
+            content
+        );
+
+        return content;
+    } catch (error) {
+        throw error;
+    }
+}
+
+async function getCachedProject(
+    username,
+    repo,
+    stats
+) {
+    const cacheKey =
+        `${String(username).trim().toLowerCase()}/${String(repo).trim().toLowerCase()}`;
+
+    if (
+        stats.projectDataCache.has(cacheKey)
+    ) {
+        return stats.projectDataCache.get(cacheKey);
+    }
+
+    const project =
+        await getProject(
+            username,
+            repo
+        );
+
+    stats.projectDataCache.set(
+        cacheKey,
+        project
+    );
+
+    return project;
+}
 
 async function checkAccountGitProHubProjects(
     username,
     stats = null
 ) {
-
-    if (
-        !isValidUsername(username)
-    ) {
-
+    if (!isValidUsername(username)) {
         return {
-
             success: false,
-
             hasProject: false,
-
             projects: [],
-
             errors: [
                 "Invalid GitHub username"
             ]
-
         };
-
     }
-
-
-    // --------------------------------------------------------
-    // Temporary stats object when called independently
-    // --------------------------------------------------------
 
     if (!stats) {
-
-        stats = {
-
-            repositoryCache:
-                new Map(),
-
-            repositoryErrors:
-                new Map(),
-
-            projectFileCache:
-                new Map(),
-
-            processedProjects:
-                new Set(),
-
-            addedKeys:
-                new Set(),
-
-            updatedKeys:
-                new Set(),
-
-            removedKeys:
-                new Set(),
-
-            newAccountNames:
-                new Set(),
-
-            errors: []
-
-        };
-
+        stats = createDiscoveryStats();
     }
-
 
     let repositories;
 
-
     try {
-
         repositories =
             await getAccountRepositories(
                 username,
                 stats
             );
-
     } catch (error) {
-
         console.log(
             `⚠️ Could not scan repositories for ${username}: ${error.message}`
         );
 
-
         return {
-
             success: false,
-
             hasProject: false,
-
             projects: [],
-
             errors: [
                 error.message
             ]
-
         };
-
     }
-
 
     const projects = [];
     const errors = [];
 
-
-    for (
-        const repository
-        of repositories
-    ) {
-
-        if (
-            !repository?.name
-        ) {
+    for (const repository of repositories) {
+        if (!repository?.name) {
             continue;
         }
 
-
         const repoName =
-            String(
-                repository.name
-            ).trim();
-
+            String(repository.name).trim();
 
         if (!repoName) {
             continue;
         }
 
-
-        const cacheKey =
-            `${username.toLowerCase()}/${repoName.toLowerCase()}`;
-
-
-        let content;
-
-
         try {
-
-            if (
-                stats.projectFileCache.has(
-                    cacheKey
-                )
-            ) {
-
-                content =
-                    stats.projectFileCache.get(
-                        cacheKey
-                    );
-
-            } else {
-
-                content =
-                    await getGitProHubFile(
-                        username,
-                        repoName
-                    );
-
-
-                stats.projectFileCache.set(
-                    cacheKey,
-                    content
+            const content =
+                await getCachedGitProHubFile(
+                    username,
+                    repoName,
+                    stats
                 );
-
-            }
-
 
             if (!content) {
                 continue;
             }
 
-
             projects.push({
-
                 username,
-
-                repo:
-                    repoName
-
+                repo: repoName
             });
-
 
             console.log(
                 `📄 gitprohub.md found: ${username}/${repoName}`
             );
-
-
         } catch (error) {
+            const message =
+                `${username}/${repoName}: ${error.message}`;
 
-            errors.push(
-                `${username}/${repoName}: ${error.message}`
-            );
-
+            errors.push(message);
 
             console.log(
                 `⚠️ Could not check ${username}/${repoName}: ${error.message}`
             );
-
         }
-
     }
 
-
     return {
-
         success: true,
-
-        hasProject:
-            projects.length > 0,
-
+        hasProject: projects.length > 0,
         projects,
-
         errors
-
     };
-
 }
-
-
-// ============================================================
-// REGISTER KNOWN ACCOUNT
-// ============================================================
-//
-// IMPORTANT:
-// This function is now lightweight.
-//
-// It verifies the account ONCE,
-// but does NOT scan all repositories again.
-//
-// Use options.verifiedUser when the account was already
-// verified in the current discovery cycle.
-//
-// ============================================================
 
 async function registerKnownAccount(
     username,
     options = {}
 ) {
-
-    if (
-        !isValidUsername(username)
-    ) {
-
+    if (!isValidUsername(username)) {
         console.log(
             `⏭️ Invalid account skipped: ${username}`
         );
 
         return {
-
             success: false,
-
             added: false,
-
             updated: false,
-
+            removed: false,
             newAccount: false,
-
             username: null,
-
-            reason:
-                "invalid_username"
-
+            reason: "invalid_username"
         };
-
     }
-
 
     const cleanUsername =
         String(username).trim();
 
-
     let user =
-        options.verifiedUser ||
-        null;
-
-
-    // --------------------------------------------------------
-    // Verify only when user is not already verified
-    // --------------------------------------------------------
+        options.verifiedUser || null;
 
     if (!user) {
-
         const verification =
             await verifyGitHubAccount(
                 cleanUsername
             );
 
-
-        if (
-            !verification.success
-        ) {
-
+        if (!verification.success) {
             console.log(
                 `⏭️ Account NOT added: ${cleanUsername}`
             );
 
-
             return {
-
                 success: false,
-
                 added: false,
-
                 updated: false,
-
+                removed: false,
                 newAccount: false,
-
-                username:
-                    cleanUsername,
-
-                reason:
-                    "github_account_not_verified",
-
-                error:
-                    verification.error,
-
-                status:
-                    verification.status
-
+                username: cleanUsername,
+                reason: "github_account_not_verified",
+                error: verification.error,
+                status: verification.status || null
             };
-
         }
 
-
-        user =
-            verification.user;
-
+        user = verification.user;
     }
 
-
-    // --------------------------------------------------------
-    // Save verified account
-    // --------------------------------------------------------
-
     const result =
-        saveVerifiedAccount(
-            user
-        );
-
+        saveVerifiedAccount(user);
 
     return {
-
-        success:
-            result.success,
-
-        added:
-            result.added,
-
-        updated:
-            result.updated,
-
+        success: result.success,
+        added: result.added,
+        updated: result.updated,
         removed: false,
-
-        newAccount:
-            result.newAccount,
-
-        username:
-            result.username,
-
-        id:
-            result.id,
-
-        reason:
-            result.newAccount
-                ? "new_account"
-                : result.updated
-                    ? "account_updated"
-                    : "account_already_known"
-
+        newAccount: result.newAccount,
+        username: result.username,
+        id: result.id,
+        reason: result.newAccount
+            ? "new_account"
+            : result.updated
+                ? "account_updated"
+                : "account_already_known"
     };
-
 }
-
-
-// ============================================================
-// SAVE DISCOVERED PROJECT
-// ============================================================
-//
-// Uses processedProjects Set to prevent duplicate processing.
-// ============================================================
 
 async function saveDiscoveredProject(
     username,
     repo,
     stats
 ) {
-
-    if (
-        !isValidUsername(username)
-    ) {
-
+    if (!isValidUsername(username)) {
         console.log(
             `⏭️ Invalid project owner skipped: ${username}`
         );
 
         return {
-
             success: false,
-
             added: false,
-
             updated: false,
-
             skipped: true
-
         };
-
     }
-
 
     if (
         typeof repo !== "string" ||
         !repo.trim() ||
         repo.includes("/")
     ) {
-
         console.log(
             `⏭️ Invalid repository skipped: ${username}/${repo}`
         );
 
         return {
-
             success: false,
-
             added: false,
-
             updated: false,
-
             skipped: true
-
         };
-
     }
 
+    const cleanUsername =
+        String(username).trim();
 
-    repo =
+    const cleanRepo =
         repo.trim();
-
 
     const key =
         getProjectKey(
-            username,
-            repo
+            cleanUsername,
+            cleanRepo
         );
 
-
-    // --------------------------------------------------------
-    // Duplicate protection
-    // --------------------------------------------------------
-
     if (
-        stats.processedProjects.has(
-            key
-        )
+        stats.processedProjects.has(key)
     ) {
-
         return {
-
             success: true,
-
             added: false,
-
             updated: false,
-
             skipped: true,
-
             duplicate: true
-
         };
-
     }
 
-
-    stats.processedProjects.add(
-        key
-    );
-
-
-    // --------------------------------------------------------
-    // Check cached gitprohub.md first
-    // --------------------------------------------------------
-
-    const fileCacheKey =
-        `${username.toLowerCase()}/${repo.toLowerCase()}`;
-
+    stats.processedProjects.add(key);
 
     try {
-
-        let content;
-
-
-        if (
-            stats.projectFileCache.has(
-                fileCacheKey
-            )
-        ) {
-
-            content =
-                stats.projectFileCache.get(
-                    fileCacheKey
-                );
-
-        } else {
-
-            content =
-                await getGitProHubFile(
-                    username,
-                    repo
-                );
-
-
-            stats.projectFileCache.set(
-                fileCacheKey,
-                content
+        const content =
+            await getCachedGitProHubFile(
+                cleanUsername,
+                cleanRepo,
+                stats
             );
 
-        }
-
-
-        // ----------------------------------------------------
-        // Missing file
-        // ----------------------------------------------------
-
         if (!content) {
-
             console.log(
-                `⏭️ Not a GitProHub project: ${username}/${repo}`
+                `⏭️ Not a GitProHub project: ${cleanUsername}/${cleanRepo}`
             );
 
             return {
-
                 success: true,
-
                 added: false,
-
                 updated: false,
-
                 skipped: true
-
             };
-
         }
-
-
     } catch (error) {
-
         console.log(
-            `🛡️ Project kept safe: ${username}/${repo} → ${error.message}`
+            `🛡️ Project kept safe: ${cleanUsername}/${cleanRepo} → ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            username,
-
-            repo,
-
-            message:
-                error.message
-
+        addError(stats, {
+            username: cleanUsername,
+            repo: cleanRepo,
+            message: error.message
         });
 
-
         return {
-
             success: false,
-
             added: false,
-
             updated: false,
-
             skipped: false
-
         };
-
     }
-
-
-    // --------------------------------------------------------
-    // Get full project data
-    // --------------------------------------------------------
 
     let project;
 
-
     try {
-
         project =
-            await getProject(
-                username,
-                repo
+            await getCachedProject(
+                cleanUsername,
+                cleanRepo,
+                stats
             );
-
-
     } catch (error) {
-
         console.log(
-            `⚠️ Project data fetch failed: ${username}/${repo} → ${error.message}`
+            `⚠️ Project data fetch failed: ${cleanUsername}/${cleanRepo} → ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            username,
-
-            repo,
-
-            message:
-                error.message
-
+        addError(stats, {
+            username: cleanUsername,
+            repo: cleanRepo,
+            message: error.message
         });
 
-
         return {
-
             success: false,
-
             added: false,
-
             updated: false,
-
             skipped: false
-
         };
-
     }
-
 
     if (!project) {
-
         console.log(
-            `⏭️ GitProHub project data unavailable: ${username}/${repo}`
+            `⏭️ GitProHub project data unavailable: ${cleanUsername}/${cleanRepo}`
         );
 
         return {
-
             success: true,
-
             added: false,
-
             updated: false,
-
             skipped: true
-
         };
-
     }
-
-
-    // --------------------------------------------------------
-    // Save project
-    // --------------------------------------------------------
 
     try {
-
         const result =
-            await saveProject(
-                project
-            );
-
+            await saveProject(project);
 
         const added =
-            Boolean(
-                result?.added
-            );
-
+            Boolean(result?.added);
 
         const updated =
-            Boolean(
-                result?.updated
-            );
-
+            Boolean(result?.updated);
 
         if (added) {
+            stats.addedKeys.add(key);
 
-            stats.addedKeys.add(
-                key
-            );
-
+            stats.newProjects.push(project);
 
             console.log(
-                `🆕 NEW GitProHub project added: ${username}/${repo}`
+                `🆕 NEW GitProHub project added: ${cleanUsername}/${cleanRepo}`
             );
-
         }
-
 
         if (updated) {
+            stats.updatedKeys.add(key);
 
-            stats.updatedKeys.add(
-                key
-            );
-
+            stats.updatedProjects.push(project);
 
             console.log(
-                `🔄 GitProHub project updated: ${username}/${repo}`
+                `🔄 GitProHub project updated: ${cleanUsername}/${cleanRepo}`
             );
-
         }
 
-
         return {
-
             success: true,
-
             added,
-
             updated,
-
             skipped: false,
-
             project
-
         };
-
-
     } catch (error) {
-
         console.log(
-            `❌ Could not save project ${username}/${repo}: ${error.message}`
+            `❌ Could not save project ${cleanUsername}/${cleanRepo}: ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            username,
-
-            repo,
-
-            message:
-                error.message
-
+        addError(stats, {
+            username: cleanUsername,
+            repo: cleanRepo,
+            message: error.message
         });
 
-
         return {
-
             success: false,
-
             added: false,
-
             updated: false,
-
             skipped: false
-
         };
-
     }
-
 }
-
-
-// ============================================================
-// SCAN ONE GITHUB ACCOUNT
-// ============================================================
-//
-// IMPORTANT:
-// Account verification happens outside this function.
-// This function only scans repositories once.
-//
-// ============================================================
 
 async function scanGitHubAccount(
     username,
     stats,
     options = {}
 ) {
-
-    if (
-        !isValidUsername(username)
-    ) {
-
+    if (!isValidUsername(username)) {
         console.log(
             `⏭️ Invalid account skipped: ${username}`
         );
 
         return {
-
             success: false,
-
             added: 0,
-
             updated: 0,
-
             projects: []
-
         };
-
     }
-
 
     const cleanUsername =
         String(username).trim();
 
-
     console.log("");
-
     console.log(
         `👤 Scanning GitHub account: ${cleanUsername}`
     );
 
-
     let repositories;
 
-
     try {
-
         repositories =
             await getAccountRepositories(
                 cleanUsername,
                 stats
             );
-
-
     } catch (error) {
-
         console.log(
             `⚠️ Could not scan account ${cleanUsername}: ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            username:
-                cleanUsername,
-
-            message:
-                error.message
-
+        addError(stats, {
+            username: cleanUsername,
+            message: error.message
         });
 
-
         return {
-
             success: false,
-
             added: 0,
-
             updated: 0,
-
             projects: []
-
         };
-
     }
-
 
     let added = 0;
     let updated = 0;
 
     const projects = [];
 
-
-    for (
-        const repository
-        of repositories
-    ) {
-
-        if (
-            !repository?.name
-        ) {
+    for (const repository of repositories) {
+        if (!repository?.name) {
             continue;
         }
 
-
         const repoName =
-            String(
-                repository.name
-            ).trim();
-
+            String(repository.name).trim();
 
         if (!repoName) {
             continue;
         }
-
 
         const result =
             await saveDiscoveredProject(
@@ -1954,190 +1092,152 @@ async function scanGitHubAccount(
                 stats
             );
 
-
         if (result.added) {
             added++;
         }
-
 
         if (result.updated) {
             updated++;
         }
 
-
         if (result.project) {
-
             projects.push(
                 result.project
             );
-
         }
-
     }
-
 
     console.log(
         `📦 ${cleanUsername}: ${repositories.length} repositories scanned`
     );
 
-
     console.log(
         `🆕 ${cleanUsername}: ${added} new project(s)`
     );
-
 
     console.log(
         `🔄 ${cleanUsername}: ${updated} updated project(s)`
     );
 
-
     return {
-
         success: true,
-
         added,
-
         updated,
-
         projects
-
     };
-
 }
 
+function isSafeToRemoveProject(error) {
+    const status =
+        Number(
+            error?.status ||
+            error?.response?.status ||
+            error?.statusCode ||
+            0
+        );
 
-// ============================================================
-// CHECK EXISTING PROJECTS
-// ============================================================
-//
-// VERY IMPORTANT:
-//
-// 404 / missing gitprohub.md
-//     → remove project
-//
-// 403 / rate limit / network error
-//     → KEEP project
-//
-// ============================================================
+    if (status === 404) {
+        return true;
+    }
 
-async function checkExistingProjects(
-    stats
-) {
+    if (status === 403) {
+        return false;
+    }
 
+    if (status === 429) {
+        return false;
+    }
+
+    const message =
+        String(error?.message || "")
+            .toLowerCase();
+
+    if (
+        message.includes("rate limit") ||
+        message.includes("api rate") ||
+        message.includes("network") ||
+        message.includes("timeout") ||
+        message.includes("timed out") ||
+        message.includes("fetch failed") ||
+        message.includes("econn") ||
+        message.includes("enotfound")
+    ) {
+        return false;
+    }
+
+    return false;
+}
+
+async function checkExistingProjects(stats) {
     let projects;
 
-
     try {
-
-        projects =
-            getProjects();
-
-
+        projects = getProjects();
     } catch (error) {
-
         console.log(
             `❌ Could not load existing projects: ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            message:
-                error.message
-
+        addError(stats, {
+            message: error.message
         });
 
-
         return {
-
             checked: 0,
-
             removed: 0,
-
             updated: 0
-
         };
-
     }
 
-
-    if (
-        !Array.isArray(projects)
-    ) {
-
+    if (!Array.isArray(projects)) {
         return {
-
             checked: 0,
-
             removed: 0,
-
             updated: 0
-
         };
-
     }
-
 
     let checked = 0;
     let removed = 0;
     let updated = 0;
 
-
-    for (
-        const storedProject
-        of projects
-    ) {
-
+    for (const storedProject of projects) {
         const username =
             storedProject?.developer?.username ||
             storedProject?.github?.owner?.login ||
             storedProject?.owner ||
             null;
 
-
         const repo =
             storedProject?.github?.name ||
             storedProject?.repo ||
             null;
 
-
-        if (
-            !isValidUsername(username)
-        ) {
-
+        if (!isValidUsername(username)) {
             console.log(
                 "⏭️ Invalid stored project owner skipped."
             );
 
             continue;
-
         }
-
 
         if (
             typeof repo !== "string" ||
             !repo.trim() ||
             repo.includes("/")
         ) {
-
             console.log(
                 `⏭️ Invalid stored repository skipped: ${username}/${repo}`
             );
 
             continue;
-
         }
 
-
         const cleanUsername =
-            String(
-                username
-            ).trim();
-
+            String(username).trim();
 
         const cleanRepo =
             repo.trim();
-
 
         const key =
             getProjectKey(
@@ -2145,346 +1245,233 @@ async function checkExistingProjects(
                 cleanRepo
             );
 
-
-        const cacheKey =
-            `${cleanUsername.toLowerCase()}/${cleanRepo.toLowerCase()}`;
-
-
         try {
-
-            let content;
-
-
-            // ------------------------------------------------
-            // Use cache when available
-            // ------------------------------------------------
-
-            if (
-                stats.projectFileCache.has(
-                    cacheKey
-                )
-            ) {
-
-                content =
-                    stats.projectFileCache.get(
-                        cacheKey
-                    );
-
-            } else {
-
-                content =
-                    await getGitProHubFile(
-                        cleanUsername,
-                        cleanRepo
-                    );
-
-
-                stats.projectFileCache.set(
-                    cacheKey,
-                    content
+            const content =
+                await getCachedGitProHubFile(
+                    cleanUsername,
+                    cleanRepo,
+                    stats
                 );
-
-            }
-
 
             checked++;
 
-
-            // ------------------------------------------------
-            // Confirmed missing gitprohub.md
-            // ------------------------------------------------
-
             if (!content) {
-
                 console.log(
                     `🗑️ GitProHub project removed: ${cleanUsername}/${cleanRepo}`
                 );
 
-
                 try {
-
                     await removeProject(
                         cleanUsername,
                         cleanRepo
                     );
 
-
                     removed++;
 
+                    stats.removedKeys.add(key);
 
-                    stats.removedKeys.add(
-                        key
+                    stats.removedProjects.push(
+                        storedProject
                     );
-
-
                 } catch (removeError) {
-
                     console.log(
                         `⚠️ Could not remove ${cleanUsername}/${cleanRepo}: ${removeError.message}`
                     );
 
-
-                    stats.errors.push({
-
-                        username:
-                            cleanUsername,
-
-                        repo:
-                            cleanRepo,
-
-                        message:
-                            removeError.message
-
+                    addError(stats, {
+                        username: cleanUsername,
+                        repo: cleanRepo,
+                        message: removeError.message
                     });
-
                 }
 
-
                 continue;
-
             }
 
-
-            // ------------------------------------------------
-            // gitprohub.md still exists
-            // ------------------------------------------------
-
             const currentProject =
-                await getProject(
+                await getCachedProject(
                     cleanUsername,
-                    cleanRepo
+                    cleanRepo,
+                    stats
                 );
 
-
             if (!currentProject) {
-
                 console.log(
                     `⚠️ Project data unavailable: ${cleanUsername}/${cleanRepo}`
                 );
 
                 continue;
-
             }
-
 
             const saveResult =
                 await saveProject(
                     currentProject
                 );
 
-
-            if (
-                saveResult?.updated
-            ) {
-
+            if (saveResult?.updated) {
                 updated++;
 
+                stats.updatedKeys.add(key);
 
-                stats.updatedKeys.add(
-                    key
+                if (
+                    !stats.newProjects.some(
+                        project =>
+                            getProjectKey(
+                                project?.developer?.username ||
+                                    project?.github?.owner?.login ||
+                                    project?.owner,
+                                project?.github?.name ||
+                                    project?.repo
+                            ) === key
+                    )
+                ) {
+                    stats.updatedProjects.push(
+                        currentProject
+                    );
+                }
+            }
+        } catch (error) {
+            if (isSafeToRemoveProject(error)) {
+                console.log(
+                    `🗑️ Confirmed missing project: ${cleanUsername}/${cleanRepo}`
                 );
 
+                try {
+                    await removeProject(
+                        cleanUsername,
+                        cleanRepo
+                    );
+
+                    checked++;
+                    removed++;
+
+                    stats.removedKeys.add(key);
+
+                    stats.removedProjects.push(
+                        storedProject
+                    );
+                } catch (removeError) {
+                    console.log(
+                        `⚠️ Could not remove ${cleanUsername}/${cleanRepo}: ${removeError.message}`
+                    );
+
+                    addError(stats, {
+                        username: cleanUsername,
+                        repo: cleanRepo,
+                        message: removeError.message
+                    });
+                }
+
+                continue;
             }
-
-
-        } catch (error) {
-
-            // ------------------------------------------------
-            // SAFE MODE
-            // ------------------------------------------------
 
             console.log(
                 `🛡️ SAFE MODE: keeping ${cleanUsername}/${cleanRepo}`
             );
 
-
             console.log(
                 `   ⚠️ ${error.message}`
             );
 
-
-            stats.errors.push({
-
-                username:
-                    cleanUsername,
-
-                repo:
-                    cleanRepo,
-
-                message:
-                    error.message
-
+            addError(stats, {
+                username: cleanUsername,
+                repo: cleanRepo,
+                message: error.message
             });
-
         }
-
     }
 
-
     return {
-
         checked,
-
         removed,
-
         updated
-
     };
-
 }
 
-
-// ============================================================
-// DISCOVER NEW PROJECTS FROM GLOBAL GITHUB SEARCH
-// ============================================================
-//
-// IMPORTANT:
-//
-// Global search result already tells us:
-// username + repository
-//
-// Therefore:
-// DO NOT scan the entire account here.
-//
-// ============================================================
-
-async function discoverNewGitProHubProjects(
-    stats
-) {
-
+async function discoverNewGitProHubProjects(stats) {
     console.log("");
-
     console.log(
         "🌐 Starting global GitHub GitProHub discovery..."
     );
 
-
     let repositories;
 
-
     try {
-
         repositories =
             await crawlGitHubGitProHubFiles();
-
-
     } catch (error) {
-
         console.log(
             `❌ Global discovery failed: ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            message:
-                error.message
-
+        addError(stats, {
+            message: error.message
         });
 
-
         return {
-
             success: false,
-
             added: 0,
-
             updated: 0,
-
             newAccounts: []
-
         };
-
     }
 
-
-    if (
-        !Array.isArray(repositories)
-    ) {
-
+    if (!Array.isArray(repositories)) {
         return {
-
             success: true,
-
             added: 0,
-
             updated: 0,
-
             newAccounts: []
-
         };
-
     }
 
+    const newAccounts = new Map();
 
-    const newAccounts =
-        new Map();
+    const globalProjects = new Map();
 
-
-    const processedGlobalAccounts =
-        new Set();
-
-
-    for (
-        const item
-        of repositories
-    ) {
-
+    for (const item of repositories) {
         const username =
             item?.username ||
             item?.owner ||
+            item?.github?.owner?.login ||
             null;
-
 
         const repo =
             item?.repo ||
             item?.repository ||
+            item?.name ||
+            item?.github?.name ||
             null;
 
-
-        if (
-            !isValidUsername(username)
-        ) {
-
+        if (!isValidUsername(username)) {
             console.log(
                 `⏭️ Invalid global search username skipped: ${username}`
             );
 
             continue;
-
         }
-
 
         if (
             typeof repo !== "string" ||
             !repo.trim() ||
             repo.includes("/")
         ) {
-
             console.log(
                 `⏭️ Invalid global search repository skipped: ${username}/${repo}`
             );
 
             continue;
-
         }
 
-
-        // ----------------------------------------------------
-        // Verify account only once
-        // ----------------------------------------------------
-
         const accountKey =
-            String(
-                username
-            ).trim().toLowerCase();
-
+            String(username)
+                .trim()
+                .toLowerCase();
 
         let verifiedUser =
             stats.accountCache.get(
                 accountKey
             );
-
 
         if (
             !verifiedUser &&
@@ -2492,66 +1479,45 @@ async function discoverNewGitProHubProjects(
                 accountKey
             )
         ) {
-
             const verification =
                 await verifyGitHubAccount(
                     username
                 );
 
-
-            if (
-                !verification.success
-            ) {
-
+            if (!verification.success) {
                 stats.accountVerificationErrors.set(
                     accountKey,
                     verification
                 );
-
 
                 console.log(
                     `🛡️ Global account skipped safely: ${username}`
                 );
 
                 continue;
-
             }
-
 
             verifiedUser =
                 verification.user;
-
 
             stats.accountCache.set(
                 accountKey,
                 verifiedUser
             );
-
         }
-
 
         if (!verifiedUser) {
             continue;
         }
-
-
-        // ----------------------------------------------------
-        // Save account using already verified user
-        // ----------------------------------------------------
 
         const accountResult =
             saveVerifiedAccount(
                 verifiedUser
             );
 
-
-        if (
-            accountResult.newAccount
-        ) {
-
+        if (accountResult.newAccount) {
             const login =
                 accountResult.username;
-
 
             if (
                 login &&
@@ -2559,151 +1525,103 @@ async function discoverNewGitProHubProjects(
                     login.toLowerCase()
                 )
             ) {
-
                 newAccounts.set(
                     login.toLowerCase(),
                     login
                 );
 
+                stats.newAccountNames.add(
+                    login
+                );
             }
-
         }
 
+        const actualUsername =
+            String(
+                verifiedUser.login
+            ).trim();
 
-        // ----------------------------------------------------
-        // Save only this discovered project
-        // ----------------------------------------------------
+        const projectKey =
+            getProjectKey(
+                actualUsername,
+                repo.trim()
+            );
+
+        if (
+            globalProjects.has(projectKey)
+        ) {
+            continue;
+        }
+
+        globalProjects.set(
+            projectKey,
+            true
+        );
 
         await saveDiscoveredProject(
-            verifiedUser.login,
-            repo,
+            actualUsername,
+            repo.trim(),
             stats
         );
-
-
-        processedGlobalAccounts.add(
-            accountKey
-        );
-
     }
 
-
     return {
-
         success: true,
-
         added: 0,
-
         updated: 0,
-
         newAccounts:
             Array.from(
                 newAccounts.values()
             )
-
     };
-
 }
 
-
-// ============================================================
-// DISCOVER PROJECTS FROM KNOWN ACCOUNTS
-// ============================================================
-//
-// Flow:
-//
-// account
-//   ↓
-// verify ONCE
-//   ↓
-// update GitHub ID/login
-//   ↓
-// get repositories ONCE
-//   ↓
-// check gitprohub.md
-//   ↓
-// save projects
-//
-// ============================================================
-
-async function discoverKnownGitHubAccounts(
-    stats
-) {
-
+async function discoverKnownGitHubAccounts(stats) {
     const accounts =
         getKnownGitHubAccounts();
 
-
     console.log("");
-
     console.log(
         `👥 Known GitHub accounts to scan: ${accounts.length}`
     );
 
-
     let added = 0;
     let updated = 0;
 
+    const processedAccounts = new Set();
 
-    // --------------------------------------------------------
-    // Account deduplication
-    // --------------------------------------------------------
-
-    const processedAccounts =
-        new Set();
-
-
-    for (
-        const account
-        of accounts
-    ) {
-
+    for (const account of accounts) {
         const normalized =
-            normalizeAccount(
-                account
-            );
-
+            normalizeAccount(account);
 
         if (!normalized) {
             continue;
         }
-
 
         const accountKey =
             normalized.id
                 ? `id:${normalized.id}`
                 : `login:${normalized.login.toLowerCase()}`;
 
-
         if (
             processedAccounts.has(
                 accountKey
             )
         ) {
-
             continue;
-
         }
-
 
         processedAccounts.add(
             accountKey
         );
 
-
-        // ----------------------------------------------------
-        // Verify account ONCE
-        // ----------------------------------------------------
-
         const loginKey =
             normalized.login.toLowerCase();
-
 
         let verifiedUser =
             stats.accountCache.get(
                 loginKey
             );
-
 
         if (
             !verifiedUser &&
@@ -2711,80 +1629,52 @@ async function discoverKnownGitHubAccounts(
                 loginKey
             )
         ) {
-
             const verification =
                 await verifyGitHubAccount(
                     normalized.login
                 );
 
-
-            if (
-                !verification.success
-            ) {
-
+            if (!verification.success) {
                 console.log(
                     `🛡️ Keeping known account safely: ${normalized.login}`
                 );
-
 
                 stats.accountVerificationErrors.set(
                     loginKey,
                     verification
                 );
 
-
-                stats.errors.push({
-
-                    username:
-                        normalized.login,
-
+                addError(stats, {
+                    username: normalized.login,
                     message:
                         verification.error ||
                         "GitHub account verification failed"
-
                 });
 
-
                 continue;
-
             }
-
 
             verifiedUser =
                 verification.user;
-
 
             stats.accountCache.set(
                 loginKey,
                 verifiedUser
             );
-
         }
-
 
         if (!verifiedUser) {
             continue;
         }
-
 
         const actualUsername =
             String(
                 verifiedUser.login
             ).trim();
 
-
-        // ----------------------------------------------------
-        // Update account ID/login WITHOUT API call
-        // ----------------------------------------------------
-
         saveVerifiedAccount(
             verifiedUser
         );
-
-
-        // ----------------------------------------------------
-        // Scan account ONCE
-        // ----------------------------------------------------
 
         const result =
             await scanGitHubAccount(
@@ -2792,418 +1682,228 @@ async function discoverKnownGitHubAccounts(
                 stats
             );
 
-
         added +=
-            Number(
-                result.added
-            ) || 0;
-
+            Number(result.added) || 0;
 
         updated +=
-            Number(
-                result.updated
-            ) || 0;
-
+            Number(result.updated) || 0;
     }
 
-
     return {
-
-        success:
-            true,
-
+        success: true,
         added,
-
         updated
-
     };
-
 }
 
-
-// ============================================================
-// CLEAN / MIGRATE KNOWN ACCOUNTS
-// ============================================================
-//
-// IMPORTANT:
-//
-// This function does NOT call GitHub API.
-//
-// It only:
-// - removes malformed entries
-// - converts strings to objects
-// - removes duplicates
-//
-// GitHub ID/login verification happens later,
-// exactly once per account.
-// ============================================================
-
-async function migrateKnownAccounts(
-    stats
-) {
-
+async function migrateKnownAccounts(stats) {
     const oldAccounts =
         readKnownAccounts();
 
-
-    if (
-        !Array.isArray(oldAccounts)
-    ) {
-
+    if (!Array.isArray(oldAccounts)) {
         return {
-
             migrated: 0,
-
             updated: 0
-
         };
-
     }
 
-
-    const normalized = [];
-
-    const seenIds =
-        new Set();
-
-    const seenLogins =
-        new Set();
-
-
-    for (
-        const account
-        of oldAccounts
-    ) {
-
-        const item =
-            normalizeAccount(
-                account
-            );
-
-
-        if (!item) {
-
-            console.log(
-                "🧹 Removing malformed known account entry."
-            );
-
-            continue;
-
-        }
-
-
-        if (item.id) {
-
-            const id =
-                String(
-                    item.id
-                );
-
-
-            if (
-                seenIds.has(id)
-            ) {
-                continue;
-            }
-
-
-            seenIds.add(id);
-
-        }
-
-
-        const login =
-            item.login.toLowerCase();
-
-
-        if (
-            seenLogins.has(login)
-        ) {
-            continue;
-        }
-
-
-        seenLogins.add(
-            login
-        );
-
-
-        normalized.push(
-            item
-        );
-
-    }
-
-
-    const before =
-        JSON.stringify(
+    const normalized =
+        deduplicateAccounts(
             oldAccounts
         );
 
+    const before =
+        JSON.stringify(oldAccounts);
 
     const after =
-        JSON.stringify(
-            normalized
-        );
+        JSON.stringify(normalized);
 
-
-    if (
-        before !== after
-    ) {
-
+    if (before !== after) {
         writeKnownAccounts(
             normalized
         );
-
 
         console.log(
             `🧹 knownAccounts.json cleaned: ${oldAccounts.length} → ${normalized.length}`
         );
 
-
         return {
-
             migrated: 1,
-
             updated: 1
-
         };
-
     }
 
-
     return {
-
         migrated: 0,
-
         updated: 0
-
     };
-
 }
 
+function uniqueProjects(projects) {
+    const map = new Map();
 
-// ============================================================
-// MAIN DISCOVERY
-// ============================================================
+    for (const project of projects) {
+        if (!project) {
+            continue;
+        }
+
+        const username =
+            project?.developer?.username ||
+            project?.github?.owner?.login ||
+            project?.owner ||
+            null;
+
+        const repo =
+            project?.github?.name ||
+            project?.repo ||
+            null;
+
+        if (
+            !username ||
+            !repo
+        ) {
+            continue;
+        }
+
+        try {
+            const key =
+                getProjectKey(
+                    username,
+                    repo
+                );
+
+            map.set(
+                key,
+                project
+            );
+        } catch {
+            continue;
+        }
+    }
+
+    return Array.from(
+        map.values()
+    );
+}
 
 async function discoverAllGitProHubProjects() {
-
     console.log("");
-
     console.log(
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     );
-
     console.log(
         "🚀 GitProHub discovery started"
     );
-
     console.log(
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     );
 
-
-    // --------------------------------------------------------
-    // Per-run statistics
-    // --------------------------------------------------------
-
-    const stats = {
-
-        processedProjects:
-            new Set(),
-
-        addedKeys:
-            new Set(),
-
-        updatedKeys:
-            new Set(),
-
-        removedKeys:
-            new Set(),
-
-        newAccountNames:
-            new Set(),
-
-        errors: [],
-
-
-        // ----------------------------------------------------
-        // API caches
-        // ----------------------------------------------------
-
-        accountCache:
-            new Map(),
-
-        accountVerificationErrors:
-            new Map(),
-
-        repositoryCache:
-            new Map(),
-
-        repositoryErrors:
-            new Map(),
-
-        projectFileCache:
-            new Map()
-
-    };
-
-
-    // ========================================================
-    // STEP 1
-    // ========================================================
+    const stats =
+        createDiscoveryStats();
 
     console.log("");
-
     console.log(
         "1️⃣ Cleaning known GitHub accounts..."
     );
 
-
-    await migrateKnownAccounts(
-        stats
-    );
-
-
-    // ========================================================
-    // STEP 2
-    // ========================================================
+    const migration =
+        await migrateKnownAccounts(
+            stats
+        );
 
     console.log("");
-
     console.log(
         "2️⃣ Checking existing GitProHub projects..."
     );
-
 
     const existing =
         await checkExistingProjects(
             stats
         );
 
-
-    // ========================================================
-    // STEP 3
-    // ========================================================
-
     console.log("");
-
     console.log(
         "3️⃣ Running global GitHub discovery..."
     );
-
 
     const global =
         await discoverNewGitProHubProjects(
             stats
         );
 
-
-    for (
-        const username
-        of global.newAccounts || []
-    ) {
-
+    for (const username of global.newAccounts || []) {
         stats.newAccountNames.add(
             username
         );
-
     }
 
-
-    // ========================================================
-    // STEP 4
-    // ========================================================
-
     console.log("");
-
     console.log(
         "4️⃣ Scanning known GitHub accounts..."
     );
-
 
     const known =
         await discoverKnownGitHubAccounts(
             stats
         );
 
-
-    // ========================================================
-    // FINAL PROJECT LIST
-    // ========================================================
-
     let finalProjects = [];
 
-
     try {
-
         finalProjects =
             getProjects();
-
-
     } catch (error) {
-
         console.log(
             `❌ Could not load final project list: ${error.message}`
         );
 
-
-        stats.errors.push({
-
-            message:
-                error.message
-
+        addError(stats, {
+            message: error.message
         });
-
     }
 
-
-    if (
-        !Array.isArray(finalProjects)
-    ) {
-
+    if (!Array.isArray(finalProjects)) {
         finalProjects = [];
-
     }
 
-
-    // ========================================================
-    // FINAL ACCOUNT LIST
-    // ========================================================
+    finalProjects =
+        uniqueProjects(
+            finalProjects
+        );
 
     const finalAccounts =
         getNormalizedKnownAccounts();
 
-
-    // ========================================================
-    // FINAL COUNTS
-    // ========================================================
-
     const added =
         stats.addedKeys.size;
-
 
     const updated =
         stats.updatedKeys.size;
 
-
     const removed =
         stats.removedKeys.size;
-
 
     const newAccounts =
         Array.from(
             stats.newAccountNames
         );
 
+    const newProjects =
+        uniqueProjects(
+            stats.newProjects
+        );
 
-    // ========================================================
-    // RESULT
-    // ========================================================
+    const updatedProjects =
+        uniqueProjects(
+            stats.updatedProjects
+        );
+
+    const removedProjects =
+        uniqueProjects(
+            stats.removedProjects
+        );
 
     const result = {
-
         success:
             stats.errors.length === 0,
 
@@ -3224,6 +1924,12 @@ async function discoverAllGitProHubProjects() {
         projects:
             finalProjects,
 
+        newProjects,
+
+        updatedProjects,
+
+        removedProjects,
+
         errors:
             stats.errors,
 
@@ -3239,32 +1945,30 @@ async function discoverAllGitProHubProjects() {
         knownAccountsScanned:
             finalAccounts.length,
 
+        knownAccountsTotal:
+            finalAccounts.length,
+
         globalSearchSuccess:
-            global.success,
+            Boolean(global.success),
 
         knownAccountsSuccess:
-            known.success,
+            Boolean(known.success),
+
+        migration:
+
+            migration,
 
         completedAt:
             new Date().toISOString()
-
     };
 
-
-    // ========================================================
-    // LOG
-    // ========================================================
-
     console.log("");
-
     console.log(
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     );
-
     console.log(
         "✅ GitProHub discovery completed"
     );
-
     console.log(
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     );
@@ -3297,118 +2001,148 @@ async function discoverAllGitProHubProjects() {
         `⚠️ Errors          : ${result.errors.length}`
     );
 
-
-    if (
-        result.newAccounts.length > 0
-    ) {
-
+    if (result.newAccounts.length > 0) {
         console.log("");
-
         console.log(
             "👤 New GitHub accounts:"
         );
-
 
         for (
             const username
             of result.newAccounts
         ) {
-
             console.log(
                 `   ➕ ${username}`
             );
-
         }
-
     }
 
-
-    if (
-        result.errors.length > 0
-    ) {
-
+    if (result.newProjects.length > 0) {
         console.log("");
+        console.log(
+            "🆕 New GitProHub projects:"
+        );
 
+        for (
+            const project
+            of result.newProjects
+        ) {
+            const username =
+                project?.developer?.username ||
+                project?.github?.owner?.login ||
+                project?.owner ||
+                "unknown";
+
+            const repo =
+                project?.github?.name ||
+                project?.repo ||
+                "unknown";
+
+            console.log(
+                `   ➕ ${username}/${repo}`
+            );
+        }
+    }
+
+    if (result.updatedProjects.length > 0) {
+        console.log("");
+        console.log(
+            "🔄 Updated GitProHub projects:"
+        );
+
+        for (
+            const project
+            of result.updatedProjects
+        ) {
+            const username =
+                project?.developer?.username ||
+                project?.github?.owner?.login ||
+                project?.owner ||
+                "unknown";
+
+            const repo =
+                project?.github?.name ||
+                project?.repo ||
+                "unknown";
+
+            console.log(
+                `   🔄 ${username}/${repo}`
+            );
+        }
+    }
+
+    if (result.removedProjects.length > 0) {
+        console.log("");
+        console.log(
+            "🗑️ Removed GitProHub projects:"
+        );
+
+        for (
+            const project
+            of result.removedProjects
+        ) {
+            const username =
+                project?.developer?.username ||
+                project?.github?.owner?.login ||
+                project?.owner ||
+                "unknown";
+
+            const repo =
+                project?.github?.name ||
+                project?.repo ||
+                "unknown";
+
+            console.log(
+                `   🗑️ ${username}/${repo}`
+            );
+        }
+    }
+
+    if (result.errors.length > 0) {
+        console.log("");
         console.log(
             "⚠️ Discovery errors:"
         );
-
 
         for (
             const error
             of result.errors
         ) {
-
-            if (
-                typeof error === "string"
-            ) {
-
-                console.log(
-                    `   • ${error}`
-                );
-
-                continue;
-
-            }
-
-
             const owner =
                 error?.username
                     ? `${error.username}${error.repo ? `/${error.repo}` : ""}: `
                     : "";
 
-
             console.log(
                 `   • ${owner}${error?.message || JSON.stringify(error)}`
             );
-
         }
-
     }
-
 
     console.log(
         "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     );
-
     console.log("");
 
-
     return result;
-
 }
 
-
-// ============================================================
-// EXPORTS
-// ============================================================
-
 module.exports = {
-
     discoverAllGitProHubProjects,
-
     discoverNewGitProHubProjects,
-
     discoverKnownGitHubAccounts,
-
     scanGitHubAccount,
-
     saveDiscoveredProject,
-
     checkExistingProjects,
-
     registerKnownAccount,
-
     verifyGitHubAccount,
-
     checkAccountGitProHubProjects,
-
     getKnownGitHubAccounts,
-
     readKnownAccounts,
-
     writeKnownAccounts,
-
-    normalizeAccount
-
+    normalizeAccount,
+    getNormalizedKnownAccounts,
+    saveVerifiedAccount,
+    migrateKnownAccounts,
+    createDiscoveryStats
 };
