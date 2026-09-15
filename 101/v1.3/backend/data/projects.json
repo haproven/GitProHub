@@ -1,0 +1,441 @@
+[
+  {
+    "title": "GitProHub",
+    "description": "title: HaproID description: A verified digital identity and professional profile platform for developers, creators, and professionals.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "HaproID",
+      "url": "https://github.com/haproven/HaproID",
+      "description": "HaproID is a digital identity platform that allows everyone to create their own unique online profile. It's not just for students, but also suitable for job seekers, professionals, and creators.",
+      "stars": 1,
+      "forks": 0,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-04-26T05:14:16Z",
+      "updated_at": "2026-09-13T22:04:13Z",
+      "pushed_at": "2026-09-13T22:04:10Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/haproven/HaproID",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "b0f9632b9fc6c445b0744c8af39803968dfa2a7e",
+      "size": 420,
+      "url": "https://github.com/haproven/HaproID/blob/main/gitprohub.md"
+    },
+    "readme": "# HaproID – Free Professional Profile\n\n\n**HaproID**is a **digital identity platform** that allows everyone to create their own **unique online profile**. It's not just for students, but also suitable for **job seekers, professionals, and creators.**\n\n\n---\n\n## 🌐What is HaproID?\nHaproID is your **digital identity.** \nIt lets you showcase your professional and personal details in a single link.\n\n\n### These include:\n- Your name  \n- profile photo \n- Skills / Expertise  \n- Social Media Links (LinkedIn, Instagram, GitHub, YouTube etc.)  \n- Contact Details  \n- Resume / CV (optional)  \n- Projects / Portfolio  \n\n---\n---\n## 🎯 फायदे (Benefits)\n\n1. **One-link profile** – No need to share the link again and again.\n2. **SEO-friendly** – Easily visible in Google search.  \n3. **Verified & Professional** – trusted digital identity  \n4. **Free & Simple** – Prepare without website or coding knowledge. \n5. **All-in-one** –For students, job seekers, creators all.\n^. **Haproid_Name** –Pro-[first-name]-[serial-number] .\n\n---\n\n## 🛠️ How to create HaproID?\n1. [HaproID Create Link](https://haproid.netlify.app/)go to. \n2. Your **username** Pro-[first-name]-[serial-number]\n3. Fill profile details\n4. Share your link and increase your digital presence.\n---\n\n## 🔗 Example\n\nUnique HaproID URLs का format: Pro-[first-name]-[serial-number]\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:45.278Z",
+      "lastUpdatedAt": "2026-09-15T11:34:45.278Z",
+      "firstSeenAt": "2026-09-15T11:25:30.393Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: Haproven description: Indian technology community and creative team building hackathons, projects, events, and developer tools.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "haproven",
+      "url": "https://github.com/haproven/haproven",
+      "description": "HAPROVEN is a tech community focused on turning ideas into real-world projects.",
+      "stars": 8,
+      "forks": 11,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-04-25T13:12:11Z",
+      "updated_at": "2026-09-13T21:58:08Z",
+      "pushed_at": "2026-09-13T21:58:05Z",
+      "default_branch": "main",
+      "topics": [
+        "developer-tools",
+        "github-config",
+        "haproven",
+        "haproven-frame",
+        "haproven-framework",
+        "haproven-github",
+        "haproven-technologies",
+        "tech-community",
+        "web-framework"
+      ],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://avatars.githubusercontent.com/u/279256795?v=4",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "b393b5dede2fe989249832eaf8b7e57d5914af1d",
+      "size": 478,
+      "url": "https://github.com/haproven/haproven/blob/main/gitprohub.md"
+    },
+    "readme": "\n# 🚀 HAPROVEN — Tech Community\n\n<p align=\"center\">\n  <img\n    src=\"suggestions/susheel/main/Banner.jpeg\"\n    alt=\"Haproven Tech Community Banner\"\n    width=\"100%\">\n</p>\n\n<p align=\"center\">\n  <b>Hackathons • Projects • Events • Technology</b>\n</p>\n\n<p align=\"center\">\n  Turning ideas into real-world digital solutions through\n  <b>collaboration, creativity, and code.</b>\n</p>\n\n---\n\n\n\n\n\n## 🖼️ Haproven Frame\n\n<p align=\"center\">\n  <b>The People Behind Haproven</b>\n</p>\n\n<p align=\"center\">\n  Haproven Frame recognizes the developers, builders, and contributors\n  helping Haproven grow through open-source collaboration.\n</p>\n\n<!-- HAPROVEN-FRAME:START -->\n\n<p align=\"center\">\n\n<a href=\"https://github.com/haproven\" title=\"haproven — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/279256795?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"haproven — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/codersusheel\" title=\"codersusheel — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/195109254?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"codersusheel — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/coder-sk-2026\" title=\"coder-sk-2026 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/310669286?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"coder-sk-2026 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/susheel026\" title=\"susheel026 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/199501106?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"susheel026 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/deepakyadav1425\" title=\"deepakyadav1425 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/321023452?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"deepakyadav1425 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/Kushagra1001\" title=\"Kushagra1001 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/146299482?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"Kushagra1001 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/shivamrai26\" title=\"shivamrai26 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/285886682?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"shivamrai26 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/surajpaniyara102-web\" title=\"surajpaniyara102-web — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/240368312?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"surajpaniyara102-web — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/Swalih-05\" title=\"Swalih-05 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/201027180?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"Swalih-05 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/vijaylaxmi88582-art\" title=\"vijaylaxmi88582-art — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/263568971?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"vijaylaxmi88582-art — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/amansingh1182006\" title=\"amansingh1182006 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/205407093?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"amansingh1182006 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/rajputhimanshusingh01\" title=\"rajputhimanshusingh01 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/224974472?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"rajputhimanshusingh01 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/udaykumar25398-droid\" title=\"udaykumar25398-droid — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/297070626?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"udaykumar25398-droid — Haproven Contributor\">\n</a>\n\n</p>\n\n<!-- HAPROVEN-FRAME:END -->\n\n<p align=\"center\">\n  <sub>\n    👆 Click a profile photo to visit that contributor's GitHub profile.\n  </sub>\n</p>\n\n<p align=\"center\">\n  <a href=\"https://github.com/haproven/haproven/tree/main/suggestions\">\n    🤝 Share Your Idea →\n  </a>\n</p>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---\n\n\n## 💡 About HAPROVEN\n\n**HAPROVEN** is a technology community for developers, students, creators, and technology enthusiasts.\n\nWe bring people together to **learn, build, collaborate, and innovate** through real-world projects, hackathons, events, open-source development, and technology initiatives.\n\n### 🎯 Our Focus\n\n* 🏆 Hackathons\n* 💻 Real-world Projects\n* 🎯 Technology Events\n* 🌱 Open Source\n* 🤝 Developer Collaboration\n* 🚀 Learning & Innovation\n\n---\n\n## 🌐 HAPROVEN Ecosystem\n\n**HaproID** • **HaproShow** • **HaproLearn** • **HaproAPI** • **HaproFun**\n\nOur ecosystem is built to help developers **create profiles, showcase projects, learn technologies, explore developer tools, and participate in community activities.**\n\n---\n\n## 💭 Have an Idea for HAPROVEN?\n\nWe want to hear from you.\n\nIf you have an idea, improvement, event concept, project suggestion, feature request, or anything related to Haproven, you can share it with us.\n\n📁 **Suggestions folder:** [`suggestions/`](./suggestions/)\n\nYou can suggest things like:\n\n* 💡 New Haproven features\n* 🛠️ Website improvements\n* 🏆 Hackathon ideas\n* 🎯 Event ideas\n* 💻 Project ideas\n* 🌐 New ecosystem services\n* 🤝 Community activities\n* 📚 Learning initiatives\n* 🎨 UI/UX improvements\n* 🚀 Any useful idea related to Haproven\n\n**No idea is too small if it can help the community grow.**\n\n---\n\n## 🪪 Want Your Profile in the HAPROVEN Community?\n\nIf you are a developer, contributor, builder, or active community member and want your GitHub profile to become part of the Haproven community, we'd love to see you contribute.\n\nStart by:\n\n1. ⭐ Exploring Haproven\n2. 💻 Contributing to a project\n3. 💡 Sharing a useful suggestion\n4. 🤝 Participating in community activities\n5. 🚀 Building something with Haproven\n\nYour contributions help the community grow — and your profile can become part of that journey.\n\n---\n\n## 🤝 How You Can Contribute\n\nYou don't need to be an expert.\n\nYou can contribute through:\n\n**Code** → Build & improve projects\n**Ideas** → Suggest useful improvements\n**Design** → Improve UI/UX\n**Documentation** → Improve guides & information\n**Events** → Help organize community activities\n**Feedback** → Tell us what can be better\n\nEvery useful contribution matters.\n\n---\n\n## 🔐 Suggestions & Privacy\n\nThe `suggestions/` folder is intended for **private suggestions and internal discussion**.\n\nPlease do **not** submit:\n\n* Passwords\n* API keys\n* Personal documents\n* Private credentials\n* Sensitive personal information\n\nOnly share information that is appropriate for the Haproven team to review.\n\n---\n\n## 🔗 Connect With HAPROVEN\n\n<p align=\"center\">\n\n<a href=\"https://haproven.netlify.app/\">🌐 Website</a> • <a href=\"https://github.com/haproven/\">💻 GitHub</a> • <a href=\"https://instagram.com/haproven\">📸 Instagram</a> • <a href=\"https://youtube.com/@Haproven\">▶️ YouTube</a>\n\n</p>\n\n---\n\n<p align=\"center\">\n\n### 🚀 HAPROVEN\n\n<b>Where Ideas Get Proven.</b>\n\n<br>\n\n<i>Build • Learn • Collaborate • Innovate</i>\n\n</p>\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:47.263Z",
+      "lastUpdatedAt": "2026-09-15T11:34:47.263Z",
+      "firstSeenAt": "2026-09-15T11:25:32.280Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: Vishnupur-SMR description: A Hindi and Maithili web portal for Vishnupur, Sitamarhi, providing local information, important places, community updates, and useful resources.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "vishnupur-smr",
+      "url": "https://github.com/haproven/vishnupur-smr",
+      "description": "Vishnupur Sitamarhi Bihar 843324 – village information, history, tourist places, local events, schools, and community updates.",
+      "stars": 1,
+      "forks": 1,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-06-16T10:49:20Z",
+      "updated_at": "2026-09-13T23:59:35Z",
+      "pushed_at": "2026-09-13T23:59:30Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/haproven/vishnupur-smr",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "85d4be9adf53ab79f2083141a64ccc4d448252ea",
+      "size": 507,
+      "url": "https://github.com/haproven/vishnupur-smr/blob/main/gitprohub.md"
+    },
+    "readme": "# vishnupur SMR (Sitamarhi)\n\n**vishnupur (bishnupur) SMR** विष्णुपुर, सीतामढ़ी, बिहार (843324) के लिए बनाया गया एक ओपन-सोर्स वेब एप्लिकेशन है। इसका उद्देश्य गाँव की डिजिटल पहचान बनाना और गाँव से जुड़ी महत्वपूर्ण जानकारी को एक ही स्थान पर उपलब्ध कराना है।\n\nइस वेब-ऐप को इंस्टॉल करने के बाद उपयोगकर्ता गाँव से संबंधित उपयोगी और समय-समय पर अपडेट होने वाली जानकारी आसानी से देख सकेंगे।\n\n##  विष्णुपुर SMR क्या है?\n\nविष्णुपुर SMR एक सामुदायिक डिजिटल सूचना मंच (Digital Information Platform) है, जिसका उद्देश्य गाँव के इतिहास, संस्कृति, विकास और सामुदायिक गतिविधियों को सुरक्षित रखना तथा सभी तक पहुँचाना है।\n\nयह केवल एक वेबसाइट नहीं, बल्कि विष्णुपुर गाँव का डिजिटल रिकॉर्ड तैयार करने का एक दीर्घकालिक प्रयास है।\n\n##  इसमें क्या-क्या जानकारी मिलेगी?\n\n* 🏛️ गाँव का इतिहास और विरासत\n* 🗺️ गाँव की सामान्य एवं प्रशासनिक जानकारी\n* 🏫 स्कूलों और शैक्षणिक संस्थानों की जानकारी\n* 🛕 मंदिरों और धार्मिक स्थलों की जानकारी\n* 📍 महत्वपूर्ण एवं पर्यटन स्थलों की जानकारी\n* 🏪 गाँव की दुकानों और स्थानीय व्यवसायों की जानकारी\n* 👨‍💼 वर्तमान मुखिया एवं अन्य जनप्रतिनिधियों/अधिकारियों की जानकारी\n* 📞 आवश्यक संपर्क विवरण\n* 📰 गाँव से जुड़े समाचार और अपडेट\n* 🎉 दुर्गा पूजा, सरस्वती पूजा, छठ पूजा तथा अन्य स्थानीय त्योहारों की जानकारी\n* 🏫 स्कूल कार्यक्रमों और सामुदायिक गतिविधियों का विवरण\n* 📅 आगामी कार्यक्रमों की पूरी जानकारी\n* 💰 कार्यक्रमों में प्राप्त चंदा और हुए खर्च का विवरण (यदि आयोजकों द्वारा सार्वजनिक किया जाए)\n* 📸 गाँव की तस्वीरें, यादें और ऐतिहासिक रिकॉर्ड\n* 🚧 गाँव में होने वाले विकास कार्यों और भविष्य की योजनाओं की जानकारी\n* 💻 समुदाय द्वारा ओपन-सोर्स योगदान की सुविधा\n\n##  हमारा उद्देश्य\n\nहमारा लक्ष्य एक ऐसा विश्वसनीय डिजिटल मंच तैयार करना है, जहाँ विष्णुपुर का प्रत्येक निवासी गाँव से जुड़ी सही और उपयोगी जानकारी प्राप्त कर सके।\n\nसाथ ही, सामुदायिक कार्यक्रमों, दान राशि और खर्च से संबंधित जानकारी को पारदर्शी तरीके से प्रस्तुत कर गाँव में जवाबदेही और विश्वास को बढ़ावा देना भी इस परियोजना का उद्देश्य है।\n\n## 🤝 योगदान करें\n\nयह एक ओपन-सोर्स प्रोजेक्ट है। यदि आप इस परियोजना में योगदान देना चाहते हैं, तो आप:\n\n* नई जानकारी साझा कर सकते हैं,\n* पुरानी या गलत जानकारी को सुधार सकते हैं,\n* कोड में सुधार कर सकते हैं,\n* नए सुझाव दे सकते हैं,\n* तस्वीरें और ऐतिहासिक जानकारी उपलब्ध करा सकते हैं।\n\nआपका छोटा-सा योगदान भी इस मंच को और बेहतर बनाने में मदद करेगा।\n\n## 🌐 वेबसाइट\n\nhttps://vishnupursmr.netlify.app\n\n\n### 👉 Social Media / Community Hub\n🔗 https://instagram.com/vishnupursmr \n\n🔗 https://facebook.com/vishnupursmr \n\n---\n\n## विष्णुपुर SMR\n\n**\"विष्णुपुर गाँव की डिजिटल पहचान\"**\n\n**विरासत को संजोना • पारदर्शिता को बढ़ावा देना • समुदाय को एकजुट करना**\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:39.468Z",
+      "lastUpdatedAt": "2026-09-15T11:34:39.468Z",
+      "firstSeenAt": "2026-09-15T11:25:24.501Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: HaproShow description: A web-based platform by Haproven for showcasing projects, creative work, and digital content in an interactive and simple way.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "haproShow",
+      "url": "https://github.com/haproven/haproShow",
+      "description": "A project showcase platform by Haproven to discover, share, and showcase innovative projects.",
+      "stars": 0,
+      "forks": 0,
+      "language": null,
+      "license": null,
+      "created_at": "2026-08-12T10:16:19Z",
+      "updated_at": "2026-09-13T23:57:58Z",
+      "pushed_at": "2026-09-13T23:57:55Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/haproven/haproShow",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "062ef9f1ab3e361505d3d97e72a30341fc3fb0dd",
+      "size": 443,
+      "url": "https://github.com/haproven/haproShow/blob/main/gitprohub.md"
+    },
+    "readme": "# 🚀 HaproShow\n\n**HaproShow** is a project showcase platform by **Haproven** where developers, students, and creators can showcase, discover, and share their projects.\n\n> **Show your project. Share your ideas. Get discovered.**\n\n---\n\n## ✨ About HaproShow\n\nHaproShow is built to give projects a dedicated space on the web.\n\nCreators can present their projects with important details such as:\n\n* 📌 Project name and description\n* 👤 Project creator\n* 🛠️ Technologies used\n* 🖼️ Project screenshots\n* 🔗 Live demo\n* 💻 Source code / GitHub repository\n* 🏷️ Project category\n* 📅 Project information\n\nThe goal is to make it easier for people to **discover projects, explore ideas, and connect with creators**.\n\n---\n\n## 🌐 Haproven Ecosystem\n\nHaproShow is part of the **Haproven** ecosystem.\n\n| Platform          | Purpose                          |\n| ----------------- | -------------------------------- |\n| 🚀 **Haproven**   | Technology & developer community |\n| 👤 **HaproID**    | Developer and creator profiles   |\n| 🎨 **HaproShow**  | Project showcase                 |\n| 📚 **HaproLearn** | Learning & educational resources |\n| 🔌 **HaproAPI**   | APIs and developer services      |\n| 🎮 **HaproFun**   | Fun & interactive projects       |\n\n---\n\n## 🎯 Goals\n\nHaproShow aims to:\n\n* Help creators showcase their work\n* Make projects easier to discover\n* Encourage students and developers to build\n* Give projects a professional online presence\n* Connect creators with the wider tech community\n* Promote innovation and real-world projects\n\n---\n\n## 🛠️ Features\n\n### Project Showcase\n\nPresent projects with a clean and structured project page.\n\n### Creator Profiles\n\nConnect projects with their creators through HaproID.\n\n### Project Discovery\n\nBrowse and discover projects created by members of the community.\n\n### Live Demo\n\nProvide a direct link to try the project.\n\n### Source Code\n\nLink projects to their GitHub repositories.\n\n### Categories & Technologies\n\nOrganize projects by category and technology.\n\n---\n\n## 🏗️ Project Structure\n\n```text\nhaproShow/\n├── assets/\n├── css/\n├── js/\n├── images/\n├── index.html\n├── README.md\n└── ...\n```\n\n> The project structure may change as HaproShow evolves.\n\n---\n\n## 🚀 Getting Started\n\nClone the repository:\n\n```bash\ngit clone https://github.com/haproven/haproShow.git\n```\n\nGo to the project directory:\n\n```bash\ncd haproShow\n```\n\nThen open the project in your preferred code editor and run it using your local development environment.\n\n---\n\n## 🤝 Contributing\n\nContributions are welcome!\n\nIf you have an idea, improvement, bug fix, or feature proposal:\n\n1. Fork the repository\n2. Create a new branch\n3. Make your changes\n4. Commit your changes\n5. Push the branch\n6. Open a Pull Request\n\n---\n\n## 📌 Future Plans\n\nSome planned improvements may include:\n\n* 🔎 Advanced project search\n* 🏷️ Technology and category filters\n* ⭐ Featured projects\n* ❤️ Project likes\n* 📊 Project statistics\n* 👤 Creator profiles\n* 🔗 HaproID integration\n* 📱 Improved mobile experience\n* 🌐 Public project pages\n\n---\n\n## 📄 License\n\nThis project is developed and maintained by **Haproven**.\n\n---\n\n## 🌟 Haproven\n\n**HaproShow** is a part of the Haproven ecosystem, built to help people **transform ideas into real-world solutions**.\n\n**Show your work. Share your ideas. Build something meaningful.**\n\n---\n\n### 🔗 Links\n\n* **Haproven:** https://haproven.netlify.app\n* **HaproShow:** https://github.com/haproven/haproShow\n\n---\n\n<p align=\"center\">\n  Made with ❤️ by <strong>Haproven</strong>\n</p>\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:41.422Z",
+      "lastUpdatedAt": "2026-09-15T11:34:41.422Z",
+      "firstSeenAt": "2026-09-15T11:25:26.480Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: HaproSel description: A simple and lightweight web project built by Haproven for showcasing and exploring a practical web-based solution.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "haprosel",
+      "url": "https://github.com/haproven/haprosel",
+      "description": null,
+      "stars": 0,
+      "forks": 0,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-05-24T14:11:55Z",
+      "updated_at": "2026-09-13T23:25:06Z",
+      "pushed_at": "2026-09-13T23:25:03Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/haproven/haprosel",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "b4029a71881c03588593f7fa8e92dd81562ff0ad",
+      "size": 395,
+      "url": "https://github.com/haproven/haprosel/blob/main/gitprohub.md"
+    },
+    "readme": "﻿# haprosel\r\n⌢栠灡潲敳≬ഠ�",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:43.359Z",
+      "lastUpdatedAt": "2026-09-15T11:34:43.359Z",
+      "firstSeenAt": "2026-09-15T11:25:28.432Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: HaproGlob description: A web-based project by Codersusheel for creating a simple and useful global platform with a clean and accessible user experience.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "susheel kumar",
+      "username": "codersusheel",
+      "avatar": "https://avatars.githubusercontent.com/u/195109254?v=4",
+      "github": "https://github.com/codersusheel",
+      "bio": "Full Stack Developer | Founder of Haproven Ecosystem | Web Apps, APIs, SEO Optimized & Scalable Solutions",
+      "followers": 11,
+      "public_repos": 28
+    },
+    "live": "",
+    "github": {
+      "name": "haproglob",
+      "url": "https://github.com/codersusheel/haproglob",
+      "description": "Haproven Global",
+      "stars": 0,
+      "forks": 0,
+      "language": null,
+      "license": null,
+      "created_at": "2026-08-24T20:04:40Z",
+      "updated_at": "2026-09-14T00:36:07Z",
+      "pushed_at": "2026-09-14T00:36:03Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/codersusheel/haproglob",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "e8724d3350de2fac98c20d134103aabe0dd82550",
+      "size": 421,
+      "url": "https://github.com/codersusheel/haproglob/blob/main/gitprohub.md"
+    },
+    "readme": "# haproglob\nHaproven Global\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:55.111Z",
+      "lastUpdatedAt": "2026-09-15T11:34:55.111Z",
+      "firstSeenAt": "2026-09-15T11:25:40.182Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: Haproven Base description: A web-based base platform by Haproven providing a structured foundation for web projects, pages, assets, and reusable digital components.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "susheel kumar",
+      "username": "codersusheel",
+      "avatar": "https://avatars.githubusercontent.com/u/195109254?v=4",
+      "github": "https://github.com/codersusheel",
+      "bio": "Full Stack Developer | Founder of Haproven Ecosystem | Web Apps, APIs, SEO Optimized & Scalable Solutions",
+      "followers": 11,
+      "public_repos": 28
+    },
+    "live": "",
+    "github": {
+      "name": "haprobase",
+      "url": "https://github.com/codersusheel/haprobase",
+      "description": "Haproven Base",
+      "stars": 0,
+      "forks": 1,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-08-24T20:05:23Z",
+      "updated_at": "2026-09-13T23:26:32Z",
+      "pushed_at": "2026-09-13T23:26:28Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/codersusheel/haprobase",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "a32f0dd56bb9251563e8fddd668cdee3418a460b",
+      "size": 454,
+      "url": "https://github.com/codersusheel/haprobase/blob/main/gitprohub.md"
+    },
+    "readme": "",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:57.026Z",
+      "lastUpdatedAt": "2026-09-15T11:34:57.026Z",
+      "firstSeenAt": "2026-09-15T11:25:42.292Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: Codersusheel description: Personal developer profile and open-source projects by Codersusheel.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "susheel kumar",
+      "username": "codersusheel",
+      "avatar": "https://avatars.githubusercontent.com/u/195109254?v=4",
+      "github": "https://github.com/codersusheel",
+      "bio": "Full Stack Developer | Founder of Haproven Ecosystem | Web Apps, APIs, SEO Optimized & Scalable Solutions",
+      "followers": 11,
+      "public_repos": 28
+    },
+    "live": "",
+    "github": {
+      "name": "Codersusheel",
+      "url": "https://github.com/codersusheel/Codersusheel",
+      "description": "Founder of Haproven | Software Engineer | Top 40 @ HackWithDelhi | 150+ Days GitHub Contribution Streak | Crafting Scalable Digital Solutions & Tech Communities",
+      "stars": 2,
+      "forks": 1,
+      "language": "JavaScript",
+      "license": null,
+      "created_at": "2025-08-09T18:25:17Z",
+      "updated_at": "2026-09-13T21:53:56Z",
+      "pushed_at": "2026-09-13T21:53:52Z",
+      "default_branch": "main",
+      "topics": [
+        "c",
+        "codersusheel",
+        "css",
+        "developer",
+        "full-stack",
+        "fullstack-development",
+        "html",
+        "javascript",
+        "json",
+        "php",
+        "profile",
+        "susheelcoder",
+        "webapp",
+        "webdev"
+      ],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/codersusheel/Codersusheel",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "2f170c0c9cda31d92bdf29e4aa374e8a763b5243",
+      "size": 363,
+      "url": "https://github.com/codersusheel/Codersusheel/blob/main/gitprohub.md"
+    },
+    "readme": "# 👋 Hi, I'm Susheel Kumar (Codersusheel)\n\n**Founder & CEO at Haproven Tech · Full Stack Developer · Open Source Builder**\n\nI’m **Susheel Kumar**, known online as **Codersusheel** — a developer, entrepreneur, and technology enthusiast focused on building meaningful digital products and developer-focused solutions.\n\nAs the **Founder & CEO of Haproven Tech**, I focus on turning ideas into practical products, platforms, and tools that create value for developers, learners, and the wider technology community.\n\n### 🚀 What I Do\n\n<p>\n  <strong>Haproven Tech</strong> ·\n  <strong>Product Development</strong> ·\n  <strong>Web Applications</strong> ·\n  <strong>Open Source</strong> ·\n  <strong>SEO & Technology</strong> ·\n  <strong>Developer Community</strong>\n</p>\n\nI build and lead **Haproven Tech**, develop modern digital products and web applications, work on SEO and technology, contribute to open-source projects, and create tools and platforms for the developer community.\n\n### 🌐 Haproven Tech\n\n**Haproven Tech** is a technology ecosystem focused on **developer tools, learning, digital products, open-source projects, and community-driven innovation**.\n\n### 🔗 Connect With Me\n\n<p align=\"center\">\n  <a href=\"https://github.com/Codersusheel\"><strong>GitHub</strong></a>\n  &nbsp;•&nbsp;\n  <a href=\"https://Codersusheel.netlify.app\"><strong>Portfolio</strong></a>\n  &nbsp;•&nbsp;\n  <a href=\"https://www.linkedin.com\"><strong>LinkedIn</strong></a>\n  &nbsp;•&nbsp;\n  <a href=\"https://haproid.netlify.app/user/pro-susheel-01/\"><strong>Pro-susheel-01</strong></a>\n</p>\n\n---\n\n\n<p align=\"center\">\n  <b>Build with Purpose • Lead with Vision • Grow Together 🚀</b>\n</p>\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:34:59.998Z",
+      "lastUpdatedAt": "2026-09-15T11:34:59.998Z",
+      "firstSeenAt": "2026-09-15T11:25:44.253Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: Vijaylaxmi Prajapti description: i am Vijaylaxmi Mern stack (Full Stack developer)",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "Vijay Laxmi",
+      "username": "vijaylaxmi88582-art",
+      "avatar": "https://avatars.githubusercontent.com/u/263568971?v=4",
+      "github": "https://github.com/vijaylaxmi88582-art",
+      "bio": "MERN Full Stack Developer\r\n Experienced in building full-stack web applications using MongoDB, Express.js, React.js, and Node.js\r\n Continuously learning and",
+      "followers": 1,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "vijaylaxmi88582-art",
+      "url": "https://github.com/vijaylaxmi88582-art/vijaylaxmi88582-art",
+      "description": null,
+      "stars": 0,
+      "forks": 1,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-09-11T12:54:00Z",
+      "updated_at": "2026-09-14T13:50:27Z",
+      "pushed_at": "2026-09-14T13:50:07Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/vijaylaxmi88582-art/vijaylaxmi88582-art",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "a81905d6a4484c29f8fe6053570b2a983cae669c",
+      "size": 402,
+      "url": "https://github.com/vijaylaxmi88582-art/vijaylaxmi88582-art/blob/main/gitprohub.md"
+    },
+    "readme": "# 👋 Hi, I'm Vijay Laxmi   ( [**Pro-vijaylaxmi-01**](https://haproid.netlify.app/user/pro-vijaylaxmi-01/) )\n \n**MERN Full Stack Developer · Computer Science Engineer · Open to Opportunities**\n\nI’m **Vijay Laxmi**, a MERN Full Stack Developer from **Maharajganj, Uttar Pradesh, India**. I have practical experience in full-stack web development and enjoy building useful, scalable, and real-world web applications.\n\n### 🚀 What I Do\n\n**Full Stack Development** · **Web Applications** · **MERN Development** · **API Development** · **Problem Solving**\n\nI focus on developing modern web applications and turning ideas into practical digital solutions through full-stack development.\n\n### 💼 Professional Experience\n\n**DigiCoder Technologies** · **MERN Stack Developer Intern**\n\nCompleted a **6-month internship**, gaining practical experience in full-stack web development and real-world application development.\n\n### 🔗 Connect With Me\n\n[**Profile**](https://portfolio-indol-six-d3wc0nm9ta.vercel.app/) .  [**HaproID Profile**](https://haproid.netlify.app/user/pro-vijaylaxmi-01/) · [**Email**](mailto:vijaylaxmi88582@gmail.com)   [**Linkedin Profile**](https://www.linkedin.com/in/vijaylaxmi-prajapti-196602335/) . [**Github**](https://github.com/vijaylaxmi88582-art)   \n\n\n---\n\n*© 2026 Vijay Laxmi · HaproID: Pro-vijaylaxmi-01*\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T11:35:23.907Z",
+      "lastUpdatedAt": "2026-09-15T11:35:23.907Z",
+      "firstSeenAt": "2026-09-15T11:26:06.875Z"
+    }
+  }
+]

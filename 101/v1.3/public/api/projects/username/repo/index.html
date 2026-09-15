@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitProHub Project</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fafc,
+                    #eef2ff
+                );
+            color: #111827;
+            padding: 24px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1050px;
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        button {
+            border: 0;
+            outline: none;
+            cursor: pointer;
+            background: #111827;
+            color: #ffffff;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .api-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .api-url {
+            font-size: 13px;
+            opacity: 0.85;
+            word-break: break-all;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #f59e0b;
+        }
+
+        .status.connected .status-dot {
+            background: #22c55e;
+        }
+
+        .status.error .status-dot {
+            background: #ef4444;
+        }
+
+        .project {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 26px;
+            overflow: hidden;
+            box-shadow:
+                0 20px 55px rgba(15, 23, 42, 0.08);
+        }
+
+        .project-header {
+            padding: 34px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .project-title-row {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .project-name {
+            font-size: clamp(30px, 6vw, 48px);
+            line-height: 1.05;
+            letter-spacing: -1.5px;
+            font-weight: 850;
+            word-break: break-word;
+        }
+
+        .project-description {
+            color: #64748b;
+            margin-top: 14px;
+            line-height: 1.7;
+            max-width: 780px;
+            font-size: 15px;
+        }
+
+        .badge {
+            flex-shrink: 0;
+            padding: 8px 13px;
+            border-radius: 999px;
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 800;
+            border: 1px solid #e2e8f0;
+        }
+
+        .content {
+            padding: 30px 34px 36px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .info-card {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 18px;
+            padding: 20px;
+        }
+
+        .label {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .value {
+            color: #111827;
+            font-size: 15px;
+            font-weight: 700;
+            word-break: break-word;
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+            padding: 11px 17px;
+            border-radius: 12px;
+            background: #111827;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 750;
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        .link:hover {
+            transform: translateY(-2px);
+            opacity: 0.9;
+        }
+
+        .link.secondary {
+            background: #f1f5f9;
+            color: #111827;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sync {
+            margin-top: 25px;
+            padding-top: 22px;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .sync-title {
+            font-size: 15px;
+            font-weight: 800;
+            margin-bottom: 14px;
+        }
+
+        .sync-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .sync-item {
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 15px;
+        }
+
+        .sync-item .label {
+            margin-bottom: 6px;
+        }
+
+        .sync-item .value {
+            font-size: 12px;
+        }
+
+        .message {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 22px;
+            padding: 45px 20px;
+            text-align: center;
+            color: #64748b;
+            box-shadow:
+                0 15px 40px rgba(15, 23, 42, 0.06);
+        }
+
+        .message.error {
+            color: #dc2626;
+        }
+
+        footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .project-header {
+                padding: 25px 20px;
+            }
+
+            .content {
+                padding: 22px 20px 28px;
+            }
+
+            .project-title-row {
+                flex-direction: column;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .sync-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .api-bar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="topbar">
+            <div class="brand">
+                GitProHub
+                <span> / Project</span>
+            </div>
+
+            <button
+                id="refreshButton"
+                type="button"
+            >
+                Refresh
+            </button>
+        </div>
+
+        <div class="api-bar">
+
+            <div
+                class="api-url"
+                id="apiUrl"
+            >
+                Loading API...
+            </div>
+
+            <div
+                class="status"
+                id="apiStatus"
+            >
+                <span class="status-dot"></span>
+
+                <span id="statusText">
+                    Connecting...
+                </span>
+            </div>
+
+        </div>
+
+        <section id="projectContainer">
+
+            <div class="message">
+                Loading project...
+            </div>
+
+        </section>
+
+        <footer>
+            GitProHub · Powered by Haproven
+        </footer>
+
+    </main>
+
+    <script>
+        const API_BASE =
+            "http://127.0.0.1:3000/api/project";
+
+        const projectContainer =
+            document.getElementById(
+                "projectContainer"
+            );
+
+        const refreshButton =
+            document.getElementById(
+                "refreshButton"
+            );
+
+        const apiUrl =
+            document.getElementById(
+                "apiUrl"
+            );
+
+        const apiStatus =
+            document.getElementById(
+                "apiStatus"
+            );
+
+        const statusText =
+            document.getElementById(
+                "statusText"
+            );
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        const username =
+            params.get("username");
+
+        const repo =
+            params.get("repo");
+
+        function setStatus(
+            type,
+            message
+        ) {
+            apiStatus.classList.remove(
+                "connected",
+                "error"
+            );
+
+            if (type) {
+                apiStatus.classList.add(
+                    type
+                );
+            }
+
+            statusText.textContent =
+                message;
+        }
+
+        function escapeHtml(value) {
+            return String(
+                value ?? ""
+            )
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+        }
+
+        function formatDate(value) {
+            if (!value) {
+                return "Not available";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return escapeHtml(value);
+            }
+
+            return escapeHtml(
+                date.toLocaleString(
+                    "en-IN",
+                    {
+                        dateStyle: "medium",
+                        timeStyle: "medium"
+                    }
+                )
+            );
+        }
+
+        function safeUrl(value) {
+            if (!value) {
+                return null;
+            }
+
+            try {
+                const url =
+                    new URL(value);
+
+                if (
+                    url.protocol === "http:" ||
+                    url.protocol === "https:"
+                ) {
+                    return url.href;
+                }
+
+                return null;
+            } catch {
+                return null;
+            }
+        }
+
+        function getProjectName(project) {
+            return (
+                project?.name ||
+                project?.title ||
+                project?.github?.name ||
+                project?.repo ||
+                project?.repository?.name ||
+                repo ||
+                "GitProHub Project"
+            );
+        }
+
+        function getDescription(project) {
+            return (
+                project?.description ||
+                project?.summary ||
+                project?.github?.description ||
+                "No project description available."
+            );
+        }
+
+        function getUsername(project) {
+            return (
+                project?.developer?.username ||
+                project?.github?.owner?.login ||
+                project?.owner?.login ||
+                project?.username ||
+                username ||
+                "Unknown"
+            );
+        }
+
+        function getRepository(project) {
+            return (
+                project?.github?.name ||
+                project?.repo ||
+                project?.repository?.name ||
+                repo ||
+                "Unknown"
+            );
+        }
+
+        function getLanguage(project) {
+            return (
+                project?.github?.language ||
+                project?.language ||
+                "Not specified"
+            );
+        }
+
+        function getStars(project) {
+            return (
+                project?.github?.stargazers_count ??
+                project?.stars ??
+                project?.github?.stars ??
+                0
+            );
+        }
+
+        function getForks(project) {
+            return (
+                project?.github?.forks_count ??
+                project?.forks ??
+                project?.github?.forks ??
+                0
+            );
+        }
+
+        function getLiveUrl(project) {
+            return (
+                safeUrl(
+                    project?.liveUrl
+                ) ||
+                safeUrl(
+                    project?.live
+                ) ||
+                safeUrl(
+                    project?.website
+                ) ||
+                safeUrl(
+                    project?.demo
+                ) ||
+                safeUrl(
+                    project?.links?.live
+                ) ||
+                safeUrl(
+                    project?.urls?.live
+                )
+            );
+        }
+
+        function getGithubUrl(project) {
+            return (
+                safeUrl(
+                    project?.github?.html_url
+                ) ||
+                safeUrl(
+                    project?.githubUrl
+                ) ||
+                safeUrl(
+                    project?.repositoryUrl
+                ) ||
+                `https://github.com/${encodeURIComponent(
+                    getUsername(project)
+                )}/${encodeURIComponent(
+                    getRepository(project)
+                )}`
+            );
+        }
+
+        function createProject(project) {
+            const name =
+                escapeHtml(
+                    getProjectName(project)
+                );
+
+            const description =
+                escapeHtml(
+                    getDescription(project)
+                );
+
+            const developer =
+                escapeHtml(
+                    getUsername(project)
+                );
+
+            const repository =
+                escapeHtml(
+                    getRepository(project)
+                );
+
+            const language =
+                escapeHtml(
+                    getLanguage(project)
+                );
+
+            const stars =
+                escapeHtml(
+                    getStars(project)
+                );
+
+            const forks =
+                escapeHtml(
+                    getForks(project)
+                );
+
+            const liveUrl =
+                getLiveUrl(project);
+
+            const githubUrl =
+                getGithubUrl(project);
+
+            const sync =
+                project?.sync || {};
+
+            const liveButton =
+                liveUrl
+                    ? `
+                        <a
+                            class="link"
+                            href="${escapeHtml(liveUrl)}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Live Project
+                        </a>
+                    `
+                    : "";
+
+            return `
+                <article class="project">
+
+                    <header class="project-header">
+
+                        <div class="project-title-row">
+
+                            <div>
+                                <h1 class="project-name">
+                                    ${name}
+                                </h1>
+
+                                <p class="project-description">
+                                    ${description}
+                                </p>
+                            </div>
+
+                            <div class="badge">
+                                GitProHub
+                            </div>
+
+                        </div>
+
+                    </header>
+
+                    <div class="content">
+
+                        <div class="grid">
+
+                            <div class="info-card">
+                                <div class="label">
+                                    Developer
+                                </div>
+
+                                <div class="value">
+                                    ${developer}
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="label">
+                                    Repository
+                                </div>
+
+                                <div class="value">
+                                    ${repository}
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="label">
+                                    Language
+                                </div>
+
+                                <div class="value">
+                                    ${language}
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="label">
+                                    Stars
+                                </div>
+
+                                <div class="value">
+                                    ${stars}
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="label">
+                                    Forks
+                                </div>
+
+                                <div class="value">
+                                    ${forks}
+                                </div>
+                            </div>
+
+                            <div class="info-card">
+                                <div class="label">
+                                    Project Key
+                                </div>
+
+                                <div class="value">
+                                    ${escapeHtml(
+                                        `${getUsername(project)}/${getRepository(project)}`
+                                    )}
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="links">
+
+                            ${liveButton}
+
+                            <a
+                                class="link secondary"
+                                href="${escapeHtml(githubUrl)}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                GitHub Repository
+                            </a>
+
+                        </div>
+
+                        <div class="sync">
+
+                            <div class="sync-title">
+                                Synchronization
+                            </div>
+
+                            <div class="sync-grid">
+
+                                <div class="sync-item">
+
+                                    <div class="label">
+                                        First Seen
+                                    </div>
+
+                                    <div class="value">
+                                        ${formatDate(
+                                            sync.firstSeenAt
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                <div class="sync-item">
+
+                                    <div class="label">
+                                        Last Checked
+                                    </div>
+
+                                    <div class="value">
+                                        ${formatDate(
+                                            sync.lastCheckedAt
+                                        )}
+                                    </div>
+
+                                </div>
+
+                                <div class="sync-item">
+
+                                    <div class="label">
+                                        Last Updated
+                                    </div>
+
+                                    <div class="value">
+                                        ${formatDate(
+                                            sync.lastUpdatedAt
+                                        )}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </article>
+            `;
+        }
+
+        async function loadProject() {
+            if (
+                !username ||
+                !repo
+            ) {
+                apiUrl.textContent =
+                    "Project parameters missing";
+
+                setStatus(
+                    "error",
+                    "Invalid project URL"
+                );
+
+                projectContainer.innerHTML = `
+                    <div class="message error">
+                        Username and repository are required.
+                        <br><br>
+                        Example:
+                        <br>
+                        ?username=codersusheel&repo=haprocard
+                    </div>
+                `;
+
+                return;
+            }
+
+            const endpoint =
+                `${API_BASE}/${encodeURIComponent(username)}/${encodeURIComponent(repo)}`;
+
+            apiUrl.textContent =
+                endpoint;
+
+            refreshButton.disabled =
+                true;
+
+            setStatus(
+                "",
+                "Connecting..."
+            );
+
+            try {
+                const response =
+                    await fetch(
+                        endpoint,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                if (
+                    response.status === 404
+                ) {
+                    throw new Error(
+                        "GitProHub project not found"
+                    );
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                if (
+                    !data ||
+                    data.success === false ||
+                    !data.project
+                ) {
+                    throw new Error(
+                        data?.message ||
+                        data?.error ||
+                        "Invalid project response"
+                    );
+                }
+
+                projectContainer.innerHTML =
+                    createProject(
+                        data.project
+                    );
+
+                setStatus(
+                    "connected",
+                    "API Connected"
+                );
+
+            } catch (error) {
+                projectContainer.innerHTML = `
+                    <div class="message error">
+                        ${escapeHtml(
+                            error?.message ||
+                            "Unable to load project"
+                        )}
+                    </div>
+                `;
+
+                setStatus(
+                    "error",
+                    "API Connection Failed"
+                );
+
+            } finally {
+                refreshButton.disabled =
+                    false;
+            }
+        }
+
+        refreshButton.addEventListener(
+            "click",
+            loadProject
+        );
+
+        loadProject();
+    </script>
+
+</body>
+</html>

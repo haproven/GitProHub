@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitProHub API</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: #f6f8fb;
+            color: #172033;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: auto;
+            padding: 30px 22px;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #effdf8, #f5fbff);
+            border: 1px solid #bce9df;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 22px;
+        }
+
+        .hero-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 25px;
+        }
+
+        .hero-content {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .hero-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 18px;
+            background: #16b364;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .hero h1 {
+            font-size: 34px;
+            margin-bottom: 6px;
+        }
+
+        .hero p {
+            color: #475569;
+            font-size: 15px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hero-button {
+            text-decoration: none;
+            background: #172033;
+            color: white;
+            padding: 11px 16px;
+            border-radius: 11px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .hero-button.secondary {
+            background: white;
+            color: #334155;
+            border: 1px solid #dce5e1;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 16px;
+            background: #dcfce7;
+            color: #15803d;
+            border-radius: 30px;
+            padding: 7px 14px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #16a34a;
+            border-radius: 50%;
+        }
+
+        .top-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-bottom: 22px;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e3e8ef;
+            border-radius: 18px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 19px 22px;
+            border-bottom: 1px solid #edf0f4;
+            display: flex;
+            align-items: center;
+            gap: 13px;
+        }
+
+        .card-header h2 {
+            font-size: 21px;
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .blue {
+            background: #1677ff;
+        }
+
+        .purple {
+            background: #7c3aed;
+        }
+
+        .green {
+            background: #10b981;
+        }
+
+        .orange {
+            background: #f59e0b;
+        }
+
+        .info-list {
+            padding: 7px 22px 17px;
+        }
+
+        .info-row {
+            min-height: 58px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .info-row:last-child {
+            border-bottom: 0;
+        }
+
+        .info-label {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: #334155;
+            font-size: 15px;
+        }
+
+        .info-value {
+            font-weight: 700;
+            text-align: right;
+        }
+
+        .true {
+            background: #dcfce7;
+            color: #15803d;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .false {
+            background: #fee2e2;
+            color: #dc2626;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .interval {
+            background: #eaf2ff;
+            color: #2563eb;
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        .endpoint-card {
+            margin-bottom: 22px;
+        }
+
+        .endpoint-list {
+            padding: 7px 22px 17px;
+        }
+
+        .endpoint {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            min-height: 57px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .endpoint:last-child {
+            border-bottom: 0;
+        }
+
+        .endpoint-number {
+            width: 33px;
+            height: 33px;
+            border-radius: 50%;
+            background: #dff7ed;
+            color: #166534;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            flex-shrink: 0;
+            font-size: 13px;
+        }
+
+        .endpoint-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .endpoint a {
+            text-decoration: none;
+        }
+
+        .endpoint code {
+            font-family: Consolas, monospace;
+            font-size: 14px;
+            color: #172033;
+        }
+
+        .endpoint code:hover {
+            color: #1677ff;
+        }
+
+        .endpoint-method {
+            margin-left: auto;
+            background: #eff6ff;
+            color: #2563eb;
+            border-radius: 7px;
+            padding: 5px 8px;
+            font-size: 10px;
+            font-weight: 800;
+            flex-shrink: 0;
+        }
+
+        .projects-card {
+            margin-bottom: 22px;
+        }
+
+        .projects-count {
+            margin-left: auto;
+            background: #eef2ff;
+            color: #4338ca;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .view-all {
+            text-decoration: none;
+            background: #172033;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .projects {
+            padding: 22px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 18px;
+        }
+
+        .project {
+            border: 1px solid #e3e8ef;
+            border-radius: 16px;
+            padding: 19px;
+            background: #fff;
+            transition: .2s ease;
+        }
+
+        .project:hover {
+            transform: translateY(-3px);
+            border-color: #cbd5e1;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
+        }
+
+        .project-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .project-icon {
+            width: 47px;
+            height: 47px;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: #4f46e5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .project-status {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 6px 9px;
+            border-radius: 20px;
+            background: #dcfce7;
+            color: #15803d;
+        }
+
+        .project h3 {
+            font-size: 18px;
+            margin-bottom: 6px;
+            word-break: break-word;
+        }
+
+        .project-developer {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 11px;
+        }
+
+        .project-description {
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.6;
+            min-height: 42px;
+            margin-bottom: 15px;
+        }
+
+        .project-links {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .project-links a {
+            text-decoration: none;
+            border: 1px solid #e2e8f0;
+            color: #334155;
+            padding: 7px 10px;
+            border-radius: 9px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .project-links a:hover {
+            background: #172033;
+            border-color: #172033;
+            color: white;
+        }
+
+        .dashboard-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .dashboard-link {
+            text-decoration: none;
+            background: white;
+            border: 1px solid #e3e8ef;
+            border-radius: 15px;
+            padding: 18px;
+            color: #172033;
+            transition: .2s ease;
+        }
+
+        .dashboard-link:hover {
+            transform: translateY(-3px);
+            border-color: #cbd5e1;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, .07);
+        }
+
+        .dashboard-link strong {
+            display: block;
+            font-size: 15px;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-link span {
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .loading,
+        .empty,
+        .error {
+            grid-column: 1 / -1;
+            padding: 42px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .error {
+            color: #dc2626;
+        }
+
+        footer {
+            text-align: center;
+            color: #64748b;
+            font-size: 13px;
+            padding: 10px 0 25px;
+        }
+
+        @media (max-width: 1050px) {
+            .dashboard-links {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 800px) {
+            .container {
+                padding: 20px 14px;
+            }
+
+            .hero {
+                padding: 22px;
+            }
+
+            .hero-top {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .hero h1 {
+                font-size: 28px;
+            }
+
+            .hero-actions {
+                width: 100%;
+            }
+
+            .hero-button {
+                flex: 1;
+                text-align: center;
+            }
+
+            .top-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .info-row {
+                align-items: flex-start;
+                flex-direction: column;
+                justify-content: center;
+                gap: 6px;
+                padding: 11px 0;
+            }
+
+            .info-value {
+                text-align: left;
+            }
+
+            .endpoint {
+                min-height: 62px;
+            }
+
+            .endpoint code {
+                font-size: 12px;
+                word-break: break-all;
+            }
+
+            .endpoint-method {
+                display: none;
+            }
+
+            .dashboard-links {
+                grid-template-columns: 1fr;
+            }
+
+            .projects {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            .card-header {
+                flex-wrap: wrap;
+            }
+
+            .projects-count {
+                margin-left: auto;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <section class="hero">
+
+            <div class="hero-top">
+
+                <div class="hero-content">
+
+                    <div class="hero-icon">
+                        ✓
+                    </div>
+
+                    <div>
+
+                        <h1 id="apiName">
+                            GitProHub API
+                        </h1>
+
+                        <p id="apiMessage">
+                            GitProHub is running
+                        </p>
+
+                        <div class="status">
+                            <span class="status-dot"></span>
+                            <span id="statusText">
+                                API Online
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-actions">
+
+                    <a class="hero-button" href="api/projects/">
+                        View Projects
+                    </a>
+
+                    <a class="hero-button secondary" href="/docs">
+                        API Docs
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="dashboard-links">
+
+            <a class="dashboard-link" href="/public/api/projects/index.html">
+                <strong>Projects</strong>
+                <span>
+                    Browse all discovered GitProHub projects.
+                </span>
+            </a>
+
+            <a class="dashboard-link" href="/public/api/discovery/status/">
+                <strong>Project Stats</strong>
+                <span>
+                    View project and developer statistics.
+                </span>
+            </a>
+
+            <a class="dashboard-link" href="/public/api/discovery/">
+                <strong>Discovery</strong>
+                <span>
+                    Monitor automatic project discovery.
+                </span>
+            </a>
+
+            <a class="dashboard-link" href="/docs">
+                <strong>Documentation</strong>
+                <span>
+                    Explore GitProHub API endpoints.
+                </span>
+            </a>
+
+        </section>
+
+        <section class="top-grid">
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="header-icon blue">
+                        ⌕
+                    </div>
+
+                    <h2>
+                        Discovery
+                    </h2>
+
+                </div>
+
+                <div class="info-list">
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <span>▶</span>
+                            <span>Running</span>
+                        </div>
+
+                        <div id="running" class="info-value true">
+                            true
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <span>◫</span>
+                            <span>Scheduled</span>
+                        </div>
+
+                        <div id="scheduled" class="info-value true">
+                            true
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <span>◷</span>
+                            <span>Interval</span>
+                        </div>
+
+                        <div id="interval" class="info-value interval">
+                            1 minute
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="card">
+
+                <div class="card-header">
+
+                    <div class="header-icon purple">
+                        i
+                    </div>
+
+                    <h2>
+                        API Information
+                    </h2>
+
+                </div>
+
+                <div class="info-list">
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <span>✓</span>
+                            <span>Success</span>
+                        </div>
+
+                        <div id="success" class="info-value true">
+                            true
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <span>▤</span>
+                            <span>Name</span>
+                        </div>
+
+                        <div id="name" class="info-value">
+                            GitProHub API
+                        </div>
+
+                    </div>
+
+                    <div class="info-row">
+
+                        <div class="info-label">
+                            <span>▣</span>
+                            <span>Message</span>
+                        </div>
+
+                        <div id="message" class="info-value">
+                            GitProHub is running
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="card endpoint-card">
+
+            <div class="card-header">
+
+                <div class="header-icon green">
+                    &lt;/&gt;
+                </div>
+
+                <h2>
+                    API Endpoints
+                </h2>
+
+            </div>
+
+            <div class="endpoint-list">
+
+                <div class="endpoint">
+
+                    <div class="endpoint-number">
+                        1
+                    </div>
+
+                    <div class="endpoint-content">
+                        <a href="api/projects/">
+                            <code>/api/projects</code>
+                        </a>
+                    </div>
+
+                    <span class="endpoint-method">
+                        GET
+                    </span>
+
+                </div>
+
+                <div class="endpoint">
+
+                    <div class="endpoint-number">
+                        2
+                    </div>
+
+                    <div class="endpoint-content">
+                        <a href="api/projects/stats/" target="_blank">
+                            <code>/api/projects/stats</code>
+                        </a>
+                    </div>
+
+                    <span class="endpoint-method">
+                        GET
+                    </span>
+
+                </div>
+
+                <div class="endpoint">
+
+                    <div class="endpoint-number">
+                        3
+                    </div>
+
+                    <div class="endpoint-content">
+                     <a href="api/projects/username/repo/">
+                           <code>
+                        /api/project/:username/:repo
+                    </code>
+                     </a>
+                    </div>
+
+                    <span class="endpoint-method">
+                        GET
+                    </span>
+
+                </div>
+
+                <div class="endpoint">
+
+                    <div class="endpoint-number">
+                        4
+                    </div>
+
+                    <div class="endpoint-content">
+                        <a href="api/projects/username/">
+                            <code>
+                        /api/github/:username
+                    </code>
+                        </a>
+                    </div>
+
+                    <span class="endpoint-method">
+                        GET
+                    </span>
+
+                </div>
+
+                <div class="endpoint">
+
+                    <div class="endpoint-number">
+                        5
+                    </div>
+
+                    <div class="endpoint-content">
+                        <a href="api/discovery/run" target="_blank">
+                            <code>
+                            /api/discovery/run
+                        </code>
+                        </a>
+                    </div>
+
+                    <span class="endpoint-method">
+                        GET
+                    </span>
+
+                </div>
+
+                <div class="endpoint">
+
+                    <div class="endpoint-number">
+                        6
+                    </div>
+
+                    <div class="endpoint-content">
+                        <a href="api/discovery/status" target="_blank">
+                            <code>
+                            /api/discovery/status
+                        </code>
+                        </a>
+                    </div>
+
+                    <span class="endpoint-method">
+                        GET
+                    </span>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="card projects-card">
+
+            <div class="card-header">
+
+                <div class="header-icon orange">
+                    ◆
+                </div>
+
+                <h2>
+                    GitProHub Projects
+                </h2>
+
+                <span id="projectCount" class="projects-count">
+                    0 Projects
+                </span>
+
+                <a href="api/projects/" class="view-all">
+                    View All
+                </a>
+
+            </div>
+
+            <div id="projects" class="projects">
+
+                <div class="loading">
+                    Loading projects...
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer>
+            GitProHub API · Powered by Haproven
+        </footer>
+
+    </div>
+
+    <script>
+        const API_BASE =
+            window.location.port === "5500" ||
+                window.location.port === "5501"
+                ? "http://localhost:3000"
+                : "";
+
+        const API_URL =
+            `${API_BASE}/api/projects`;
+
+        const API_ROOT =
+            `${API_BASE}/`;
+
+        let projectsLoaded = false;
+        let apiRequestRunning = false;
+        let projectRequestRunning = false;
+
+        function escapeHtml(value) {
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function getValue(
+            project,
+            keys,
+            fallback = ""
+        ) {
+            for (const key of keys) {
+                const parts = key.split(".");
+                let value = project;
+
+                for (const part of parts) {
+                    if (
+                        value === null ||
+                        value === undefined
+                    ) {
+                        break;
+                    }
+
+                    value = value[part];
+                }
+
+                if (
+                    value !== undefined &&
+                    value !== null &&
+                    value !== ""
+                ) {
+                    return value;
+                }
+            }
+
+            return fallback;
+        }
+
+        function getProjects(data) {
+            if (Array.isArray(data)) {
+                return data;
+            }
+
+            if (
+                data &&
+                Array.isArray(data.projects)
+            ) {
+                return data.projects;
+            }
+
+            if (
+                data &&
+                data.data &&
+                Array.isArray(data.data.projects)
+            ) {
+                return data.data.projects;
+            }
+
+            if (
+                data &&
+                Array.isArray(data.data)
+            ) {
+                return data.data;
+            }
+
+            if (
+                data &&
+                Array.isArray(data.items)
+            ) {
+                return data.items;
+            }
+
+            return [];
+        }
+
+        function createProjectCard(project) {
+            const name =
+                getValue(
+                    project,
+                    [
+                        "name",
+                        "projectName",
+                        "title",
+                        "repository.name",
+                        "repo"
+                    ],
+                    "Unnamed Project"
+                );
+
+            const developer =
+                getValue(
+                    project,
+                    [
+                        "username",
+                        "developer.username",
+                        "github.owner.login",
+                        "owner.login",
+                        "owner",
+                        "author"
+                    ],
+                    "Unknown Developer"
+                );
+
+            const description =
+                getValue(
+                    project,
+                    [
+                        "description",
+                        "project.description",
+                        "about",
+                        "summary"
+                    ],
+                    "No description available."
+                );
+
+            const github =
+                getValue(
+                    project,
+                    [
+                        "github",
+                        "githubUrl",
+                        "repository.html_url",
+                        "repoUrl",
+                        "repositoryUrl",
+                        "github_url",
+                        "url"
+                    ],
+                    ""
+                );
+
+            const live =
+                getValue(
+                    project,
+                    [
+                        "live",
+                        "liveUrl",
+                        "website",
+                        "demo",
+                        "demoUrl",
+                        "projectUrl",
+                        "live_url"
+                    ],
+                    ""
+                );
+
+            const status =
+                getValue(
+                    project,
+                    [
+                        "status",
+                        "projectStatus"
+                    ],
+                    "Active"
+                );
+
+            return `
+            <article class="project">
+
+                <div class="project-top">
+
+                    <div class="project-icon">
+                        ${escapeHtml(
+                String(name)
+                    .charAt(0)
+                    .toUpperCase()
+            )}
+                    </div>
+
+                    <span class="project-status">
+                        ${escapeHtml(status)}
+                    </span>
+
+                </div>
+
+                <h3>
+                    ${escapeHtml(name)}
+                </h3>
+
+                <div class="project-developer">
+                    Developer: @${escapeHtml(developer)}
+                </div>
+
+                <div class="project-description">
+                    ${escapeHtml(description)}
+                </div>
+
+                <div class="project-links">
+
+                    ${github
+                    ? `
+                                <a
+                                    href="${escapeHtml(github)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    GitHub ↗
+                                </a>
+                            `
+                    : ""
+                }
+
+                    ${live
+                    ? `
+                                <a
+                                    href="${escapeHtml(live)}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Live ↗
+                                </a>
+                            `
+                    : ""
+                }
+
+                </div>
+
+            </article>
+        `;
+        }
+
+        async function loadApiStatus() {
+            if (apiRequestRunning) {
+                return;
+            }
+
+            apiRequestRunning = true;
+
+            try {
+                const response =
+                    await fetch(
+                        API_ROOT,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                document.getElementById(
+                    "success"
+                ).textContent =
+                    data.success ?? false;
+
+                if (data.name) {
+                    document.getElementById(
+                        "apiName"
+                    ).textContent =
+                        data.name;
+
+                    document.getElementById(
+                        "name"
+                    ).textContent =
+                        data.name;
+                }
+
+                if (data.message) {
+                    document.getElementById(
+                        "apiMessage"
+                    ).textContent =
+                        data.message;
+
+                    document.getElementById(
+                        "message"
+                    ).textContent =
+                        data.message;
+                }
+
+                if (data.discovery) {
+                    const running =
+                        data.discovery.running ??
+                        false;
+
+                    const scheduled =
+                        data.discovery.scheduled ??
+                        false;
+
+                    document.getElementById(
+                        "running"
+                    ).textContent =
+                        running;
+
+                    document.getElementById(
+                        "scheduled"
+                    ).textContent =
+                        scheduled;
+
+                    document.getElementById(
+                        "interval"
+                    ).textContent =
+                        data.discovery.interval ??
+                        "Unknown";
+
+                    document.getElementById(
+                        "running"
+                    ).className =
+                        `info-value ${running
+                            ? "true"
+                            : "false"
+                        }`;
+
+                    document.getElementById(
+                        "scheduled"
+                    ).className =
+                        `info-value ${scheduled
+                            ? "true"
+                            : "false"
+                        }`;
+                }
+
+                document.getElementById(
+                    "statusText"
+                ).textContent =
+                    "API Online";
+
+            } catch (error) {
+                console.error(
+                    "GitProHub API:",
+                    error
+                );
+
+                document.getElementById(
+                    "apiMessage"
+                ).textContent =
+                    "Unable to connect to API";
+
+                document.getElementById(
+                    "statusText"
+                ).textContent =
+                    "API Offline";
+            } finally {
+                apiRequestRunning = false;
+            }
+        }
+
+        async function loadProjects() {
+            if (projectRequestRunning) {
+                return;
+            }
+
+            projectRequestRunning = true;
+
+            const container =
+                document.getElementById(
+                    "projects"
+                );
+
+            try {
+                const response =
+                    await fetch(
+                        API_URL,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const result =
+                    await response.json();
+
+                const projects =
+                    getProjects(result);
+
+                document.getElementById(
+                    "projectCount"
+                ).textContent =
+                    `${projects.length} ${projects.length === 1
+                        ? "Project"
+                        : "Projects"
+                    }`;
+
+                if (!projects.length) {
+                    if (!projectsLoaded) {
+                        container.innerHTML = `
+                        <div class="empty">
+                            No GitProHub projects found.
+                        </div>
+                    `;
+                    }
+
+                    projectsLoaded = true;
+                    return;
+                }
+
+                const newHtml =
+                    projects
+                        .slice(0, 6)
+                        .map(createProjectCard)
+                        .join("");
+
+                if (
+                    container.innerHTML !==
+                    newHtml
+                ) {
+                    container.innerHTML =
+                        newHtml;
+                }
+
+                projectsLoaded = true;
+
+            } catch (error) {
+                console.error(
+                    "GitProHub Projects:",
+                    error
+                );
+
+                if (!projectsLoaded) {
+                    document.getElementById(
+                        "projectCount"
+                    ).textContent =
+                        "0 Projects";
+
+                    container.innerHTML = `
+                    <div class="error">
+                        Unable to load projects.
+                        <br><br>
+                        <small>
+                            API: ${escapeHtml(API_URL)}
+                        </small>
+                    </div>
+                `;
+                }
+            } finally {
+                projectRequestRunning = false;
+            }
+        }
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            () => {
+                loadApiStatus();
+                loadProjects();
+            }
+        );
+    </script>
+
+</body>
+
+</html>

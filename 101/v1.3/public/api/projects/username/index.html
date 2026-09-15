@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitProHub Projects</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 30px;
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .search-box {
+            background: #fff;
+            padding: 25px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-box h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .search-box p {
+            margin: 0 0 20px;
+            color: #666;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        #githubUsername {
+            flex: 1;
+            width: 100%;
+            height: 48px;
+            padding: 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            outline: none;
+            font-size: 16px;
+        }
+
+        #githubUsername:focus {
+            border-color: #111;
+        }
+
+        #searchButton {
+            height: 48px;
+            padding: 0 22px;
+            border: 0;
+            border-radius: 10px;
+            background: #111;
+            color: #fff;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        #searchButton:hover {
+            opacity: 0.85;
+        }
+
+        #searchButton:disabled {
+            opacity: 0.6;
+            cursor: wait;
+        }
+
+        .status {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 10px;
+            background: #f1f3f5;
+            font-size: 14px;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .project-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: 0.2s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .project-card h2 {
+            margin: 0 0 10px;
+            font-size: 21px;
+        }
+
+        .project-card p {
+            margin: 7px 0;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .project-info {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            padding: 6px 10px;
+            border-radius: 8px;
+            background: #f1f3f5;
+            font-size: 13px;
+        }
+
+        .links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .links a {
+            text-decoration: none;
+            padding: 9px 13px;
+            border-radius: 9px;
+            background: #111;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .links a:hover {
+            opacity: 0.85;
+        }
+
+        .empty {
+            background: #fff;
+            padding: 30px;
+            border-radius: 16px;
+            text-align: center;
+            color: #666;
+            grid-column: 1 / -1;
+        }
+
+        .error {
+            background: #fff0f0;
+            color: #c00;
+            padding: 18px;
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+
+            .search-box h1 {
+                font-size: 23px;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            #searchButton {
+                width: 100%;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <section class="search-box">
+
+            <h1>GitProHub Projects</h1>
+
+            <p>
+                GitHub username enter karke projects search karein.
+            </p>
+
+            <div class="search-form">
+
+                <input
+                    type="text"
+                    id="githubUsername"
+                    placeholder="Enter GitHub username..."
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+
+                <button
+                    type="button"
+                    id="searchButton"
+                >
+                    Search
+                </button>
+
+            </div>
+
+            <div
+                class="status"
+                id="status"
+            >
+                GitHub username enter karein.
+            </div>
+
+        </section>
+
+        <div
+            id="projects"
+            class="projects-grid"
+        ></div>
+
+    </div>
+
+    <script>
+        (() => {
+
+            const API_BASE =
+                "http://127.0.0.1:3000";
+
+            const STORAGE_KEY =
+                "gitprohub_github_username";
+
+            const usernameInput =
+                document.getElementById("githubUsername");
+
+            const searchButton =
+                document.getElementById("searchButton");
+
+            const status =
+                document.getElementById("status");
+
+            const projectsContainer =
+                document.getElementById("projects");
+
+
+            function getProjects(data) {
+
+                if (Array.isArray(data)) {
+                    return data;
+                }
+
+                if (Array.isArray(data?.projects)) {
+                    return data.projects;
+                }
+
+                if (Array.isArray(data?.data)) {
+                    return data.data;
+                }
+
+                if (Array.isArray(data?.results)) {
+                    return data.results;
+                }
+
+                return [];
+            }
+
+
+            function getValue(object, paths, fallback = "") {
+
+                for (const path of paths) {
+
+                    let value = object;
+
+                    for (const key of path.split(".")) {
+                        value = value?.[key];
+                    }
+
+                    if (
+                        value !== undefined &&
+                        value !== null &&
+                        value !== ""
+                    ) {
+                        return value;
+                    }
+                }
+
+                return fallback;
+            }
+
+
+            function escapeHtml(value) {
+
+                return String(value)
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+
+            function renderProjects(projects) {
+
+                if (!projects.length) {
+
+                    projectsContainer.innerHTML = `
+                        <div class="empty">
+                            Is username ke liye koi GitProHub project nahi mila.
+                        </div>
+                    `;
+
+                    return;
+                }
+
+
+                projectsContainer.innerHTML =
+                    projects.map(project => {
+
+                        const name = getValue(
+                            project,
+                            [
+                                "name",
+                                "projectName",
+                                "github.name",
+                                "repository.name",
+                                "repo"
+                            ],
+                            "Unnamed Project"
+                        );
+
+                        const description = getValue(
+                            project,
+                            [
+                                "description",
+                                "github.description",
+                                "repository.description"
+                            ],
+                            "No description available."
+                        );
+
+                        const language = getValue(
+                            project,
+                            [
+                                "language",
+                                "github.language",
+                                "repository.language"
+                            ],
+                            "Unknown"
+                        );
+
+                        const stars = getValue(
+                            project,
+                            [
+                                "stars",
+                                "github.stargazers_count",
+                                "repository.stargazers_count"
+                            ],
+                            0
+                        );
+
+                        const forks = getValue(
+                            project,
+                            [
+                                "forks",
+                                "github.forks_count",
+                                "repository.forks_count"
+                            ],
+                            0
+                        );
+
+                        const githubUrl = getValue(
+                            project,
+                            [
+                                "github.html_url",
+                                "repository.html_url",
+                                "githubUrl",
+                                "github"
+                            ],
+                            ""
+                        );
+
+                        const liveUrl = getValue(
+                            project,
+                            [
+                                "liveUrl",
+                                "live",
+                                "website",
+                                "demo",
+                                "projectUrl"
+                            ],
+                            ""
+                        );
+
+
+                        return `
+                            <article class="project-card">
+
+                                <h2>
+                                    ${escapeHtml(name)}
+                                </h2>
+
+                                <p>
+                                    ${escapeHtml(description)}
+                                </p>
+
+                                <div class="project-info">
+
+                                    <span class="badge">
+                                        Language:
+                                        ${escapeHtml(language)}
+                                    </span>
+
+                                    <span class="badge">
+                                        ⭐ ${escapeHtml(String(stars))}
+                                    </span>
+
+                                    <span class="badge">
+                                        Forks:
+                                        ${escapeHtml(String(forks))}
+                                    </span>
+
+                                </div>
+
+                                <div class="links">
+
+                                    ${
+                                        githubUrl
+                                            ? `
+                                                <a
+                                                    href="${escapeHtml(githubUrl)}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    GitHub
+                                                </a>
+                                            `
+                                            : ""
+                                    }
+
+                                    ${
+                                        liveUrl
+                                            ? `
+                                                <a
+                                                    href="${escapeHtml(liveUrl)}"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                >
+                                                    Live
+                                                </a>
+                                            `
+                                            : ""
+                                    }
+
+                                </div>
+
+                            </article>
+                        `;
+
+                    }).join("");
+            }
+
+
+            async function searchUsername(username) {
+
+                username =
+                    username.trim();
+
+                if (!username) {
+
+                    status.textContent =
+                        "GitHub username enter karein.";
+
+                    projectsContainer.innerHTML = "";
+
+                    return;
+                }
+
+
+                localStorage.setItem(
+                    STORAGE_KEY,
+                    username
+                );
+
+
+                searchButton.disabled = true;
+
+                searchButton.textContent =
+                    "Searching...";
+
+                status.textContent =
+                    `@${username} ke projects search ho rahe hain...`;
+
+                projectsContainer.innerHTML = "";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            `${API_BASE}/api/github/${encodeURIComponent(username)}`,
+                            {
+                                method: "GET",
+                                cache: "no-store"
+                            }
+                        );
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            `API Error: ${response.status}`
+                        );
+                    }
+
+
+                    const data =
+                        await response.json();
+
+
+                    const projects =
+                        getProjects(data);
+
+
+                    renderProjects(projects);
+
+
+                    status.textContent =
+                        `${projects.length} GitProHub project${projects.length === 1 ? "" : "s"} found for @${username}.`;
+
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    projectsContainer.innerHTML = `
+                        <div class="error">
+                            GitHub username ke projects load nahi ho paaye.
+                            API server check karein.
+                        </div>
+                    `;
+
+                    status.textContent =
+                        "API connection failed.";
+
+                } finally {
+
+                    searchButton.disabled = false;
+
+                    searchButton.textContent =
+                        "Search";
+                }
+            }
+
+
+            searchButton.addEventListener(
+                "click",
+                () => {
+
+                    searchUsername(
+                        usernameInput.value
+                    );
+                }
+            );
+
+
+            usernameInput.addEventListener(
+                "keydown",
+                event => {
+
+                    if (event.key === "Enter") {
+
+                        event.preventDefault();
+
+                        searchUsername(
+                            usernameInput.value
+                        );
+                    }
+                }
+            );
+
+
+            const savedUsername =
+                localStorage.getItem(
+                    STORAGE_KEY
+                );
+
+
+            if (savedUsername) {
+
+                usernameInput.value =
+                    savedUsername;
+
+                searchUsername(
+                    savedUsername
+                );
+
+            }
+
+        })();
+    </script>
+
+</body>
+
+</html>

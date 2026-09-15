@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GitProHub Project Stats</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fafc,
+                    #eef2ff
+                );
+            color: #111827;
+            padding: 30px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .hero {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e5e7eb;
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow:
+                0 20px 50px rgba(15, 23, 42, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 10px;
+        }
+
+        .logo {
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: #111827;
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        h1 {
+            font-size: clamp(28px, 5vw, 44px);
+            line-height: 1.1;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #64748b;
+            font-size: 15px;
+            margin-top: 12px;
+        }
+
+        .api-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            background: #111827;
+            color: #ffffff;
+            border-radius: 16px;
+            padding: 14px 18px;
+            margin-bottom: 20px;
+        }
+
+        .api-url {
+            font-size: 13px;
+            word-break: break-all;
+            opacity: 0.9;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #f59e0b;
+        }
+
+        .status.connected .status-dot {
+            background: #22c55e;
+        }
+
+        .status.error .status-dot {
+            background: #ef4444;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .stat-card {
+            position: relative;
+            overflow: hidden;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 22px;
+            padding: 28px;
+            min-height: 180px;
+            box-shadow:
+                0 12px 30px rgba(15, 23, 42, 0.06);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow:
+                0 18px 38px rgba(15, 23, 42, 0.1);
+        }
+
+        .stat-card::after {
+            content: "";
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            right: -45px;
+            bottom: -55px;
+            border-radius: 50%;
+            background: #f1f5f9;
+        }
+
+        .stat-label {
+            position: relative;
+            z-index: 1;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .stat-value {
+            position: relative;
+            z-index: 1;
+            font-size: clamp(34px, 7vw, 58px);
+            line-height: 1;
+            font-weight: 800;
+            letter-spacing: -2px;
+        }
+
+        .stat-description {
+            position: relative;
+            z-index: 1;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 14px;
+        }
+
+        .updated-card {
+            grid-column: 1 / -1;
+            min-height: auto;
+        }
+
+        .updated-value {
+            font-size: 22px;
+            letter-spacing: 0;
+            line-height: 1.4;
+            word-break: break-word;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        button {
+            border: 0;
+            outline: none;
+            cursor: pointer;
+            border-radius: 14px;
+            padding: 13px 22px;
+            background: #111827;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            transform: none;
+        }
+
+        .message {
+            text-align: center;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 35px 20px;
+            color: #64748b;
+            box-shadow:
+                0 12px 30px rgba(15, 23, 42, 0.06);
+        }
+
+        .error-message {
+            color: #dc2626;
+        }
+
+        footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 28px;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 18px 12px;
+            }
+
+            .hero {
+                padding: 24px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .updated-card {
+                grid-column: auto;
+            }
+
+            .api-bar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <section class="hero">
+            <div class="brand">
+                <div class="logo">G</div>
+
+                <div>
+                    <h1>Project Stats</h1>
+                </div>
+            </div>
+
+            <p class="subtitle">
+                GitProHub project index statistics
+            </p>
+        </section>
+
+        <div class="api-bar">
+
+            <div class="api-url">
+                http://127.0.0.1:3000/api/projects/stats
+            </div>
+
+            <div
+                class="status"
+                id="apiStatus"
+            >
+                <span class="status-dot"></span>
+                <span id="statusText">
+                    Connecting...
+                </span>
+            </div>
+
+        </div>
+
+        <section
+            class="stats-grid"
+            id="statsContainer"
+        >
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Total Projects
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="totalProjects"
+                >
+                    —
+                </div>
+
+                <div class="stat-description">
+                    Unique projects in GitProHub index
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Index Status
+                </div>
+
+                <div
+                    class="stat-value"
+                    id="indexStatus"
+                >
+                    —
+                </div>
+
+                <div class="stat-description">
+                    Current API connection
+                </div>
+            </div>
+
+            <div class="stat-card updated-card">
+                <div class="stat-label">
+                    Last Updated
+                </div>
+
+                <div
+                    class="stat-value updated-value"
+                    id="lastUpdated"
+                >
+                    —
+                </div>
+
+                <div class="stat-description">
+                    Latest project synchronization time
+                </div>
+            </div>
+
+        </section>
+
+        <div class="actions">
+            <button
+                type="button"
+                id="refreshButton"
+            >
+                Refresh Stats
+            </button>
+        </div>
+
+        <footer>
+            GitProHub · Powered by Haproven
+        </footer>
+
+    </main>
+
+    <script>
+        const API_URL =
+            "http://127.0.0.1:3000/api/projects/stats";
+
+        const totalProjects =
+            document.getElementById(
+                "totalProjects"
+            );
+
+        const indexStatus =
+            document.getElementById(
+                "indexStatus"
+            );
+
+        const lastUpdated =
+            document.getElementById(
+                "lastUpdated"
+            );
+
+        const apiStatus =
+            document.getElementById(
+                "apiStatus"
+            );
+
+        const statusText =
+            document.getElementById(
+                "statusText"
+            );
+
+        const refreshButton =
+            document.getElementById(
+                "refreshButton"
+            );
+
+        function setStatus(
+            type,
+            message
+        ) {
+            apiStatus.classList.remove(
+                "connected",
+                "error"
+            );
+
+            if (type) {
+                apiStatus.classList.add(
+                    type
+                );
+            }
+
+            statusText.textContent =
+                message;
+        }
+
+        function formatDate(value) {
+            if (!value) {
+                return "Not available";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return value;
+            }
+
+            return date.toLocaleString(
+                "en-IN",
+                {
+                    dateStyle: "medium",
+                    timeStyle: "medium"
+                }
+            );
+        }
+
+        async function loadStats() {
+            refreshButton.disabled = true;
+
+            setStatus(
+                "",
+                "Connecting..."
+            );
+
+            try {
+                const response =
+                    await fetch(
+                        API_URL,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                const data =
+                    await response.json();
+
+                if (
+                    !data ||
+                    data.success === false
+                ) {
+                    throw new Error(
+                        data?.error ||
+                        "Invalid API response"
+                    );
+                }
+
+                const total =
+                    Number(data.total) || 0;
+
+                totalProjects.textContent =
+                    total;
+
+                indexStatus.textContent =
+                    "Online";
+
+                lastUpdated.textContent =
+                    formatDate(
+                        data.lastUpdated
+                    );
+
+                setStatus(
+                    "connected",
+                    "API Connected"
+                );
+
+            } catch (error) {
+                totalProjects.textContent =
+                    "—";
+
+                indexStatus.textContent =
+                    "Offline";
+
+                lastUpdated.textContent =
+                    "Not available";
+
+                setStatus(
+                    "error",
+                    "API Connection Failed"
+                );
+
+            } finally {
+                refreshButton.disabled =
+                    false;
+            }
+        }
+
+        refreshButton.addEventListener(
+            "click",
+            loadStats
+        );
+
+        loadStats();
+    </script>
+
+</body>
+</html>
