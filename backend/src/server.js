@@ -1,165 +1,82 @@
+// =========================================================
+// GitProHub Server
+// =========================================================
+
 require("dotenv").config();
 
-const express = require("express");
+const express =
+    require("express");
 
-
-// ==========================================
-// Services
-// ==========================================
-
-const {
-    getUser,
-    getGitProHubFile
-} = require("./services/githubService");
-
+const cors =
+    require("cors");
 
 const {
-    parseGitProHub
-} = require("./services/gitprohubParser");
-
+    getProjects,
+    getProjectFromIndex,
+    getIndexStats
+} = require("./services/projectIndexService");
 
 const {
     getProject
 } = require("./services/projectService");
 
-
-// Automatic Discovery
 const {
+    getUserRepositories
+} = require("./services/githubService");
+
+const {
+    runAutoDiscovery,
     startAutoDiscovery
 } = require("./services/autoDiscoveryService");
 
 
-// ==========================================
-// Routes
-// ==========================================
-
-const projectsRouter =
-    require("./routes/projects");
-
-
-const developersRouter =
-    require("./routes/developers");
-
-
-// ==========================================
+// =========================================================
 // App
-// ==========================================
+// =========================================================
 
-const app = express();
+const app =
+    express();
 
-const PORT =
-    process.env.PORT || 3000;
+app.use(
+    cors()
+);
 
-
-// ==========================================
-// JSON Middleware
-// ==========================================
-
-app.use(express.json());
-
-
-// ==========================================
-// Home
-// ==========================================
-
-app.get("/", (req, res) => {
-
-    res.send(
-        "GitProHub API is running 🚀"
-    );
-
-});
-
-
-// ==========================================
-// GitHub User
-// ==========================================
-
-app.get(
-    "/github/:username",
-    async (req, res) => {
-
-        try {
-
-            const user =
-                await getUser(
-                    req.params.username
-                );
-
-
-            res.json({
-
-                success: true,
-
-                username:
-                    user.login,
-
-                name:
-                    user.name,
-
-                avatar:
-                    user.avatar_url,
-
-                github:
-                    user.html_url,
-
-                public_repos:
-                    user.public_repos
-
-            });
-
-
-        } catch (error) {
-
-            console.error(error);
-
-
-            res.status(500).json({
-
-                success: false,
-
-                error:
-                    error.message
-
-            });
-
-        }
-
-    }
+app.use(
+    express.json()
 );
 
 
-// ==========================================
-// GitProHub Parser Test
-// ==========================================
+// =========================================================
+// Health
+// =========================================================
 
 app.get(
-    "/test-parser",
+    "/",
     (req, res) => {
-
-        const content = `
-title: GitProHub
-description: Universal GitHub project platform
-category: Developer Tools
-status: In Development
-tags: github, api, open-source
-featured: true
-open_source: true
-`;
-
-
-        const data =
-            parseGitProHub(
-                content
-            );
-
 
         res.json({
 
             success: true,
 
-            data:
-                data
+            name:
+                "GitProHub API",
+
+            message:
+                "GitProHub is running",
+
+            endpoints: [
+
+                "/api/projects",
+
+                "/api/projects/stats",
+
+                "/api/project/:username/:repo",
+
+                "/api/github/:username",
+
+                "/api/discovery/run"
+
+            ]
 
         });
 
@@ -167,40 +84,31 @@ open_source: true
 );
 
 
-// ==========================================
-// GitProHub File Test
-// ==========================================
+// =========================================================
+// Get All Projects
+// =========================================================
 
 app.get(
-    "/test-gitprohub/:username/:repo",
-    async (req, res) => {
+    "/api/projects",
+    (req, res) => {
 
         try {
 
-            const content =
-                await getGitProHubFile(
-                    req.params.username,
-                    req.params.repo
-                );
-
+            const projects =
+                getProjects();
 
             res.json({
 
                 success: true,
 
-                found:
-                    content !== null,
+                total:
+                    projects.length,
 
-                content:
-                    content
+                projects
 
             });
 
-
         } catch (error) {
-
-            console.error(error);
-
 
             res.status(500).json({
 
@@ -217,24 +125,86 @@ app.get(
 );
 
 
-// ==========================================
-// GitProHub Project
-// ==========================================
+// =========================================================
+// Project Stats
+// =========================================================
 
 app.get(
-    "/github-project/:username/:repo",
-    async (req, res) => {
+    "/api/projects/stats",
+    (req, res) => {
 
         try {
 
+            const stats =
+                getIndexStats();
+
+            res.json({
+
+                success: true,
+
+                ...stats
+
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+
+                success: false,
+
+                error:
+                    error.message
+
+            });
+
+        }
+
+    }
+);
+
+
+// =========================================================
+// Get Single Project
+// =========================================================
+
+app.get(
+    "/api/project/:username/:repo",
+    async (req, res) => {
+
+        const {
+            username,
+            repo
+        } = req.params;
+
+        try {
+
+            const indexed =
+                getProjectFromIndex(
+                    username,
+                    repo
+                );
+
+            if (indexed) {
+
+                return res.json({
+
+                    success: true,
+
+                    project:
+                        indexed
+
+                });
+
+            }
+
+
             const project =
                 await getProject(
-                    req.params.username,
-                    req.params.repo
+                    username,
+                    repo
                 );
 
 
-            // gitprohub.md not found
             if (!project) {
 
                 return res.status(404).json({
@@ -242,7 +212,7 @@ app.get(
                     success: false,
 
                     message:
-                        "gitprohub.md not found"
+                        "GitProHub project not found"
 
                 });
 
@@ -253,16 +223,11 @@ app.get(
 
                 success: true,
 
-                project:
-                    project
+                project
 
             });
 
-
         } catch (error) {
-
-            console.error(error);
-
 
             res.status(500).json({
 
@@ -279,39 +244,249 @@ app.get(
 );
 
 
-// ==========================================
-// Projects API
-// ==========================================
+// =========================================================
+// Check GitHub Account
+// =========================================================
+//
+// Example:
+//
+// http://localhost:3000/api/github/codersusheel
+//
+// This checks all PUBLIC repositories of the account
+// and finds repositories containing root gitprohub.md
+//
+// =========================================================
 
-app.use(
-    "/api/projects",
-    projectsRouter
+app.get(
+    "/api/github/:username",
+    async (req, res) => {
+
+        const {
+            username
+        } = req.params;
+
+
+        if (!username) {
+
+            return res.status(400).json({
+
+                success: false,
+
+                message:
+                    "GitHub username is required"
+
+            });
+
+        }
+
+
+        console.log("");
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            `🔎 Checking GitHub account: ${username}`
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        try {
+
+            // Get all public repositories
+            const repositories =
+                await getUserRepositories(
+                    username
+                );
+
+
+            console.log(
+                `📦 Public repositories found: ${repositories.length}`
+            );
+
+
+            const projects = [];
+
+            let checked = 0;
+
+
+            // Check every repository
+            for (const repository of repositories) {
+
+                checked++;
+
+
+                console.log(
+                    `🔍 [${checked}/${repositories.length}] ${username}/${repository.name}`
+                );
+
+
+                try {
+
+                    const project =
+                        await getProject(
+                            username,
+                            repository.name
+                        );
+
+
+                    // gitprohub.md found
+                    if (project) {
+
+                        projects.push(
+                            project
+                        );
+
+
+                        console.log(
+                            `✅ GitProHub project found: ${username}/${repository.name}`
+                        );
+
+                    }
+
+                } catch (error) {
+
+                    console.error(
+
+                        `⚠️ Could not check ${username}/${repository.name}:`,
+
+                        error.message
+
+                    );
+
+                }
+
+            }
+
+
+            console.log("");
+
+            console.log(
+                `🎯 GitProHub projects found: ${projects.length}`
+            );
+
+
+            res.json({
+
+                success: true,
+
+                username,
+
+                repositories:
+                    repositories.length,
+
+                checked,
+
+                total:
+                    projects.length,
+
+                projects
+
+            });
+
+
+        } catch (error) {
+
+            console.error(
+
+                `❌ GitHub account check failed: ${username}`,
+
+                error.message
+
+            );
+
+
+            res.status(500).json({
+
+                success: false,
+
+                username,
+
+                error:
+                    error.message
+
+            });
+
+        }
+
+    }
 );
 
 
-// ==========================================
-// Developers API
-// ==========================================
+// =========================================================
+// Manual Discovery
+// =========================================================
 
-app.use(
-    "/api/developers",
-    developersRouter
+app.post(
+    "/api/discovery/run",
+    async (req, res) => {
+
+        try {
+
+            const result =
+                await runAutoDiscovery();
+
+            res.json({
+
+                success: true,
+
+                ...result
+
+            });
+
+        } catch (error) {
+
+            res.status(500).json({
+
+                success: false,
+
+                error:
+                    error.message
+
+            });
+
+        }
+
+    }
 );
 
 
-// ==========================================
-// Start Server
-// ==========================================
+// =========================================================
+// Server
+// =========================================================
 
-app.listen(PORT, () => {
-
-    console.log(
-        `GitProHub Server running on http://localhost:${PORT}`
-    );
+const PORT =
+    process.env.PORT ||
+    3000;
 
 
-    // Start Automatic Discovery
-    startAutoDiscovery();
+app.listen(
+    PORT,
+    () => {
 
-});
- 
+        console.log("");
+
+        console.log(
+            "=========================================="
+        );
+
+        console.log(
+            `GitProHub Server running on http://localhost:${PORT}`
+        );
+
+        console.log(
+            "=========================================="
+        );
+
+
+        // Start universal discovery
+        startAutoDiscovery(
+            1 * 60 * 1000
+        );
+
+    }
+);

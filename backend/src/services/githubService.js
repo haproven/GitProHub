@@ -1,215 +1,583 @@
-const API_URL = "https://api.github.com";
+// =========================================================
+// GitProHub - GitHub Service
+// =========================================================
+
+const GITHUB_API =
+    "https://api.github.com";
 
 
-// GitHub User
-async function getUser(username) {
+// =========================================================
+// GITHUB HEADERS
+// =========================================================
 
-    const response = await fetch(
-        `${API_URL}/users/${username}`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                Accept: "application/vnd.github+json"
+function getHeaders() {
+
+    const headers = {
+
+        Accept:
+            "application/vnd.github+json",
+
+        "X-GitHub-Api-Version":
+            "2022-11-28"
+    };
+
+
+    if (process.env.GITHUB_TOKEN) {
+
+        headers.Authorization =
+            `Bearer ${process.env.GITHUB_TOKEN}`;
+    }
+
+
+    return headers;
+}
+
+
+// =========================================================
+// GITHUB REQUEST
+// =========================================================
+
+async function githubRequest(url) {
+
+    const response =
+        await fetch(
+            url,
+            {
+                headers:
+                    getHeaders()
             }
-        }
-    );
+        );
 
 
     if (!response.ok) {
 
-        throw new Error(
-            `GitHub API Error: ${response.status}`
-        );
+        const text =
+            await response.text();
 
+
+        throw new Error(
+            `GitHub API ${response.status}: ${text}`
+        );
     }
 
 
     return response.json();
-
 }
 
 
-// GitHub User Repositories
-async function getUserRepositories(username) {
+// =========================================================
+// GET USER
+// =========================================================
 
-    const response = await fetch(
-        `${API_URL}/users/${username}/repos?per_page=100&sort=updated`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                Accept: "application/vnd.github+json"
-            }
-        }
+async function getUser(
+    username
+) {
+
+    return githubRequest(
+        `${GITHUB_API}/users/` +
+        `${encodeURIComponent(username)}`
     );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            `GitHub API Error: ${response.status}`
-        );
-
-    }
-
-
-    return response.json();
-
 }
 
 
-// GitProHub File
-async function getGitProHubFile(username, repo) {
+// =========================================================
+// GET REPOSITORY
+// =========================================================
 
-    const response = await fetch(
-        `${API_URL}/repos/${username}/${repo}/contents/gitprohub.md`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                Accept: "application/vnd.github+json"
-            }
-        }
+async function getRepository(
+    username,
+    repo
+) {
+
+    return githubRequest(
+        `${GITHUB_API}/repos/` +
+        `${encodeURIComponent(username)}/` +
+        `${encodeURIComponent(repo)}`
     );
+}
 
 
-    if (!response.ok) {
+// =========================================================
+// GET USER REPOSITORIES
+// =========================================================
 
-        if (response.status === 404) {
+async function getUserRepositories(
+    username,
+    page = 1,
+    perPage = 100
+) {
+
+    return githubRequest(
+
+        `${GITHUB_API}/users/` +
+        `${encodeURIComponent(username)}/repos` +
+
+        `?per_page=${perPage}` +
+        `&page=${page}` +
+        `&sort=updated`
+    );
+}
+
+
+// =========================================================
+// GET ROOT gitprohub.md
+// =========================================================
+
+async function getGitProHubFile(
+    username,
+    repo
+) {
+
+    try {
+
+        const data =
+            await githubRequest(
+
+                `${GITHUB_API}/repos/` +
+                `${encodeURIComponent(username)}/` +
+                `${encodeURIComponent(repo)}/contents/gitprohub.md`
+            );
+
+
+        if (
+            !data ||
+            !data.content
+        ) {
+
             return null;
         }
 
 
-        throw new Error(
-            `GitHub API Error: ${response.status}`
-        );
-
-    }
-
-
-    const file = await response.json();
+        return Buffer
+            .from(
+                data.content,
+                "base64"
+            )
+            .toString("utf8");
 
 
-    return Buffer
-        .from(file.content, "base64")
-        .toString("utf-8");
+    } catch (error) {
 
-}
+        // 404 = gitprohub.md does not exist
+        if (
+            error.message.includes(
+                "GitHub API 404"
+            )
+        ) {
 
-
-// GitHub Repository
-async function getRepository(username, repo) {
-
-    const response = await fetch(
-        `${API_URL}/repos/${username}/${repo}`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                Accept: "application/vnd.github+json"
-            }
-        }
-    );
-
-
-    if (!response.ok) {
-
-        throw new Error(
-            `GitHub API Error: ${response.status}`
-        );
-
-    }
-
-
-    return response.json();
-
-}
-
-
-// GitHub README
-async function getReadme(username, repo) {
-
-    const response = await fetch(
-        `${API_URL}/repos/${username}/${repo}/readme`,
-        {
-            headers: {
-                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-                Accept: "application/vnd.github+json"
-            }
-        }
-    );
-
-
-    if (!response.ok) {
-
-        if (response.status === 404) {
             return null;
         }
 
 
-        throw new Error(
-            `GitHub API Error: ${response.status}`
-        );
-
+        // Network/API error must be
+        // passed to discoveryService.
+        throw error;
     }
-
-
-    const file = await response.json();
-
-
-    return Buffer
-        .from(file.content, "base64")
-        .toString("utf-8");
-
 }
 
 
-// Get Image From README
-function getImageFromReadme(readme) {
+// =========================================================
+// GET README
+// =========================================================
+
+async function getReadme(
+    username,
+    repo
+) {
+
+    try {
+
+        const data =
+            await githubRequest(
+
+                `${GITHUB_API}/repos/` +
+                `${encodeURIComponent(username)}/` +
+                `${encodeURIComponent(repo)}/readme`
+            );
+
+
+        if (
+            !data ||
+            !data.content
+        ) {
+
+            return "";
+        }
+
+
+        return Buffer
+            .from(
+                data.content,
+                "base64"
+            )
+            .toString("utf8");
+
+
+    } catch (error) {
+
+        if (
+            error.message.includes(
+                "GitHub API 404"
+            )
+        ) {
+
+            return "";
+        }
+
+
+        return "";
+    }
+}
+
+
+// =========================================================
+// GET IMAGE FROM README
+// =========================================================
+
+function getImageFromReadme(
+    readme
+) {
 
     if (!readme) {
+
         return null;
     }
 
 
-    // Markdown image
-    const markdownImage = readme.match(
-        /!\[[^\]]*\]\((https?:\/\/[^)\s]+)(?:\s+"[^"]*")?\)/i
-    );
+    const markdownImage =
+        readme.match(
+            /!\[[^\]]*\]\((https?:\/\/[^)\s]+)\)/i
+        );
 
 
-    if (markdownImage) {
+    if (
+        markdownImage &&
+        markdownImage[1]
+    ) {
+
         return markdownImage[1];
     }
 
 
-    // HTML image
-    const htmlImage = readme.match(
-        /<img[^>]+src=["'](https?:\/\/[^"']+)["']/i
-    );
+    const htmlImage =
+        readme.match(
+            /<img[^>]+src=["'](https?:\/\/[^"']+)["']/i
+        );
 
 
-    if (htmlImage) {
+    if (
+        htmlImage &&
+        htmlImage[1]
+    ) {
+
         return htmlImage[1];
     }
 
 
     return null;
-
 }
 
 
-// Export
+// =========================================================
+// GET FILE METADATA
+// =========================================================
+
+async function getFileMetadata(
+    username,
+    repo,
+    filePath
+) {
+
+    try {
+
+        return await githubRequest(
+
+            `${GITHUB_API}/repos/` +
+            `${encodeURIComponent(username)}/` +
+            `${encodeURIComponent(repo)}/contents/` +
+            `${filePath}`
+        );
+
+
+    } catch (error) {
+
+        return null;
+    }
+}
+
+
+// =========================================================
+// GET gitprohub.md METADATA
+// =========================================================
+
+async function getGitProHubFileMetadata(
+    username,
+    repo
+) {
+
+    return getFileMetadata(
+        username,
+        repo,
+        "gitprohub.md"
+    );
+}
+
+
+// =========================================================
+// GITHUB CODE SEARCH
+// =========================================================
+
+async function searchGitHubCode(
+    query,
+    page = 1,
+    perPage = 100
+) {
+
+    const encodedQuery =
+        encodeURIComponent(
+            query
+        );
+
+
+    return githubRequest(
+
+        `${GITHUB_API}/search/code` +
+
+        `?q=${encodedQuery}` +
+
+        `&per_page=${perPage}` +
+
+        `&page=${page}`
+    );
+}
+
+
+// =========================================================
+// SEARCH gitprohub.md
+// =========================================================
+
+async function searchGitProHubFiles(
+    page = 1,
+    perPage = 100
+) {
+
+    return searchGitHubCode(
+        "filename:gitprohub.md",
+        page,
+        perPage
+    );
+}
+
+
+// =========================================================
+// GLOBAL GITHUB CRAWLER
+// =========================================================
+//
+// IMPORTANT:
+//
+// Sirf:
+//     filename:gitprohub.md
+//
+// Koi username hardcode nahi hai.
+//
+// GitHub search result se automatically:
+//
+//     owner → username
+//     repository → repo
+//
+// milega.
+// =========================================================
+
+async function crawlGitHubGitProHubFiles() {
+
+    const repositories =
+        new Map();
+
+
+    console.log("");
+    console.log(
+        "🔎 Global GitHub search: filename:gitprohub.md"
+    );
+
+
+    let page = 1;
+
+
+    while (true) {
+
+        let result;
+
+
+        try {
+
+            result =
+                await searchGitProHubFiles(
+                    page,
+                    100
+                );
+
+
+        } catch (error) {
+
+            console.error(
+                "❌ GitHub global search failed:",
+                error.message
+            );
+
+
+            // IMPORTANT:
+            //
+            // Search error par existing projects
+            // delete nahi honge.
+            //
+            // Jo results already mile hain
+            // unko return karenge.
+
+            break;
+        }
+
+
+        const items =
+            result?.items || [];
+
+
+        console.log(
+            `📦 Page ${page}: ${items.length} result(s)`
+        );
+
+
+        if (
+            items.length === 0
+        ) {
+
+            break;
+        }
+
+
+        // =====================================================
+        // GET REPOSITORIES FROM SEARCH RESULTS
+        // =====================================================
+
+        for (
+            const item of items
+        ) {
+
+            const repository =
+                item?.repository;
+
+
+            const username =
+                repository?.owner?.login;
+
+
+            const repo =
+                repository?.name;
+
+
+            if (
+                !username ||
+                !repo
+            ) {
+
+                continue;
+            }
+
+
+            const key =
+                `${username}/${repo}`
+                    .toLowerCase();
+
+
+            repositories.set(
+                key,
+                {
+                    username,
+                    repo
+                }
+            );
+        }
+
+
+        // =====================================================
+        // LAST PAGE
+        // =====================================================
+
+        if (
+            items.length < 100
+        ) {
+
+            break;
+        }
+
+
+        page++;
+
+
+        // Safety limit
+        //
+        // GitHub search API ko unlimited
+        // requests nahi bhejne hain.
+
+        if (
+            page > 10
+        ) {
+
+            console.log(
+                "⚠️ Search safety limit reached."
+            );
+
+            break;
+        }
+    }
+
+
+    console.log("");
+    console.log(
+        `🌐 Unique GitHub repositories found: ${repositories.size}`
+    );
+
+
+    for (
+        const repository of repositories.values()
+    ) {
+
+        console.log(
+            `   • ${repository.username}/${repository.repo}`
+        );
+    }
+
+
+    return [
+        ...repositories.values()
+    ];
+}
+
+
+// =========================================================
+// EXPORTS
+// =========================================================
+
 module.exports = {
 
     getUser,
+
+    getRepository,
 
     getUserRepositories,
 
     getGitProHubFile,
 
-    getRepository,
+    getGitProHubFileMetadata,
 
     getReadme,
 
-    getImageFromReadme
+    getImageFromReadme,
 
+    getFileMetadata,
+
+    searchGitHubCode,
+
+    searchGitProHubFiles,
+
+    crawlGitHubGitProHubFiles
 };
- 

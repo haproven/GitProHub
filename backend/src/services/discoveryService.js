@@ -1,6 +1,9 @@
+// =========================================================
+// GitProHub - Discovery Service
+// =========================================================
+
 const {
-    getGitProHubFile,
-    getUserRepositories
+    crawlGitHubGitProHubFiles
 } = require("./githubService");
 
 const {
@@ -8,261 +11,484 @@ const {
 } = require("./projectService");
 
 const {
-    saveProject
+    saveProject,
+    getProjects,
+    removeProject,
+    getProjectKey
 } = require("./projectIndexService");
 
 
-const GITHUB_API = "https://api.github.com";
+// =========================================================
+// CHECK EXISTING PROJECTS
+// =========================================================
+//
+// Existing project ko GitHub se dobara check karega.
+//
+// gitprohub.md available:
+//      → UPDATE
+//
+// gitprohub.md missing / repository deleted:
+//      → REMOVE
+//
+// Network/API error:
+//      → DELETE NAHI karega
+// =========================================================
+
+async function checkExistingProjects() {
+
+    const projects =
+        getProjects();
+
+    let updated = 0;
+    let removed = 0;
+    let errors = 0;
 
 
-// GitHub API Headers
-function getHeaders() {
-
-    return {
-        Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
-        Accept: "application/vnd.github+json"
-    };
-
-}
-
-
-// Search GitHub Repositories
-async function searchGitProHubProjects(
-    page = 1,
-    perPage = 30
-) {
-
-    const query = encodeURIComponent(
-        "filename:gitprohub.md"
+    console.log(
+        `📂 Checking ${projects.length} existing project(s)...`
     );
 
 
-    const url =
-        `${GITHUB_API}/search/code?q=${query}` +
-        `&per_page=${perPage}` +
-        `&page=${page}`;
+    for (
+        const project of projects
+    ) {
+
+        const key =
+            getProjectKey(project);
 
 
-    const response = await fetch(url, {
-        headers: getHeaders()
-    });
+        if (!key) {
+            continue;
+        }
 
 
-    if (!response.ok) {
-
-        throw new Error(
-            `GitHub Search API Error: ${response.status}`
-        );
-
-    }
+        const parts =
+            key.split("/");
 
 
-    return response.json();
-
-}
-
-
-// Check GitProHub File
-async function hasGitProHubFile(owner, repo) {
-
-    const content =
-        await getGitProHubFile(
-            owner,
-            repo
-        );
+        if (
+            parts.length !== 2
+        ) {
+            continue;
+        }
 
 
-    return content !== null;
-
-}
-
-
-// Discover Projects By Username
-async function discoverProjectsByUser(username) {
-
-    const repositories =
-        await getUserRepositories(
-            username
-        );
-
-
-    const projects = [];
-
-
-    for (const repository of repositories) {
-
-        const owner =
-            repository.owner.login;
+        const username =
+            parts[0];
 
         const repo =
-            repository.name;
+            parts[1];
 
 
         try {
 
-            // Check gitprohub.md
-            const hasFile =
-                await hasGitProHubFile(
-                    owner,
-                    repo
-                );
-
-
-            if (!hasFile) {
-                continue;
-            }
-
-
-            // Get complete project
-            const project =
+            const freshProject =
                 await getProject(
-                    owner,
+                    username,
                     repo
                 );
 
 
-            if (!project) {
+            // =================================================
+            // PROJECT NO LONGER EXISTS
+            // OR gitprohub.md REMOVED
+            // =================================================
+
+            if (!freshProject) {
+
+                const wasRemoved =
+                    removeProject(
+                        username,
+                        repo
+                    );
+
+
+                if (wasRemoved) {
+
+                    removed++;
+
+                    console.log(
+                        `🗑️ Removed: ${username}/${repo}`
+                    );
+                }
+
+
                 continue;
             }
 
 
-            // Save / Update Index
-            saveProject(project);
+            // =================================================
+            // EXISTING PROJECT UPDATE
+            // =================================================
+
+            saveProject(
+                freshProject
+            );
 
 
-            // Add project
-            projects.push(project);
+            updated++;
 
 
         } catch (error) {
 
-            console.error(
-                `Project discovery failed: ${owner}/${repo}`,
-                error.message
-            );
-
-        }
-
-    }
+            errors++;
 
 
-    return projects;
-
-}
-
-
-// Discover GitProHub Projects
-async function discoverProjects(
-    page = 1,
-    perPage = 30
-) {
-
-    const searchResult =
-        await searchGitProHubProjects(
-            page,
-            perPage
-        );
-
-
-    const items =
-        searchResult.items || [];
-
-
-    const projects = [];
-
-
-    for (const item of items) {
-
-        let owner = "";
-        let repo = "";
-
-
-        try {
-
-            owner =
-                item.repository.owner.login;
-
-            repo =
-                item.repository.name;
-
-
-            const hasFile =
-                await hasGitProHubFile(
-                    owner,
-                    repo
-                );
-
-
-            if (!hasFile) {
-                continue;
-            }
-
-
-            const project =
-                await getProject(
-                    owner,
-                    repo
-                );
-
-
-            if (!project) {
-                continue;
-            }
-
-
-            saveProject(project);
-
-            projects.push(project);
-
-
-        } catch (error) {
+            // IMPORTANT:
+            // API/network error par project delete
+            // NAHI hoga.
 
             console.error(
-                `Project discovery failed: ${owner}/${repo}`,
+                `⚠️ Could not check ${username}/${repo}:`,
                 error.message
             );
-
         }
-
     }
 
 
     return {
+
+        checked:
+            projects.length,
+
+        updated,
+
+        removed,
+
+        errors
+    };
+}
+
+
+// =========================================================
+// DISCOVER NEW GITPROHUB PROJECTS
+// =========================================================
+//
+// GitHub par:
+//
+//      filename:gitprohub.md
+//
+// search hoga.
+//
+// Koi username hardcode nahi hai.
+//
+// New project:
+//      → ADD
+//
+// Existing:
+//      → UPDATE
+// =========================================================
+
+async function discoverNewGitProHubProjects() {
+
+    console.log("");
+    console.log(
+        "🔎 Searching GitHub for new GitProHub projects..."
+    );
+
+
+    let repositories;
+
+
+    try {
+
+        repositories =
+            await crawlGitHubGitProHubFiles();
+
+
+    } catch (error) {
+
+        console.error(
+            "❌ Global GitHub discovery failed:",
+            error.message
+        );
+
+
+        return {
+
+            discovered: 0,
+
+            added: 0,
+
+            updated: 0,
+
+            repositories: []
+        };
+    }
+
+
+    if (
+        !Array.isArray(repositories)
+    ) {
+
+        repositories = [];
+    }
+
+
+    console.log("");
+    console.log(
+        `🌐 GitHub repositories discovered: ${repositories.length}`
+    );
+
+
+    let added = 0;
+    let updated = 0;
+
+
+    // =========================================================
+    // PROCESS EVERY DISCOVERED REPOSITORY
+    // =========================================================
+
+    for (
+        const repository of repositories
+    ) {
+
+        const username =
+            repository?.username;
+
+        const repo =
+            repository?.repo;
+
+
+        if (
+            !username ||
+            !repo
+        ) {
+
+            continue;
+        }
+
+
+        console.log(
+            `🔍 Checking: ${username}/${repo}`
+        );
+
+
+        try {
+
+            const project =
+                await getProject(
+                    username,
+                    repo
+                );
+
+
+            // =================================================
+            // gitprohub.md NOT FOUND
+            // =================================================
+
+            if (!project) {
+
+                console.log(
+                    `⏭️ Skipped: ${username}/${repo}`
+                );
+
+                continue;
+            }
+
+
+            // =================================================
+            // CHECK WHETHER ALREADY EXISTS
+            // =================================================
+
+            const existingProjects =
+                getProjects();
+
+
+            const newKey =
+                getProjectKey(
+                    project
+                );
+
+
+            const alreadyExists =
+                existingProjects.some(
+                    existing =>
+                        getProjectKey(existing) ===
+                        newKey
+                );
+
+
+            // =================================================
+            // NEW PROJECT
+            // =================================================
+
+            if (!alreadyExists) {
+
+                saveProject(
+                    project
+                );
+
+                added++;
+
+
+                console.log(
+                    `🆕 NEW GitProHub project added: ${username}/${repo}`
+                );
+
+
+                continue;
+            }
+
+
+            // =================================================
+            // EXISTING PROJECT
+            // =================================================
+
+            saveProject(
+                project
+            );
+
+            updated++;
+
+
+            console.log(
+                `🔄 Existing project updated: ${username}/${repo}`
+            );
+
+
+        } catch (error) {
+
+            // API/network error par crawler continue karega.
+
+            console.error(
+                `⚠️ Failed: ${username}/${repo}`,
+                error.message
+            );
+        }
+    }
+
+
+    return {
+
+        discovered:
+            repositories.length,
+
+        added,
+
+        updated,
+
+        repositories
+    };
+}
+
+
+// =========================================================
+// MAIN GLOBAL DISCOVERY
+// =========================================================
+
+async function discoverAllGitProHubProjects() {
+
+    console.log("");
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        "🌍 GLOBAL GITHUB CRAWLER"
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    // =========================================================
+    // STEP 1
+    // CHECK OLD PROJECTS
+    // =========================================================
+
+    const existing =
+        await checkExistingProjects();
+
+
+    // =========================================================
+    // STEP 2
+    // FIND NEW PROJECTS
+    // =========================================================
+
+    const discovered =
+        await discoverNewGitProHubProjects();
+
+
+    // =========================================================
+    // FINAL PROJECT LIST
+    // =========================================================
+
+    const projects =
+        getProjects();
+
+
+    console.log("");
+    console.log(
+        "=========================================="
+    );
+
+    console.log(
+        `🎯 Total GitProHub Projects: ${projects.length}`
+    );
+
+    console.log(
+        `🆕 New projects added: ${discovered.added}`
+    );
+
+    console.log(
+        `🔄 Projects updated: ${existing.updated}`
+    );
+
+    console.log(
+        `🗑️ Projects removed: ${existing.removed}`
+    );
+
+    console.log(
+        `⚠️ Existing check errors: ${existing.errors}`
+    );
+
+    console.log(
+        "=========================================="
+    );
+
+
+    return {
+
+        success: true,
 
         total:
             projects.length,
 
-        projects:
-            projects,
+        projects,
 
-        search: {
+        discovered:
+            discovered.discovered,
 
-            total_count:
-                searchResult.total_count || 0,
+        added:
+            discovered.added,
 
-            page:
-                page,
+        updated:
+            existing.updated,
 
-            per_page:
-                perPage
+        removed:
+            existing.removed,
 
-        }
+        checked:
+            existing.checked,
 
+        errors:
+            existing.errors
     };
-
 }
 
 
-// Export
+// =========================================================
+// EXPORTS
+// =========================================================
+
 module.exports = {
 
-    searchGitProHubProjects,
+    checkExistingProjects,
 
-    hasGitProHubFile,
+    discoverNewGitProHubProjects,
 
-    discoverProjects,
-
-    discoverProjectsByUser
+    discoverAllGitProHubProjects
 
 };
- 

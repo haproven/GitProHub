@@ -1,136 +1,304 @@
+// =========================================================
+// GitProHub Project Service
+// =========================================================
+
 const {
+
     getUser,
     getGitProHubFile,
+    getGitProHubFileMetadata,
     getRepository,
     getReadme,
     getImageFromReadme
+
 } = require("./githubService");
+
 
 const {
     parseGitProHub
 } = require("./gitprohubParser");
 
 
-// Get Complete GitProHub Project
-async function getProject(username, repo) {
+// =========================================================
+// Get Complete Project
+// =========================================================
 
-    // GitHub User
-    const user = await getUser(username);
+async function getProject(
+    username,
+    repo
+) {
 
-
-    // GitHub Repository
-    const repository = await getRepository(
-        username,
-        repo
-    );
-
-
-    // gitprohub.md
-    const content = await getGitProHubFile(
-        username,
-        repo
-    );
+    const repository =
+        await getRepository(
+            username,
+            repo
+        );
 
 
-    // gitprohub.md is required
-    if (!content) {
+    // -----------------------------------------------------
+    // Private / unavailable repository
+    // -----------------------------------------------------
+
+    if (
+        !repository ||
+        repository.private
+    ) {
+
         return null;
     }
 
 
-    // Parse metadata
-    const metadata = parseGitProHub(content);
+    // -----------------------------------------------------
+    // Get gitprohub.md
+    // -----------------------------------------------------
+
+    const content =
+        await getGitProHubFile(
+            username,
+            repo
+        );
 
 
+    if (!content) {
+
+        return null;
+    }
+
+
+    // -----------------------------------------------------
+    // Parse
+    // -----------------------------------------------------
+
+    const metadata =
+        parseGitProHub(
+            content
+        );
+
+
+    // -----------------------------------------------------
+    // User
+    // -----------------------------------------------------
+
+    const user =
+        await getUser(
+            username
+        );
+
+
+    // -----------------------------------------------------
     // README
-    const readme = await getReadme(
-        username,
-        repo
-    );
+    // -----------------------------------------------------
+
+    const readme =
+        await getReadme(
+            username,
+            repo
+        );
 
 
-    // Image Priority
-    let image = metadata.image || null;
+    // -----------------------------------------------------
+    // Image
+    // -----------------------------------------------------
+
+    let image =
+        metadata.image ||
+        null;
 
 
-    // README image
     if (!image) {
-        image = getImageFromReadme(readme);
+
+        image =
+            getImageFromReadme(
+                readme
+            );
     }
 
 
-    // GitHub Social Preview
     if (!image) {
-        image = `https://opengraph.githubassets.com/1/${username}/${repo}`;
+
+        image =
+            `https://opengraph.githubassets.com/1/` +
+            `${username}/${repo}`;
     }
 
 
-    // Final Project Object
+    // -----------------------------------------------------
+    // gitprohub.md metadata
+    // -----------------------------------------------------
+
+    const fileMetadata =
+        await getGitProHubFileMetadata(
+            username,
+            repo
+        );
+
+
+    // -----------------------------------------------------
+    // Complete Project
+    // -----------------------------------------------------
+
     return {
 
-        // Project metadata
         ...metadata,
 
-
-        // Final image
         image,
 
+        gitprohub: {
 
-        // README
+            path: "gitprohub.md",
+
+            sha:
+                fileMetadata?.sha ||
+                null,
+
+            size:
+                fileMetadata?.size ||
+                null,
+
+            url:
+                fileMetadata?.html_url ||
+                null
+
+        },
+
         readme,
 
-
-        // GitHub data
         github: {
-            name: repository.name,
-            url: repository.html_url,
-            description: repository.description,
-            stars: repository.stargazers_count,
-            forks: repository.forks_count,
-            language: repository.language,
 
-            license: repository.license
-                ? repository.license.spdx_id
-                : null,
+            name:
+                repository.name,
 
-            created_at: repository.created_at,
-            updated_at: repository.updated_at,
-            default_branch: repository.default_branch,
-            topics: repository.topics || []
+            url:
+                repository.html_url,
+
+            description:
+                repository.description,
+
+            stars:
+                repository.stargazers_count,
+
+            forks:
+                repository.forks_count,
+
+            language:
+                repository.language,
+
+            license:
+                repository.license
+                    ? repository.license.spdx_id
+                    : null,
+
+            created_at:
+                repository.created_at,
+
+            updated_at:
+                repository.updated_at,
+
+            pushed_at:
+                repository.pushed_at,
+
+            default_branch:
+                repository.default_branch,
+
+            topics:
+                repository.topics || [],
+
+            archived:
+                repository.archived,
+
+            fork:
+                repository.fork
         },
 
 
-        // Developer data
         developer: {
-            name: user.name,
-            username: user.login,
-            avatar: user.avatar_url,
-            github: user.html_url
+
+            name:
+                user.name,
+
+            username:
+                user.login,
+
+            avatar:
+                user.avatar_url,
+
+            github:
+                user.html_url,
+
+            bio:
+                user.bio,
+
+            followers:
+                user.followers,
+
+            public_repos:
+                user.public_repos
         }
 
     };
 }
 
 
+// =========================================================
+// Check Project
+// =========================================================
+
+async function checkProject(
+    username,
+    repo
+) {
+
+    try {
+
+        const project =
+            await getProject(
+                username,
+                repo
+            );
+
+
+        if (!project) {
+
+            return {
+                exists: false,
+                project: null
+            };
+        }
+
+
+        return {
+
+            exists: true,
+            project
+
+        };
+
+    } catch (error) {
+
+        console.error(
+            `Project check failed: ${username}/${repo}`,
+            error.message
+        );
+
+
+        return {
+
+            exists: false,
+            project: null,
+            error: error.message
+
+        };
+    }
+}
+
+
+// =========================================================
+// Export
+// =========================================================
+
 module.exports = {
-    getProject
+
+    getProject,
+    checkProject
+
 };
- 
-
-// ### Ab next step
-
-// Ab **`server.js`** me jo `/github-project/:username/:repo` ka bada code hai, usko `projectService.js` se connect karke **clean** karenge.
-
-// Yani:
-
-//  text
-// server.js
-//      ↓
-// projectService.js
-//      ↓
-// githubService.js
-//      ↓
-// GitHub API
- 
-
-// Isse aage **Search + Discovery System** banana easy hoga.

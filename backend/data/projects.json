@@ -1,0 +1,102 @@
+[
+  {
+    "title": "GitProHub",
+    "description": "title: HaproID description: A verified digital identity and professional profile platform for developers, creators, and professionals.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "HaproID",
+      "url": "https://github.com/haproven/HaproID",
+      "description": "HaproID is a digital identity platform that allows everyone to create their own unique online profile. It's not just for students, but also suitable for job seekers, professionals, and creators.",
+      "stars": 1,
+      "forks": 0,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-04-26T05:14:16Z",
+      "updated_at": "2026-09-13T22:04:13Z",
+      "pushed_at": "2026-09-13T22:04:10Z",
+      "default_branch": "main",
+      "topics": [],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://opengraph.githubassets.com/1/haproven/HaproID",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "b0f9632b9fc6c445b0744c8af39803968dfa2a7e",
+      "size": 420,
+      "url": "https://github.com/haproven/HaproID/blob/main/gitprohub.md"
+    },
+    "readme": "# HaproID – Free Professional Profile\n\n\n**HaproID**is a **digital identity platform** that allows everyone to create their own **unique online profile**. It's not just for students, but also suitable for **job seekers, professionals, and creators.**\n\n\n---\n\n## 🌐What is HaproID?\nHaproID is your **digital identity.** \nIt lets you showcase your professional and personal details in a single link.\n\n\n### These include:\n- Your name  \n- profile photo \n- Skills / Expertise  \n- Social Media Links (LinkedIn, Instagram, GitHub, YouTube etc.)  \n- Contact Details  \n- Resume / CV (optional)  \n- Projects / Portfolio  \n\n---\n---\n## 🎯 फायदे (Benefits)\n\n1. **One-link profile** – No need to share the link again and again.\n2. **SEO-friendly** – Easily visible in Google search.  \n3. **Verified & Professional** – trusted digital identity  \n4. **Free & Simple** – Prepare without website or coding knowledge. \n5. **All-in-one** –For students, job seekers, creators all.\n^. **Haproid_Name** –Pro-[first-name]-[serial-number] .\n\n---\n\n## 🛠️ How to create HaproID?\n1. [HaproID Create Link](https://haproid.netlify.app/)go to. \n2. Your **username** Pro-[first-name]-[serial-number]\n3. Fill profile details\n4. Share your link and increase your digital presence.\n---\n\n## 🔗 Example\n\nUnique HaproID URLs का format: Pro-[first-name]-[serial-number]\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T07:47:40.778Z",
+      "lastUpdatedAt": "2026-09-15T06:01:46.037Z"
+    }
+  },
+  {
+    "title": "GitProHub",
+    "description": "title: Haproven description: Indian technology community and creative team building hackathons, projects, events, and developer tools.",
+    "category": "",
+    "status": "",
+    "developer": {
+      "name": "haproven",
+      "username": "haproven",
+      "avatar": "https://avatars.githubusercontent.com/u/279256795?v=4",
+      "github": "https://github.com/haproven",
+      "bio": "Haproven tech community .",
+      "followers": 11,
+      "public_repos": 13
+    },
+    "live": "",
+    "github": {
+      "name": "haproven",
+      "url": "https://github.com/haproven/haproven",
+      "description": "HAPROVEN is a tech community focused on turning ideas into real-world projects.",
+      "stars": 8,
+      "forks": 11,
+      "language": "HTML",
+      "license": null,
+      "created_at": "2026-04-25T13:12:11Z",
+      "updated_at": "2026-09-13T21:58:08Z",
+      "pushed_at": "2026-09-13T21:58:05Z",
+      "default_branch": "main",
+      "topics": [
+        "developer-tools",
+        "github-config",
+        "haproven",
+        "haproven-frame",
+        "haproven-framework",
+        "haproven-github",
+        "haproven-technologies",
+        "tech-community",
+        "web-framework"
+      ],
+      "archived": false,
+      "fork": false
+    },
+    "image": "https://avatars.githubusercontent.com/u/279256795?v=4",
+    "tags": [],
+    "gitprohub": {
+      "path": "gitprohub.md",
+      "sha": "b393b5dede2fe989249832eaf8b7e57d5914af1d",
+      "size": 478,
+      "url": "https://github.com/haproven/haproven/blob/main/gitprohub.md"
+    },
+    "readme": "\n# 🚀 HAPROVEN — Tech Community\n\n<p align=\"center\">\n  <img\n    src=\"suggestions/susheel/main/Banner.jpeg\"\n    alt=\"Haproven Tech Community Banner\"\n    width=\"100%\">\n</p>\n\n<p align=\"center\">\n  <b>Hackathons • Projects • Events • Technology</b>\n</p>\n\n<p align=\"center\">\n  Turning ideas into real-world digital solutions through\n  <b>collaboration, creativity, and code.</b>\n</p>\n\n---\n\n\n\n\n\n## 🖼️ Haproven Frame\n\n<p align=\"center\">\n  <b>The People Behind Haproven</b>\n</p>\n\n<p align=\"center\">\n  Haproven Frame recognizes the developers, builders, and contributors\n  helping Haproven grow through open-source collaboration.\n</p>\n\n<!-- HAPROVEN-FRAME:START -->\n\n<p align=\"center\">\n\n<a href=\"https://github.com/haproven\" title=\"haproven — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/279256795?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"haproven — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/codersusheel\" title=\"codersusheel — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/195109254?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"codersusheel — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/coder-sk-2026\" title=\"coder-sk-2026 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/310669286?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"coder-sk-2026 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/susheel026\" title=\"susheel026 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/199501106?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"susheel026 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/deepakyadav1425\" title=\"deepakyadav1425 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/321023452?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"deepakyadav1425 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/Kushagra1001\" title=\"Kushagra1001 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/146299482?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"Kushagra1001 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/shivamrai26\" title=\"shivamrai26 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/285886682?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"shivamrai26 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/surajpaniyara102-web\" title=\"surajpaniyara102-web — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/240368312?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"surajpaniyara102-web — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/Swalih-05\" title=\"Swalih-05 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/201027180?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"Swalih-05 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/vijaylaxmi88582-art\" title=\"vijaylaxmi88582-art — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/263568971?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"vijaylaxmi88582-art — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/amansingh1182006\" title=\"amansingh1182006 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/205407093?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"amansingh1182006 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/rajputhimanshusingh01\" title=\"rajputhimanshusingh01 — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/224974472?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"rajputhimanshusingh01 — Haproven Contributor\">\n</a>\n\n<a href=\"https://github.com/udaykumar25398-droid\" title=\"udaykumar25398-droid — Haproven Contributor\">\n  <img src=\"https://avatars.githubusercontent.com/u/297070626?v=4\" width=\"90\" height=\"90\" loading=\"lazy\" alt=\"udaykumar25398-droid — Haproven Contributor\">\n</a>\n\n</p>\n\n<!-- HAPROVEN-FRAME:END -->\n\n<p align=\"center\">\n  <sub>\n    👆 Click a profile photo to visit that contributor's GitHub profile.\n  </sub>\n</p>\n\n<p align=\"center\">\n  <a href=\"https://github.com/haproven/haproven/tree/main/suggestions\">\n    🤝 Share Your Idea →\n  </a>\n</p>\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n---\n\n\n## 💡 About HAPROVEN\n\n**HAPROVEN** is a technology community for developers, students, creators, and technology enthusiasts.\n\nWe bring people together to **learn, build, collaborate, and innovate** through real-world projects, hackathons, events, open-source development, and technology initiatives.\n\n### 🎯 Our Focus\n\n* 🏆 Hackathons\n* 💻 Real-world Projects\n* 🎯 Technology Events\n* 🌱 Open Source\n* 🤝 Developer Collaboration\n* 🚀 Learning & Innovation\n\n---\n\n## 🌐 HAPROVEN Ecosystem\n\n**HaproID** • **HaproShow** • **HaproLearn** • **HaproAPI** • **HaproFun**\n\nOur ecosystem is built to help developers **create profiles, showcase projects, learn technologies, explore developer tools, and participate in community activities.**\n\n---\n\n## 💭 Have an Idea for HAPROVEN?\n\nWe want to hear from you.\n\nIf you have an idea, improvement, event concept, project suggestion, feature request, or anything related to Haproven, you can share it with us.\n\n📁 **Suggestions folder:** [`suggestions/`](./suggestions/)\n\nYou can suggest things like:\n\n* 💡 New Haproven features\n* 🛠️ Website improvements\n* 🏆 Hackathon ideas\n* 🎯 Event ideas\n* 💻 Project ideas\n* 🌐 New ecosystem services\n* 🤝 Community activities\n* 📚 Learning initiatives\n* 🎨 UI/UX improvements\n* 🚀 Any useful idea related to Haproven\n\n**No idea is too small if it can help the community grow.**\n\n---\n\n## 🪪 Want Your Profile in the HAPROVEN Community?\n\nIf you are a developer, contributor, builder, or active community member and want your GitHub profile to become part of the Haproven community, we'd love to see you contribute.\n\nStart by:\n\n1. ⭐ Exploring Haproven\n2. 💻 Contributing to a project\n3. 💡 Sharing a useful suggestion\n4. 🤝 Participating in community activities\n5. 🚀 Building something with Haproven\n\nYour contributions help the community grow — and your profile can become part of that journey.\n\n---\n\n## 🤝 How You Can Contribute\n\nYou don't need to be an expert.\n\nYou can contribute through:\n\n**Code** → Build & improve projects\n**Ideas** → Suggest useful improvements\n**Design** → Improve UI/UX\n**Documentation** → Improve guides & information\n**Events** → Help organize community activities\n**Feedback** → Tell us what can be better\n\nEvery useful contribution matters.\n\n---\n\n## 🔐 Suggestions & Privacy\n\nThe `suggestions/` folder is intended for **private suggestions and internal discussion**.\n\nPlease do **not** submit:\n\n* Passwords\n* API keys\n* Personal documents\n* Private credentials\n* Sensitive personal information\n\nOnly share information that is appropriate for the Haproven team to review.\n\n---\n\n## 🔗 Connect With HAPROVEN\n\n<p align=\"center\">\n\n<a href=\"https://haproven.netlify.app/\">🌐 Website</a> • <a href=\"https://github.com/haproven/\">💻 GitHub</a> • <a href=\"https://instagram.com/haproven\">📸 Instagram</a> • <a href=\"https://youtube.com/@Haproven\">▶️ YouTube</a>\n\n</p>\n\n---\n\n<p align=\"center\">\n\n### 🚀 HAPROVEN\n\n<b>Where Ideas Get Proven.</b>\n\n<br>\n\n<i>Build • Learn • Collaborate • Innovate</i>\n\n</p>\n",
+    "sync": {
+      "lastCheckedAt": "2026-09-15T07:47:38.768Z",
+      "lastUpdatedAt": "2026-09-15T07:09:53.375Z"
+    }
+  }
+]
