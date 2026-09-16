@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta
@@ -286,36 +287,52 @@
     <main class="container">
 
         <section class="hero">
+
             <div class="brand">
-                <div class="logo">G</div>
+
+                <div class="logo">
+                    G
+                </div>
 
                 <div>
-                    <h1>Project Stats</h1>
+                    <h1>
+                        Project Stats
+                    </h1>
                 </div>
+
             </div>
 
             <p class="subtitle">
                 GitProHub project index statistics
             </p>
+
         </section>
+
 
         <div class="api-bar">
 
-            <div class="api-url">
-                http://127.0.0.1:3000/api/projects/stats
+            <div
+                class="api-url"
+                id="apiUrl"
+            >
+                https://gitprohub.onrender.com/api/projects/stats
             </div>
 
             <div
                 class="status"
                 id="apiStatus"
             >
+
                 <span class="status-dot"></span>
+
                 <span id="statusText">
                     Connecting...
                 </span>
+
             </div>
 
         </div>
+
 
         <section
             class="stats-grid"
@@ -323,6 +340,7 @@
         >
 
             <div class="stat-card">
+
                 <div class="stat-label">
                     Total Projects
                 </div>
@@ -337,9 +355,12 @@
                 <div class="stat-description">
                     Unique projects in GitProHub index
                 </div>
+
             </div>
 
+
             <div class="stat-card">
+
                 <div class="stat-label">
                     Index Status
                 </div>
@@ -354,9 +375,12 @@
                 <div class="stat-description">
                     Current API connection
                 </div>
+
             </div>
 
+
             <div class="stat-card updated-card">
+
                 <div class="stat-label">
                     Last Updated
                 </div>
@@ -371,18 +395,23 @@
                 <div class="stat-description">
                     Latest project synchronization time
                 </div>
+
             </div>
 
         </section>
 
+
         <div class="actions">
+
             <button
                 type="button"
                 id="refreshButton"
             >
                 Refresh Stats
             </button>
+
         </div>
+
 
         <footer>
             GitProHub · Powered by Haproven
@@ -390,74 +419,99 @@
 
     </main>
 
+
     <script>
+
+        const API_BASE =
+            "https://gitprohub.onrender.com";
+
         const API_URL =
-            "http://127.0.0.1:3000/api/projects/stats";
+            `${API_BASE}/api/projects/stats`;
+
 
         const totalProjects =
             document.getElementById(
                 "totalProjects"
             );
 
+
         const indexStatus =
             document.getElementById(
                 "indexStatus"
             );
+
 
         const lastUpdated =
             document.getElementById(
                 "lastUpdated"
             );
 
+
         const apiStatus =
             document.getElementById(
                 "apiStatus"
             );
+
 
         const statusText =
             document.getElementById(
                 "statusText"
             );
 
+
         const refreshButton =
             document.getElementById(
                 "refreshButton"
             );
 
+
         function setStatus(
             type,
             message
         ) {
+
             apiStatus.classList.remove(
                 "connected",
                 "error"
             );
 
+
             if (type) {
+
                 apiStatus.classList.add(
                     type
                 );
+
             }
+
 
             statusText.textContent =
                 message;
+
         }
 
+
         function formatDate(value) {
+
             if (!value) {
                 return "Not available";
             }
 
+
             const date =
                 new Date(value);
+
 
             if (
                 Number.isNaN(
                     date.getTime()
                 )
             ) {
+
                 return value;
+
             }
+
 
             return date.toLocaleString(
                 "en-IN",
@@ -466,77 +520,112 @@
                     timeStyle: "medium"
                 }
             );
+
         }
 
+
         async function loadStats() {
-            refreshButton.disabled = true;
+
+            refreshButton.disabled =
+                true;
+
 
             setStatus(
                 "",
                 "Connecting..."
             );
 
+
             try {
+
                 const response =
                     await fetch(
                         API_URL,
                         {
                             method: "GET",
+
                             headers: {
                                 "Accept":
                                     "application/json"
                             },
+
                             cache: "no-store"
                         }
                     );
 
+
                 if (!response.ok) {
+
                     throw new Error(
                         `HTTP ${response.status}`
                     );
+
                 }
+
 
                 const data =
                     await response.json();
+
 
                 if (
                     !data ||
                     data.success === false
                 ) {
+
                     throw new Error(
                         data?.error ||
+                        data?.message ||
                         "Invalid API response"
                     );
+
                 }
 
+
                 const total =
-                    Number(data.total) || 0;
+                    Number(
+                        data.total
+                    ) || 0;
+
 
                 totalProjects.textContent =
                     total;
 
+
                 indexStatus.textContent =
                     "Online";
+
 
                 lastUpdated.textContent =
                     formatDate(
                         data.lastUpdated
                     );
 
+
                 setStatus(
                     "connected",
                     "API Connected"
                 );
 
+
             } catch (error) {
+
+                console.error(
+                    "GitProHub Stats API Error:",
+                    error
+                );
+
+
                 totalProjects.textContent =
                     "—";
+
 
                 indexStatus.textContent =
                     "Offline";
 
+
                 lastUpdated.textContent =
                     "Not available";
+
 
                 setStatus(
                     "error",
@@ -544,18 +633,25 @@
                 );
 
             } finally {
+
                 refreshButton.disabled =
                     false;
+
             }
+
         }
+
 
         refreshButton.addEventListener(
             "click",
             loadStats
         );
 
+
         loadStats();
+
     </script>
 
 </body>
+
 </html>

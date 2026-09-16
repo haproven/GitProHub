@@ -450,7 +450,7 @@
 
     <script>
         const API_BASE =
-            "http://127.0.0.1:3000/api/github";
+            "https://gitprohub.onrender.com/api/github";
 
         const params =
             new URLSearchParams(
@@ -632,6 +632,9 @@
                 ) ||
                 safeUrl(
                     project?.githubUrl
+                ) ||
+                safeUrl(
+                    project?.github_url
                 ) ||
                 `https://github.com/${encodeURIComponent(
                     username

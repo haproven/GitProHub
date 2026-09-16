@@ -249,7 +249,7 @@
         (() => {
 
             const API_BASE =
-                "http://127.0.0.1:3000";
+                "https://gitprohub.onrender.com";
 
             const STORAGE_KEY =
                 "gitprohub_github_username";
@@ -283,6 +283,22 @@
 
                 if (Array.isArray(data?.results)) {
                     return data.results;
+                }
+
+                if (Array.isArray(data?.result)) {
+                    return data.result;
+                }
+
+                if (Array.isArray(data?.result?.projects)) {
+                    return data.result.projects;
+                }
+
+                if (Array.isArray(data?.data?.projects)) {
+                    return data.data.projects;
+                }
+
+                if (Array.isArray(data?.items)) {
+                    return data.items;
                 }
 
                 return [];
@@ -352,6 +368,7 @@
                             "Unnamed Project"
                         );
 
+
                         const description = getValue(
                             project,
                             [
@@ -361,6 +378,7 @@
                             ],
                             "No description available."
                         );
+
 
                         const language = getValue(
                             project,
@@ -372,25 +390,30 @@
                             "Unknown"
                         );
 
+
                         const stars = getValue(
                             project,
                             [
                                 "stars",
+                                "github.stars",
                                 "github.stargazers_count",
                                 "repository.stargazers_count"
                             ],
                             0
                         );
 
+
                         const forks = getValue(
                             project,
                             [
                                 "forks",
+                                "github.forks",
                                 "github.forks_count",
                                 "repository.forks_count"
                             ],
                             0
                         );
+
 
                         const githubUrl = getValue(
                             project,
@@ -398,19 +421,25 @@
                                 "github.html_url",
                                 "repository.html_url",
                                 "githubUrl",
+                                "github_url",
+                                "repoUrl",
+                                "repositoryUrl",
                                 "github"
                             ],
                             ""
                         );
 
+
                         const liveUrl = getValue(
                             project,
                             [
                                 "liveUrl",
+                                "live_url",
                                 "live",
                                 "website",
                                 "demo",
-                                "projectUrl"
+                                "projectUrl",
+                                "project_url"
                             ],
                             ""
                         );
@@ -524,7 +553,10 @@
                             `${API_BASE}/api/github/${encodeURIComponent(username)}`,
                             {
                                 method: "GET",
-                                cache: "no-store"
+                                cache: "no-store",
+                                headers: {
+                                    "Accept": "application/json"
+                                }
                             }
                         );
 
@@ -554,7 +586,10 @@
 
                 } catch (error) {
 
-                    console.error(error);
+                    console.error(
+                        "GitProHub API Error:",
+                        error
+                    );
 
                     projectsContainer.innerHTML = `
                         <div class="error">
@@ -583,6 +618,7 @@
                     searchUsername(
                         usernameInput.value
                     );
+
                 }
             );
 
@@ -598,7 +634,9 @@
                         searchUsername(
                             usernameInput.value
                         );
+
                     }
+
                 }
             );
 

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>GitProHub Discovery Run</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background:
+                linear-gradient(
+                    135deg,
+                    #f8fafc,
+                    #eef2ff
+                );
+            color: #111827;
+            padding: 24px 16px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .brand {
+            font-size: 21px;
+            font-weight: 850;
+            letter-spacing: -0.5px;
+        }
+
+        .brand span {
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        button {
+            border: 0;
+            outline: none;
+            cursor: pointer;
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: #111827;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 750;
+            transition:
+                transform 0.2s ease,
+                opacity 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+        }
+
+        button:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .api-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+            background: #111827;
+            color: #ffffff;
+            padding: 14px 18px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+        }
+
+        .api-url {
+            font-size: 13px;
+            opacity: 0.85;
+            word-break: break-all;
+        }
+
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            white-space: nowrap;
+        }
+
+        .status-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #f59e0b;
+        }
+
+        .status.connected .status-dot {
+            background: #22c55e;
+        }
+
+        .status.error .status-dot {
+            background: #ef4444;
+        }
+
+        .card {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow:
+                0 20px 55px rgba(15, 23, 42, 0.08);
+        }
+
+        .heading {
+            font-size: clamp(30px, 6vw, 48px);
+            line-height: 1.05;
+            letter-spacing: -1.5px;
+            font-weight: 850;
+        }
+
+        .description {
+            margin-top: 12px;
+            color: #64748b;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .run-button {
+            margin-top: 25px;
+            min-width: 150px;
+        }
+
+        .result {
+            margin-top: 25px;
+            border-radius: 17px;
+            border: 1px solid #e5e7eb;
+            background: #f8fafc;
+            padding: 20px;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+        }
+
+        .result-title {
+            font-size: 15px;
+            font-weight: 850;
+            margin-bottom: 12px;
+        }
+
+        .result pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+            overflow-x: auto;
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+            font-size: 12px;
+            line-height: 1.7;
+            color: #334155;
+        }
+
+        .message {
+            margin-top: 18px;
+            padding: 15px 17px;
+            border-radius: 13px;
+            background: #f8fafc;
+            border: 1px solid #e5e7eb;
+            color: #64748b;
+            font-size: 13px;
+            line-height: 1.6;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            color: #dc2626;
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        footer {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 650px) {
+            body {
+                padding: 16px 12px;
+            }
+
+            .topbar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .card {
+                padding: 23px 20px;
+            }
+
+            .api-bar {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .run-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <main class="container">
+
+        <div class="topbar">
+
+            <div class="brand">
+                GitProHub
+                <span> / Discovery</span>
+            </div>
+
+        </div>
+
+        <div class="api-bar">
+
+            <div
+                class="api-url"
+                id="apiUrl"
+            >
+                https://gitprohub.onrender.com/api/discovery/run
+            </div>
+
+            <div
+                class="status"
+                id="apiStatus"
+            >
+                <span class="status-dot"></span>
+
+                <span id="statusText">
+                    Ready
+                </span>
+            </div>
+
+        </div>
+
+        <section class="card">
+
+            <h1 class="heading">
+                Discovery Run
+            </h1>
+
+            <p class="description">
+                Run GitProHub project discovery and automatically
+                scan available GitHub projects.
+            </p>
+
+            <button
+                class="run-button"
+                id="runButton"
+                type="button"
+            >
+                Run Discovery
+            </button>
+
+            <div
+                class="message"
+                id="message"
+            ></div>
+
+            <div
+                class="result"
+                id="result"
+            >
+
+                <div class="result-title">
+                    API Response
+                </div>
+
+                <pre id="resultContent"></pre>
+
+            </div>
+
+        </section>
+
+        <footer>
+            GitProHub · Powered by Haproven
+        </footer>
+
+    </main>
+
+    <script>
+        const API_URL =
+            "https://gitprohub.onrender.com/api/discovery/run";
+
+        const runButton =
+            document.getElementById(
+                "runButton"
+            );
+
+        const apiStatus =
+            document.getElementById(
+                "apiStatus"
+            );
+
+        const statusText =
+            document.getElementById(
+                "statusText"
+            );
+
+        const message =
+            document.getElementById(
+                "message"
+            );
+
+        const result =
+            document.getElementById(
+                "result"
+            );
+
+        const resultContent =
+            document.getElementById(
+                "resultContent"
+            );
+
+        function setStatus(
+            type,
+            text
+        ) {
+            apiStatus.classList.remove(
+                "connected",
+                "error"
+            );
+
+            if (type) {
+                apiStatus.classList.add(
+                    type
+                );
+            }
+
+            statusText.textContent =
+                text;
+        }
+
+        function showMessage(
+            text,
+            isError = false
+        ) {
+            message.textContent =
+                text;
+
+            message.classList.toggle(
+                "show",
+                Boolean(text)
+            );
+
+            message.classList.toggle(
+                "error",
+                isError
+            );
+        }
+
+        function showResult(data) {
+            resultContent.textContent =
+                JSON.stringify(
+                    data,
+                    null,
+                    2
+                );
+
+            result.classList.add(
+                "show"
+            );
+        }
+
+        async function runDiscovery() {
+            runButton.disabled = true;
+
+            runButton.textContent =
+                "Running...";
+
+            showMessage("");
+
+            setStatus(
+                "",
+                "Connecting..."
+            );
+
+            try {
+                const response =
+                    await fetch(
+                        API_URL,
+                        {
+                            method: "GET",
+                            headers: {
+                                "Accept":
+                                    "application/json"
+                            },
+                            cache: "no-store"
+                        }
+                    );
+
+                const contentType =
+                    response.headers.get(
+                        "content-type"
+                    ) || "";
+
+                let data;
+
+                if (
+                    contentType.includes(
+                        "application/json"
+                    )
+                ) {
+                    data =
+                        await response.json();
+                } else {
+                    const text =
+                        await response.text();
+
+                    data = {
+                        response: text
+                    };
+                }
+
+                if (!response.ok) {
+                    throw new Error(
+                        data?.error ||
+                        data?.message ||
+                        `HTTP ${response.status}`
+                    );
+                }
+
+                showResult(data);
+
+                showMessage(
+                    "Discovery completed successfully."
+                );
+
+                setStatus(
+                    "connected",
+                    "API Connected"
+                );
+
+            } catch (error) {
+                result.classList.remove(
+                    "show"
+                );
+
+                showMessage(
+                    error?.message ||
+                    "Discovery request failed.",
+                    true
+                );
+
+                setStatus(
+                    "error",
+                    "API Connection Failed"
+                );
+
+            } finally {
+                runButton.disabled =
+                    false;
+
+                runButton.textContent =
+                    "Run Discovery";
+            }
+        }
+
+        runButton.addEventListener(
+            "click",
+            runDiscovery
+        );
+    </script>
+
+</body>
+</html>
