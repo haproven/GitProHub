@@ -3,7 +3,10 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>GitProHub Projects</title>
 
@@ -86,6 +89,17 @@
             cursor: wait;
         }
 
+        .hint {
+            margin-top: 10px;
+            color: #888;
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .hint strong {
+            color: #555;
+        }
+
         .status {
             margin-top: 15px;
             padding: 12px 15px;
@@ -96,7 +110,8 @@
 
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            grid-template-columns:
+                repeat(auto-fit, minmax(280px, 1fr));
             gap: 20px;
         }
 
@@ -115,6 +130,7 @@
         .project-card h2 {
             margin: 0 0 10px;
             font-size: 21px;
+            word-break: break-word;
         }
 
         .project-card p {
@@ -207,7 +223,7 @@
             <h1>GitProHub Projects</h1>
 
             <p>
-                GitHub username enter karke projects search karein.
+                GitHub username ya GitHub profile link enter karke projects search karein.
             </p>
 
             <div class="search-form">
@@ -215,7 +231,7 @@
                 <input
                     type="text"
                     id="githubUsername"
-                    placeholder="Enter GitHub username..."
+                    placeholder="Username ya GitHub profile link..."
                     autocomplete="off"
                     spellcheck="false"
                 >
@@ -229,11 +245,19 @@
 
             </div>
 
+            <div class="hint">
+                <strong>Hint:</strong>
+                Username likhein jaise
+                <strong>haproven</strong>
+                ya profile link paste karein:
+                <strong>https://github.com/haproven</strong>
+            </div>
+
             <div
                 class="status"
                 id="status"
             >
-                GitHub username enter karein.
+                GitHub username ya profile link enter karein.
             </div>
 
         </section>
@@ -255,49 +279,167 @@
                 "gitprohub_github_username";
 
             const usernameInput =
-                document.getElementById("githubUsername");
+                document.getElementById(
+                    "githubUsername"
+                );
 
             const searchButton =
-                document.getElementById("searchButton");
+                document.getElementById(
+                    "searchButton"
+                );
 
             const status =
-                document.getElementById("status");
+                document.getElementById(
+                    "status"
+                );
 
             const projectsContainer =
-                document.getElementById("projects");
+                document.getElementById(
+                    "projects"
+                );
+
+
+            function extractUsername(value) {
+
+                value = String(
+                    value || ""
+                ).trim();
+
+                if (!value) {
+                    return "";
+                }
+
+                value = value
+                    .replace(
+                        /^["']|["']$/g,
+                        ""
+                    )
+                    .trim();
+
+                try {
+
+                    if (
+                        /^https?:\/\//i.test(
+                            value
+                        )
+                    ) {
+
+                        const url =
+                            new URL(value);
+
+                        if (
+                            url.hostname
+                                .toLowerCase()
+                                .includes("github.com")
+                        ) {
+
+                            const parts =
+                                url.pathname
+                                    .split("/")
+                                    .filter(Boolean);
+
+                            return parts[0] || "";
+                        }
+
+                    }
+
+                } catch {
+                }
+
+                value =
+                    value.replace(
+                        /^github\.com\//i,
+                        ""
+                    );
+
+                value =
+                    value.replace(
+                        /^www\.github\.com\//i,
+                        ""
+                    );
+
+                value =
+                    value.split("/")[0];
+
+                value =
+                    value.replace(
+                        /^@/,
+                        ""
+                    );
+
+                return value.trim();
+            }
+
+
+            function isValidUsername(username) {
+
+                return /^[a-zA-Z0-9-]+$/.test(
+                    username
+                );
+            }
 
 
             function getProjects(data) {
 
-                if (Array.isArray(data)) {
+                if (
+                    Array.isArray(data)
+                ) {
                     return data;
                 }
 
-                if (Array.isArray(data?.projects)) {
+                if (
+                    Array.isArray(
+                        data?.projects
+                    )
+                ) {
                     return data.projects;
                 }
 
-                if (Array.isArray(data?.data)) {
+                if (
+                    Array.isArray(
+                        data?.data
+                    )
+                ) {
                     return data.data;
                 }
 
-                if (Array.isArray(data?.results)) {
+                if (
+                    Array.isArray(
+                        data?.results
+                    )
+                ) {
                     return data.results;
                 }
 
-                if (Array.isArray(data?.result)) {
+                if (
+                    Array.isArray(
+                        data?.result
+                    )
+                ) {
                     return data.result;
                 }
 
-                if (Array.isArray(data?.result?.projects)) {
+                if (
+                    Array.isArray(
+                        data?.result?.projects
+                    )
+                ) {
                     return data.result.projects;
                 }
 
-                if (Array.isArray(data?.data?.projects)) {
+                if (
+                    Array.isArray(
+                        data?.data?.projects
+                    )
+                ) {
                     return data.data.projects;
                 }
 
-                if (Array.isArray(data?.items)) {
+                if (
+                    Array.isArray(
+                        data?.items
+                    )
+                ) {
                     return data.items;
                 }
 
@@ -305,14 +447,27 @@
             }
 
 
-            function getValue(object, paths, fallback = "") {
+            function getValue(
+                object,
+                paths,
+                fallback = ""
+            ) {
 
-                for (const path of paths) {
+                for (
+                    const path of paths
+                ) {
 
-                    let value = object;
+                    let value =
+                        object;
 
-                    for (const key of path.split(".")) {
-                        value = value?.[key];
+                    for (
+                        const key of
+                        path.split(".")
+                    ) {
+
+                        value =
+                            value?.[key];
+
                     }
 
                     if (
@@ -320,8 +475,11 @@
                         value !== null &&
                         value !== ""
                     ) {
+
                         return value;
+
                     }
+
                 }
 
                 return fallback;
@@ -330,18 +488,40 @@
 
             function escapeHtml(value) {
 
-                return String(value)
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
+                return String(
+                    value ?? ""
+                )
+                    .replace(
+                        /&/g,
+                        "&amp;"
+                    )
+                    .replace(
+                        /</g,
+                        "&lt;"
+                    )
+                    .replace(
+                        />/g,
+                        "&gt;"
+                    )
+                    .replace(
+                        /"/g,
+                        "&quot;"
+                    )
+                    .replace(
+                        /'/g,
+                        "&#039;"
+                    );
+
             }
 
 
-            function renderProjects(projects) {
+            function renderProjects(
+                projects
+            ) {
 
-                if (!projects.length) {
+                if (
+                    !projects.length
+                ) {
 
                     projectsContainer.innerHTML = `
                         <div class="empty">
@@ -354,176 +534,211 @@
 
 
                 projectsContainer.innerHTML =
-                    projects.map(project => {
+                    projects
+                        .map(
+                            project => {
 
-                        const name = getValue(
-                            project,
-                            [
-                                "name",
-                                "projectName",
-                                "github.name",
-                                "repository.name",
-                                "repo"
-                            ],
-                            "Unnamed Project"
-                        );
-
-
-                        const description = getValue(
-                            project,
-                            [
-                                "description",
-                                "github.description",
-                                "repository.description"
-                            ],
-                            "No description available."
-                        );
+                                const name =
+                                    getValue(
+                                        project,
+                                        [
+                                            "name",
+                                            "projectName",
+                                            "github.name",
+                                            "repository.name",
+                                            "repo"
+                                        ],
+                                        "Unnamed Project"
+                                    );
 
 
-                        const language = getValue(
-                            project,
-                            [
-                                "language",
-                                "github.language",
-                                "repository.language"
-                            ],
-                            "Unknown"
-                        );
+                                const description =
+                                    getValue(
+                                        project,
+                                        [
+                                            "description",
+                                            "github.description",
+                                            "repository.description"
+                                        ],
+                                        "No description available."
+                                    );
 
 
-                        const stars = getValue(
-                            project,
-                            [
-                                "stars",
-                                "github.stars",
-                                "github.stargazers_count",
-                                "repository.stargazers_count"
-                            ],
-                            0
-                        );
+                                const language =
+                                    getValue(
+                                        project,
+                                        [
+                                            "language",
+                                            "github.language",
+                                            "repository.language"
+                                        ],
+                                        "Unknown"
+                                    );
 
 
-                        const forks = getValue(
-                            project,
-                            [
-                                "forks",
-                                "github.forks",
-                                "github.forks_count",
-                                "repository.forks_count"
-                            ],
-                            0
-                        );
+                                const stars =
+                                    getValue(
+                                        project,
+                                        [
+                                            "stars",
+                                            "github.stars",
+                                            "github.stargazers_count",
+                                            "repository.stargazers_count"
+                                        ],
+                                        0
+                                    );
 
 
-                        const githubUrl = getValue(
-                            project,
-                            [
-                                "github.html_url",
-                                "repository.html_url",
-                                "githubUrl",
-                                "github_url",
-                                "repoUrl",
-                                "repositoryUrl",
-                                "github"
-                            ],
-                            ""
-                        );
+                                const forks =
+                                    getValue(
+                                        project,
+                                        [
+                                            "forks",
+                                            "github.forks",
+                                            "github.forks_count",
+                                            "repository.forks_count"
+                                        ],
+                                        0
+                                    );
 
 
-                        const liveUrl = getValue(
-                            project,
-                            [
-                                "liveUrl",
-                                "live_url",
-                                "live",
-                                "website",
-                                "demo",
-                                "projectUrl",
-                                "project_url"
-                            ],
-                            ""
-                        );
+                                const githubUrl =
+                                    getValue(
+                                        project,
+                                        [
+                                            "github.html_url",
+                                            "repository.html_url",
+                                            "githubUrl",
+                                            "github_url",
+                                            "repoUrl",
+                                            "repositoryUrl",
+                                            "github"
+                                        ],
+                                        ""
+                                    );
 
 
-                        return `
-                            <article class="project-card">
+                                const liveUrl =
+                                    getValue(
+                                        project,
+                                        [
+                                            "liveUrl",
+                                            "live_url",
+                                            "live",
+                                            "website",
+                                            "demo",
+                                            "projectUrl",
+                                            "project_url"
+                                        ],
+                                        ""
+                                    );
 
-                                <h2>
-                                    ${escapeHtml(name)}
-                                </h2>
 
-                                <p>
-                                    ${escapeHtml(description)}
-                                </p>
+                                return `
+                                    <article class="project-card">
 
-                                <div class="project-info">
+                                        <h2>
+                                            ${escapeHtml(name)}
+                                        </h2>
 
-                                    <span class="badge">
-                                        Language:
-                                        ${escapeHtml(language)}
-                                    </span>
+                                        <p>
+                                            ${escapeHtml(description)}
+                                        </p>
 
-                                    <span class="badge">
-                                        ⭐ ${escapeHtml(String(stars))}
-                                    </span>
+                                        <div class="project-info">
 
-                                    <span class="badge">
-                                        Forks:
-                                        ${escapeHtml(String(forks))}
-                                    </span>
+                                            <span class="badge">
+                                                Language:
+                                                ${escapeHtml(language)}
+                                            </span>
 
-                                </div>
+                                            <span class="badge">
+                                                ⭐
+                                                ${escapeHtml(String(stars))}
+                                            </span>
 
-                                <div class="links">
+                                            <span class="badge">
+                                                Forks:
+                                                ${escapeHtml(String(forks))}
+                                            </span>
 
-                                    ${
-                                        githubUrl
-                                            ? `
-                                                <a
-                                                    href="${escapeHtml(githubUrl)}"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    GitHub
-                                                </a>
-                                            `
-                                            : ""
-                                    }
+                                        </div>
 
-                                    ${
-                                        liveUrl
-                                            ? `
-                                                <a
-                                                    href="${escapeHtml(liveUrl)}"
-                                                    target="_blank"
-                                                    rel="noopener noreferrer"
-                                                >
-                                                    Live
-                                                </a>
-                                            `
-                                            : ""
-                                    }
+                                        <div class="links">
 
-                                </div>
+                                            ${
+                                                githubUrl
+                                                    ? `
+                                                        <a
+                                                            href="${escapeHtml(githubUrl)}"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            GitHub
+                                                        </a>
+                                                    `
+                                                    : ""
+                                            }
 
-                            </article>
-                        `;
+                                            ${
+                                                liveUrl
+                                                    ? `
+                                                        <a
+                                                            href="${escapeHtml(liveUrl)}"
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                        >
+                                                            Live
+                                                        </a>
+                                                    `
+                                                    : ""
+                                            }
 
-                    }).join("");
+                                        </div>
+
+                                    </article>
+                                `;
+
+                            }
+                        )
+                        .join("");
+
             }
 
 
-            async function searchUsername(username) {
+            async function searchUsername(
+                input
+            ) {
 
-                username =
-                    username.trim();
+                const username =
+                    extractUsername(
+                        input
+                    );
+
 
                 if (!username) {
 
                     status.textContent =
-                        "GitHub username enter karein.";
+                        "GitHub username ya profile link enter karein.";
 
-                    projectsContainer.innerHTML = "";
+                    projectsContainer.innerHTML =
+                        "";
+
+                    return;
+                }
+
+
+                if (
+                    !isValidUsername(
+                        username
+                    )
+                ) {
+
+                    status.textContent =
+                        "Valid GitHub username enter karein.";
+
+                    projectsContainer.innerHTML =
+                        "";
 
                     return;
                 }
@@ -535,37 +750,49 @@
                 );
 
 
-                searchButton.disabled = true;
+                searchButton.disabled =
+                    true;
 
                 searchButton.textContent =
                     "Searching...";
 
+
                 status.textContent =
                     `@${username} ke projects search ho rahe hain...`;
 
-                projectsContainer.innerHTML = "";
+
+                projectsContainer.innerHTML =
+                    "";
 
 
                 try {
 
+                    const endpoint =
+                        `${API_BASE}/api/github/${encodeURIComponent(username)}`;
+
+
                     const response =
                         await fetch(
-                            `${API_BASE}/api/github/${encodeURIComponent(username)}`,
+                            endpoint,
                             {
                                 method: "GET",
                                 cache: "no-store",
                                 headers: {
-                                    "Accept": "application/json"
+                                    "Accept":
+                                        "application/json"
                                 }
                             }
                         );
 
 
-                    if (!response.ok) {
+                    if (
+                        !response.ok
+                    ) {
 
                         throw new Error(
                             `API Error: ${response.status}`
                         );
+
                     }
 
 
@@ -573,41 +800,67 @@
                         await response.json();
 
 
+                    if (
+                        data?.success === false
+                    ) {
+
+                        throw new Error(
+                            data?.error ||
+                            data?.message ||
+                            "GitHub account not found."
+                        );
+
+                    }
+
+
                     const projects =
-                        getProjects(data);
+                        getProjects(
+                            data
+                        );
 
 
-                    renderProjects(projects);
+                    renderProjects(
+                        projects
+                    );
 
 
                     status.textContent =
                         `${projects.length} GitProHub project${projects.length === 1 ? "" : "s"} found for @${username}.`;
 
 
-                } catch (error) {
+                } catch (
+                    error
+                ) {
 
                     console.error(
                         "GitProHub API Error:",
                         error
                     );
 
+
                     projectsContainer.innerHTML = `
                         <div class="error">
-                            GitHub username ke projects load nahi ho paaye.
-                            API server check karein.
+                            ${escapeHtml(
+                                error?.message ||
+                                "GitHub username ke projects load nahi ho paaye."
+                            )}
                         </div>
                     `;
+
 
                     status.textContent =
                         "API connection failed.";
 
                 } finally {
 
-                    searchButton.disabled = false;
+                    searchButton.disabled =
+                        false;
 
                     searchButton.textContent =
                         "Search";
+
                 }
+
             }
 
 
@@ -627,7 +880,9 @@
                 "keydown",
                 event => {
 
-                    if (event.key === "Enter") {
+                    if (
+                        event.key === "Enter"
+                    ) {
 
                         event.preventDefault();
 
@@ -647,7 +902,9 @@
                 );
 
 
-            if (savedUsername) {
+            if (
+                savedUsername
+            ) {
 
                 usernameInput.value =
                     savedUsername;
