@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitProHub Card Live Editor</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #111111;
+      --green: #16a34a;
+      --code-bg: #0f172a;
+      --code-text: #e2e8f0;
+    }
+
+    body {
+      font-family: Inter, system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: white;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 800;
+      font-size: 18px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      background: #111;
+      color: white;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 16px;
+      font-weight: 650;
+      font-size: 13px;
+      transition: 0.15s;
+    }
+
+    .btn-primary {
+      background: #111;
+      color: white;
+    }
+    .btn-primary:hover { background: #333; }
+
+    .btn-secondary {
+      background: #f1f5f9;
+      color: #334155;
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: #e2e8f0; }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      height: calc(100vh - 80px);
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04);
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #fafbfc;
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .panel-body {
+      flex: 1;
+      overflow: auto;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      border: none;
+      outline: none;
+      resize: none;
+      padding: 20px;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 13.5px;
+      line-height: 1.7;
+      background: #0f172a;
+      color: #e2e8f0;
+    }
+
+    /* Live Preview Styles */
+    .preview-wrapper {
+      padding: 28px;
+      background: #f1f5f9;
+      min-height: 100%;
+    }
+
+    .project-card {
+      background: white;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(15, 23, 42, 0.08);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .card-image {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, #1e293b, #334155);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      font-size: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    .card-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0fdf4;
+      color: #166534;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      background: #16a34a;
+      border-radius: 50%;
+    }
+
+    .card-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      line-height: 1.25;
+    }
+
+    .card-desc {
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 18px;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .meta-pill {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    .card-links {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .card-link {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #2563eb;
+      text-decoration: none;
+      word-break: break-all;
+    }
+
+    .card-link:hover { text-decoration: underline; }
+
+    .card-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      background: #f1f5f9;
+      color: #475569;
+      font-size: 11px;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .featured-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #111;
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 4px 9px;
+      border-radius: 6px;
+      letter-spacing: 0.04em;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #111;
+      color: white;
+      padding: 12px 22px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.25s;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      .panel { min-height: 420px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="brand-mark">G</div>
+      <div>GitProHub <span style="color:#64748b;font-weight:500">Card Editor</span></div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-secondary" onclick="resetTemplate()">Reset Template</button>
+      <button class="btn-primary" onclick="copyMarkdown()">Copy .md</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- LEFT: Editor -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">gitprohub.md</div>
+        <div style="font-size:12px;color:#94a3b8">Type → Live Preview</div>
+      </div>
+      <div class="panel-body">
+        <textarea id="editor" spellcheck="false"></textarea>
+      </div>
+    </div>
+
+    <!-- RIGHT: Live Preview -->
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Live Preview</div>
+        <div style="font-size:12px;color:#94a3b8">Real-time</div>
+      </div>
+      <div class="panel-body">
+        <div class="preview-wrapper" id="preview">
+          <!-- rendered here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Copied to clipboard ✓</div>
+
+  <script>
+    const defaultTemplate = `# HaproID
+
+## Project
+
+title: HaproID
+description: A verified digital identity and professional profile platform for developers, creators, and professionals.
+category: Developer Tools
+status: Active
+image: https://haproid.netlify.app/assets/img/user/main/pro-susheel-01.webp
+
+## Links
+
+live: https://haproid.netlify.app/
+demo: 
+documentation: 
+
+## Discover
+
+tags: haproid, digital-identity, developer-profile, portfolio, cv, professional-profile, haproven
+featured: true
+open_source: true`;
+
+    const editor = document.getElementById('editor');
+    const preview = document.getElementById('preview');
+    const toast = document.getElementById('toast');
+
+    // Load default
+    editor.value = defaultTemplate;
+    renderPreview();
+
+    // Live update
+    editor.addEventListener('input', renderPreview);
+
+    function parseMarkdown(text) {
+      const data = {
+        title: '',
+        description: '',
+        category: '',
+        status: 'Active',
+        image: '',
+        live: '',
+        demo: '',
+        documentation: '',
+        tags: [],
+        featured: false,
+        open_source: false
+      };
+
+      const lines = text.split('\n');
+      let currentSection = '';
+
+      for (let line of lines) {
+        line = line.trim();
+
+        if (line.startsWith('# ')) {
+          data.title = line.slice(2).trim();
+          continue;
+        }
+
+        if (line.startsWith('## ')) {
+          currentSection = line.slice(3).trim().toLowerCase();
+          continue;
+        }
+
+        if (!line || !line.includes(':')) continue;
+
+        const [key, ...rest] = line.split(':');
+        const value = rest.join(':').trim();
+
+        const k = key.trim().toLowerCase();
+
+        if (k === 'title') data.title = value;
+        else if (k === 'description') data.description = value;
+        else if (k === 'category') data.category = value;
+        else if (k === 'status') data.status = value;
+        else if (k === 'image') data.image = value;
+        else if (k === 'live') data.live = value;
+        else if (k === 'demo') data.demo = value;
+        else if (k === 'documentation') data.documentation = value;
+        else if (k === 'tags') {
+          data.tags = value.split(',').map(t => t.trim()).filter(Boolean);
+        }
+        else if (k === 'featured') data.featured = value.toLowerCase() === 'true';
+        else if (k === 'open_source') data.open_source = value.toLowerCase() === 'true';
+      }
+
+      return data;
+    }
+
+    function renderPreview() {
+      const data = parseMarkdown(editor.value);
+
+      if (!data.title && !data.description) {
+        preview.innerHTML = `
+          <div class="empty-state">
+            <div style="font-size:32px;margin-bottom:12px">📝</div>
+            <div>Start typing in the editor...</div>
+          </div>`;
+        return;
+      }
+
+      const imageHtml = data.image
+        ? `<img src="${data.image}" alt="${data.title}" onerror="this.parentElement.innerHTML='No Image'" />`
+        : `<span>No Image</span>`;
+
+      const featuredBadge = data.featured
+        ? `<div class="featured-badge">FEATURED</div>`
+        : '';
+
+      const links = [];
+      if (data.live) links.push(`<a class="card-link" href="${data.live}" target="_blank">🌐 Live → ${data.live}</a>`);
+      if (data.demo) links.push(`<a class="card-link" href="${data.demo}" target="_blank">▶ Demo → ${data.demo}</a>`);
+      if (data.documentation) links.push(`<a class="card-link" href="${data.documentation}" target="_blank">📄 Docs → ${data.documentation}</a>`);
+
+      const tagsHtml = data.tags.map(t => `<span class="tag">${t}</span>`).join('');
+
+      preview.innerHTML = `
+        <div class="project-card">
+          <div class="card-image">
+            ${imageHtml}
+            ${featuredBadge}
+          </div>
+          <div class="card-body">
+            <div class="card-status">
+              <span class="status-dot"></span>
+              ${data.status || 'Active'}
+            </div>
+            <h2 class="card-title">${data.title || 'Untitled Project'}</h2>
+            <p class="card-desc">${data.description || 'No description provided.'}</p>
+            
+            <div class="card-meta">
+              ${data.category ? `<span class="meta-pill">${data.category}</span>` : ''}
+              ${data.open_source ? `<span class="meta-pill">Open Source</span>` : ''}
+            </div>
+
+            ${links.length ? `<div class="card-links">${links.join('')}</div>` : ''}
+
+            ${tagsHtml ? `<div class="card-tags">${tagsHtml}</div>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    function copyMarkdown() {
+      navigator.clipboard.writeText(editor.value).then(() => {
+        showToast('Copied to clipboard ✓');
+      }).catch(() => {
+        // fallback
+        editor.select();
+        document.execCommand('copy');
+        showToast('Copied to clipboard ✓');
+      });
+    }
+
+    function resetTemplate() {
+      if (confirm('Reset to default template? Current changes will be lost.')) {
+        editor.value = defaultTemplate;
+        renderPreview();
+        showToast('Template reset');
+      }
+    }
+
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1800);
+    }
+  </script>
+</body>
+</html>

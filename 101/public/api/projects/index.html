@@ -12,10 +12,21 @@
             padding: 0;
         }
 
+        :root {
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --green: #10b981;
+            --green-dark: #059669;
+            --indigo: #6366f1;
+        }
+
         body {
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f0f4f8;
-            color: #0f172a;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             line-height: 1.5;
         }
@@ -24,16 +35,17 @@
             width: 100%;
             max-width: 1280px;
             margin: auto;
-            padding: 28px 20px 40px;
+            padding: 28px 20px 50px;
         }
 
+        /* ===== HERO ===== */
         .hero {
-            background: linear-gradient(135deg, #ecfdf5 0%, #f0f9ff 50%, #faf5ff 100%);
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0f9ff 45%, #faf5ff 100%);
             border: 1px solid #a7f3d0;
             border-radius: 22px;
             padding: 28px 32px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
+            margin-bottom: 18px;
+            box-shadow: 0 4px 24px rgba(16, 185, 129, 0.07);
         }
 
         .hero-top {
@@ -59,17 +71,17 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
             flex-shrink: 0;
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 6px 18px rgba(16, 185, 129, 0.35);
         }
 
         .hero h1 {
-            font-size: 30px;
+            font-size: 28px;
             font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-bottom: 4px;
+            letter-spacing: -0.03em;
+            margin-bottom: 3px;
             color: #064e3b;
         }
 
@@ -106,6 +118,9 @@
             font-weight: 700;
             cursor: pointer;
             transition: transform 0.15s, opacity 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .refresh:hover {
@@ -119,17 +134,19 @@
             transform: none;
         }
 
+        /* ===== API BAR ===== */
         .api-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
             gap: 14px;
             background: white;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
             border-radius: 14px;
             padding: 12px 18px;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+            flex-wrap: wrap;
         }
 
         .api-status {
@@ -148,19 +165,13 @@
             flex-shrink: 0;
         }
 
-        .api-status.online {
-            color: #15803d;
-        }
-
+        .api-status.online { color: #15803d; }
         .api-status.online .api-dot {
             background: #22c55e;
             box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
         }
 
-        .api-status.offline {
-            color: #dc2626;
-        }
-
+        .api-status.offline { color: #dc2626; }
         .api-status.offline .api-dot {
             background: #ef4444;
             box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
@@ -173,6 +184,64 @@
             word-break: break-all;
         }
 
+        /* ===== TOOLBAR (Search + Filter) ===== */
+        .toolbar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 22px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 220px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            background: white;
+            outline: none;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+
+        .search-box input:focus {
+            border-color: #94a3b8;
+            box-shadow: 0 0 0 3px rgba(148, 163, 184, 0.15);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+            font-size: 15px;
+            pointer-events: none;
+        }
+
+        .filter-select {
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            background: white;
+            color: #334155;
+            cursor: pointer;
+            outline: none;
+            min-width: 150px;
+        }
+
+        .filter-select:focus {
+            border-color: #94a3b8;
+        }
+
+        /* ===== PROJECTS GRID ===== */
         .projects {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -180,25 +249,26 @@
         }
 
         .project {
-            background: #fff;
-            border: 1px solid #e2e8f0;
+            background: var(--card);
+            border: 1px solid var(--border);
             border-radius: 20px;
             padding: 0;
             display: flex;
             flex-direction: column;
             transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
             overflow: hidden;
-            min-height: 320px;
+            min-height: 340px;
+            position: relative;
         }
 
         .project:hover {
             transform: translateY(-5px);
             border-color: #cbd5e1;
-            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+            box-shadow: 0 18px 44px rgba(15, 23, 42, 0.1);
         }
 
         .project-cover {
-            height: 120px;
+            height: 130px;
             background: linear-gradient(135deg, #e0e7ff, #f0fdf4);
             position: relative;
             overflow: hidden;
@@ -222,6 +292,20 @@
             background: linear-gradient(135deg, #eef2ff, #ecfdf5);
         }
 
+        .featured-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: #111;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 6px;
+            letter-spacing: 0.04em;
+            z-index: 2;
+        }
+
         .project-body {
             padding: 18px 20px 20px;
             display: flex;
@@ -235,18 +319,18 @@
             justify-content: space-between;
             gap: 10px;
             margin-bottom: 10px;
-            margin-top: -36px;
+            margin-top: -38px;
             position: relative;
             z-index: 1;
         }
 
         .project-avatar {
-            width: 52px;
-            height: 52px;
+            width: 54px;
+            height: 54px;
             border-radius: 14px;
             background: #fff;
             border: 3px solid #fff;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
             overflow: hidden;
             display: flex;
             align-items: center;
@@ -271,7 +355,7 @@
             font-size: 11px;
             font-weight: 800;
             white-space: nowrap;
-            margin-top: 28px;
+            margin-top: 30px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
@@ -281,10 +365,10 @@
         }
 
         .project h2 {
-            font-size: 18px;
+            font-size: 17px;
             font-weight: 800;
             line-height: 1.3;
-            margin-bottom: 6px;
+            margin-bottom: 5px;
             word-break: break-word;
             color: #0f172a;
             letter-spacing: -0.01em;
@@ -324,7 +408,7 @@
         .meta-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 7px;
             margin-bottom: 14px;
             align-items: center;
         }
@@ -341,6 +425,11 @@
         .tag.lang {
             background: #eef2ff;
             color: #4338ca;
+        }
+
+        .tag.category {
+            background: #f0fdf4;
+            color: #15803d;
         }
 
         .stats {
@@ -409,14 +498,14 @@
             color: white;
         }
 
+        /* ===== STATES ===== */
         .loading,
         .empty,
         .error {
             grid-column: 1 / -1;
             background: white;
-            border: 1px solid #e2e8f0;
+            border: 1px solid var(--border);
             border-radius: 18px;
-            /* padding: 60px 24px; */
             text-align: center;
             color: #64748b;
             font-size: 15px;
@@ -428,11 +517,57 @@
             background: #fef2f2;
         }
 
+        .empty-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+        }
+
+        /* Skeleton */
+        .skeleton-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            min-height: 340px;
+        }
+
+        .skeleton-cover {
+            height: 130px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+
+        .skeleton-body {
+            padding: 20px;
+        }
+
+        .skeleton-line {
+            height: 14px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            margin-bottom: 12px;
+        }
+
+        .skeleton-line.short { width: 60%; }
+        .skeleton-line.medium { width: 80%; }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
         footer {
             text-align: center;
-            padding: 32px 0 12px;
+            padding: 36px 0 12px;
             color: #94a3b8;
             font-size: 13px;
+        }
+
+        footer strong {
+            color: #64748b;
         }
 
         @media (max-width: 700px) {
@@ -461,6 +596,7 @@
             .refresh {
                 flex: 1;
                 text-align: center;
+                justify-content: center;
             }
 
             .api-bar {
@@ -470,6 +606,14 @@
 
             .projects {
                 grid-template-columns: 1fr;
+            }
+
+            .toolbar {
+                flex-direction: column;
+            }
+
+            .filter-select {
+                width: 100%;
             }
         }
     </style>
@@ -488,7 +632,9 @@
                 </div>
                 <div class="actions">
                     <div id="projectCount" class="count">0 Projects</div>
-                    <button id="refreshButton" class="refresh" type="button">Refresh</button>
+                    <button id="refreshButton" class="refresh" type="button">
+                        <span>↻</span> Refresh
+                    </button>
                 </div>
             </div>
         </section>
@@ -501,11 +647,30 @@
             <div class="api-url">https://gitprohub.onrender.com/api/projects</div>
         </div>
 
+        <!-- Search + Filter Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="searchInput" placeholder="Search projects, developers, tags..." />
+            </div>
+            <select id="categoryFilter" class="filter-select">
+                <option value="">All Categories</option>
+            </select>
+            <select id="sortFilter" class="filter-select">
+                <option value="default">Sort: Default</option>
+                <option value="name">Sort: Name A-Z</option>
+                <option value="stars">Sort: Most Stars</option>
+                <option value="featured">Sort: Featured First</option>
+            </select>
+        </div>
+
         <section id="projects" class="projects">
-            <div class="loading">Loading projects...</div>
+            <!-- skeleton loading -->
         </section>
 
-        <footer>GitProHub · Powered by Haproven</footer>
+        <footer>
+            <strong>GitProHub</strong> · Powered by Haproven
+        </footer>
     </div>
 
     <script>
@@ -517,6 +682,11 @@
         const apiStatus = document.getElementById("apiStatus");
         const apiStatusText = document.getElementById("apiStatusText");
         const refreshButton = document.getElementById("refreshButton");
+        const searchInput = document.getElementById("searchInput");
+        const categoryFilter = document.getElementById("categoryFilter");
+        const sortFilter = document.getElementById("sortFilter");
+
+        let allProjects = [];
 
         function escapeHtml(value) {
             return String(value ?? "")
@@ -568,100 +738,84 @@
             return text || "No description available.";
         }
 
+        function showSkeletons(count = 6) {
+            projectsContainer.innerHTML = Array.from({ length: count }).map(() => `
+                <div class="skeleton-card">
+                    <div class="skeleton-cover"></div>
+                    <div class="skeleton-body">
+                        <div class="skeleton-line medium"></div>
+                        <div class="skeleton-line short"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line medium"></div>
+                    </div>
+                </div>
+            `).join("");
+        }
+
         function createProjectCard(project) {
             const name = getValue(project, [
-                "title",
-                "name",
-                "projectName",
-                "github.name",
-                "repository.name"
+                "title", "name", "projectName", "github.name", "repository.name"
             ], "Unnamed Project");
 
             const developerUsername = getValue(project, [
-                "developer.username",
-                "username",
-                "developer.name",
-                "owner.login",
-                "author"
+                "developer.username", "username", "developer.name", "owner.login", "author"
             ], "Unknown");
 
             const developerGithub = getValue(project, [
-                "developer.github",
-                "developer.url"
+                "developer.github", "developer.url"
             ], developerUsername !== "Unknown" ? `https://github.com/${developerUsername}` : "");
 
             const developerAvatar = getValue(project, [
-                "developer.avatar",
-                "image"
+                "developer.avatar", "image"
             ], "");
 
             const description = cleanDescription(getValue(project, [
-                "description",
-                "github.description",
-                "about",
-                "summary"
+                "description", "github.description", "about", "summary"
             ], "No description available."));
 
             const status = getValue(project, [
-                "status",
-                "projectStatus"
+                "status", "projectStatus"
             ], "");
 
             const githubUrl = getValue(project, [
-                "github.url",
-                "github",
-                "githubUrl",
-                "repository.html_url",
-                "repoUrl",
-                "repositoryUrl",
-                "github_url"
+                "github.url", "github", "githubUrl", "repository.html_url",
+                "repoUrl", "repositoryUrl", "github_url"
             ], "");
 
             const liveUrl = getValue(project, [
-                "live",
-                "liveUrl",
-                "website",
-                "demo",
-                "demoUrl",
-                "projectUrl",
-                "live_url"
+                "live", "liveUrl", "website", "demo", "demoUrl", "projectUrl", "live_url"
             ], "");
 
             const language = getValue(project, [
-                "github.language",
-                "language",
-                "repository.language"
+                "github.language", "language", "repository.language"
             ], "");
 
             const stars = getValue(project, [
-                "github.stars",
-                "stars",
-                "stargazers_count"
+                "github.stars", "stars", "stargazers_count"
             ], null);
 
             const forks = getValue(project, [
-                "github.forks",
-                "forks",
-                "forks_count"
+                "github.forks", "forks", "forks_count"
             ], null);
 
-            const type = getValue(project, [
-                "type",
-                "projectType",
-                "category"
+            const category = getValue(project, [
+                "category", "type", "projectType"
             ], "");
 
             const coverImage = getValue(project, [
-                "image",
-                "imageUrl",
-                "thumbnail",
-                "logo"
+                "image", "imageUrl", "thumbnail", "logo"
             ], "");
+
+            const tags = getValue(project, ["tags"], []);
+            const tagList = Array.isArray(tags) ? tags : String(tags).split(",").map(t => t.trim()).filter(Boolean);
+
+            const featured = getValue(project, ["featured", "gitprohub.featured"], false) === true ||
+                             getValue(project, ["featured"], "") === "true";
 
             const initial = String(name).charAt(0).toUpperCase();
 
             const coverHtml = coverImage
-                ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(name)}" loading="lazy">`
+                ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(name)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'project-cover-placeholder\\'>${escapeHtml(initial)}</div>'">`
                 : `<div class="project-cover-placeholder">${escapeHtml(initial)}</div>`;
 
             const avatarHtml = developerAvatar
@@ -678,9 +832,12 @@
                    </div>`
                 : "";
 
+            // Show max 3 tags
+            const visibleTags = tagList.slice(0, 3);
             const tagsHtml = `
                 ${language ? `<span class="tag lang">${escapeHtml(language)}</span>` : ""}
-                ${type ? `<span class="tag">${escapeHtml(type)}</span>` : ""}
+                ${category ? `<span class="tag category">${escapeHtml(category)}</span>` : ""}
+                ${visibleTags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join("")}
             `;
 
             const githubBtn = githubUrl
@@ -695,10 +852,15 @@
                 ? `<a href="${escapeHtml(developerGithub)}" target="_blank" rel="noopener noreferrer">@${escapeHtml(developerUsername)}</a>`
                 : `@${escapeHtml(developerUsername)}`;
 
+            const featuredBadge = featured
+                ? `<div class="featured-badge">FEATURED</div>`
+                : "";
+
             return `
             <article class="project">
                 <div class="project-cover">
                     ${coverHtml}
+                    ${featuredBadge}
                 </div>
                 <div class="project-body">
                     <div class="project-top">
@@ -721,9 +883,86 @@
             `;
         }
 
+        function populateCategories(projects) {
+            const categories = new Set();
+            projects.forEach(p => {
+                const cat = getValue(p, ["category", "type", "projectType"], "");
+                if (cat) categories.add(cat);
+            });
+
+            const current = categoryFilter.value;
+            categoryFilter.innerHTML = `<option value="">All Categories</option>`;
+            [...categories].sort().forEach(cat => {
+                categoryFilter.innerHTML += `<option value="${escapeHtml(cat)}">${escapeHtml(cat)}</option>`;
+            });
+            categoryFilter.value = current;
+        }
+
+        function filterAndRender() {
+            const query = searchInput.value.toLowerCase().trim();
+            const category = categoryFilter.value;
+            const sort = sortFilter.value;
+
+            let filtered = [...allProjects];
+
+            // Search
+            if (query) {
+                filtered = filtered.filter(p => {
+                    const name = getValue(p, ["title", "name", "github.name"], "").toLowerCase();
+                    const desc = getValue(p, ["description", "github.description"], "").toLowerCase();
+                    const dev = getValue(p, ["developer.username", "developer.name", "username"], "").toLowerCase();
+                    const tags = getValue(p, ["tags"], []);
+                    const tagStr = Array.isArray(tags) ? tags.join(" ").toLowerCase() : String(tags).toLowerCase();
+                    return name.includes(query) || desc.includes(query) || dev.includes(query) || tagStr.includes(query);
+                });
+            }
+
+            // Category filter
+            if (category) {
+                filtered = filtered.filter(p => {
+                    const cat = getValue(p, ["category", "type", "projectType"], "");
+                    return cat === category;
+                });
+            }
+
+            // Sort
+            if (sort === "name") {
+                filtered.sort((a, b) => {
+                    const na = getValue(a, ["title", "name"], "").toLowerCase();
+                    const nb = getValue(b, ["title", "name"], "").toLowerCase();
+                    return na.localeCompare(nb);
+                });
+            } else if (sort === "stars") {
+                filtered.sort((a, b) => {
+                    const sa = Number(getValue(a, ["github.stars", "stars"], 0)) || 0;
+                    const sb = Number(getValue(b, ["github.stars", "stars"], 0)) || 0;
+                    return sb - sa;
+                });
+            } else if (sort === "featured") {
+                filtered.sort((a, b) => {
+                    const fa = getValue(a, ["featured"], false) === true || getValue(a, ["featured"], "") === "true" ? 1 : 0;
+                    const fb = getValue(b, ["featured"], false) === true || getValue(b, ["featured"], "") === "true" ? 1 : 0;
+                    return fb - fa;
+                });
+            }
+
+            projectCount.textContent = `${filtered.length} ${filtered.length === 1 ? "Project" : "Projects"}`;
+
+            if (!filtered.length) {
+                projectsContainer.innerHTML = `
+                    <div class="empty">
+                        <div class="empty-icon">🔍</div>
+                        No projects match your search or filter.
+                    </div>`;
+                return;
+            }
+
+            projectsContainer.innerHTML = filtered.map(createProjectCard).join("");
+        }
+
         async function loadProjects() {
             refreshButton.disabled = true;
-            projectsContainer.innerHTML = `<div class="loading">Loading projects...</div>`;
+            showSkeletons();
             setApiStatus(false, "Connecting to GitProHub API...");
 
             try {
@@ -738,20 +977,15 @@
                 }
 
                 const data = await response.json();
-                const projects = getProjects(data);
+                allProjects = getProjects(data);
 
-                projectCount.textContent = `${projects.length} ${projects.length === 1 ? "Project" : "Projects"}`;
-                setApiStatus(true, `API Online · ${projects.length} projects loaded`);
-
-                if (!projects.length) {
-                    projectsContainer.innerHTML = `<div class="empty">No GitProHub projects found.</div>`;
-                    return;
-                }
-
-                projectsContainer.innerHTML = projects.map(createProjectCard).join("");
+                setApiStatus(true, `API Online · ${allProjects.length} projects loaded`);
+                populateCategories(allProjects);
+                filterAndRender();
 
             } catch (error) {
                 console.error("GitProHub API Error:", error);
+                allProjects = [];
                 projectCount.textContent = "0 Projects";
                 setApiStatus(false, "GitProHub API Offline");
                 projectsContainer.innerHTML = `
@@ -766,7 +1000,13 @@
             }
         }
 
+        // Events
         refreshButton.addEventListener("click", loadProjects);
+        searchInput.addEventListener("input", filterAndRender);
+        categoryFilter.addEventListener("change", filterAndRender);
+        sortFilter.addEventListener("change", filterAndRender);
+
+        // Initial load
         loadProjects();
     </script>
 </body>
