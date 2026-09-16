@@ -1,0 +1,1960 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GitProHub Discovery API — Documentation</title>
+
+    <meta name="description"
+        content="GitProHub Discovery API documentation — add haprocard.md to your GitHub repository and let GitProHub discover your project.">
+
+    <meta name="theme-color" content="#ffffff">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #ffffff;
+            --card: #ffffff;
+            --soft: #f8fafc;
+            --soft-2: #f1f5f9;
+            --text: #111111;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #111111;
+            --primary-soft: #f1f5f9;
+            --green: #16a34a;
+            --code: #0f172a;
+            --code-text: #e2e8f0;
+            --shadow: 0 18px 50px rgba(15, 23, 42, .06);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, .94);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar-inner {
+            max-width: 1200px;
+            margin: auto;
+            min-height: 70px;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 850;
+            font-size: 18px;
+        }
+
+        .brand-mark {
+            width: 40px;
+            height: 40px;
+            display: grid;
+            place-items: center;
+            border-radius: 12px;
+            background: #111111;
+            color: white;
+            font-weight: 900;
+            box-shadow: 0 8px 22px rgba(0, 0, 0, .14);
+        }
+
+        .brand-name span {
+            color: #64748b;
+        }
+
+        .top-links {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .top-links a {
+            padding: 9px 13px;
+            border-radius: 9px;
+            color: var(--muted);
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .top-links a:hover {
+            background: var(--soft-2);
+            color: var(--text);
+        }
+
+        .layout {
+            max-width: 1200px;
+            margin: auto;
+            padding: 46px 24px 90px;
+            display: grid;
+            grid-template-columns: 225px minmax(0, 1fr);
+            gap: 48px;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 105px;
+            height: max-content;
+        }
+
+        .sidebar-title {
+            font-size: 11px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .1em;
+            color: #94a3b8;
+            margin-bottom: 12px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 8px 12px;
+            margin: 3px 0;
+            border-left: 2px solid transparent;
+            color: var(--muted);
+            font-size: 13px;
+            transition: .2s;
+        }
+
+        .sidebar a:hover {
+            color: var(--text);
+            border-left-color: var(--text);
+            background: linear-gradient(90deg, #f8fafc, transparent);
+        }
+
+        main {
+            min-width: 0;
+        }
+
+        section {
+            scroll-margin-top: 100px;
+            margin-bottom: 68px;
+        }
+
+        .hero {
+            padding: 8px 0 35px;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #334155;
+            font-size: 12px;
+            font-weight: 850;
+            letter-spacing: .08em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--green);
+            box-shadow: 0 0 0 4px #dcfce7;
+        }
+
+        h1 {
+            font-size: clamp(40px, 6vw, 68px);
+            line-height: 1;
+            letter-spacing: -.055em;
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            max-width: 750px;
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.8;
+        }
+
+        .hero strong {
+            color: var(--text);
+        }
+
+        .base-url {
+            margin-top: 26px;
+            padding: 14px 15px 14px 18px;
+            background: var(--code);
+            color: var(--code-text);
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            overflow: auto;
+            box-shadow: 0 12px 30px rgba(15, 23, 42, .12);
+        }
+
+        .base-url code {
+            white-space: nowrap;
+            font-size: 13px;
+        }
+
+        .copy {
+            flex-shrink: 0;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            padding: 7px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 750;
+            font-size: 11px;
+            transition: .2s;
+        }
+
+        .copy:hover {
+            background: #334155;
+        }
+
+        .section-title {
+            font-size: 29px;
+            line-height: 1.2;
+            letter-spacing: -.035em;
+            margin-bottom: 9px;
+        }
+
+        .section-description {
+            color: var(--muted);
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+
+        .section-description code {
+            color: var(--text);
+            background: var(--soft-2);
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+
+        .info-box {
+            border: 1px solid #dbeafe;
+            background: #eff6ff;
+            padding: 17px 18px;
+            border-radius: 13px;
+            color: #1e40af;
+            font-size: 14px;
+        }
+
+        .flow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .flow-item {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 20px;
+            transition: .2s;
+        }
+
+        .flow-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+            border-color: #cbd5e1;
+        }
+
+        .flow-number {
+            font-size: 11px;
+            color: #64748b;
+            font-weight: 900;
+            letter-spacing: .08em;
+            margin-bottom: 11px;
+        }
+
+        .flow-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .flow-item span {
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        .requirements {
+            display: grid;
+            gap: 10px;
+        }
+
+        .requirement {
+            display: flex;
+            gap: 13px;
+            padding: 15px 17px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+        }
+
+        .requirement-icon {
+            width: 25px;
+            height: 25px;
+            flex: 0 0 25px;
+            display: grid;
+            place-items: center;
+            border-radius: 7px;
+            background: #f0fdf4;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .requirement div:last-child {
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .requirement strong {
+            color: var(--text);
+        }
+
+        .add-project {
+            background:
+                linear-gradient(145deg, #ffffff, #f8fafc);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .add-project-head {
+            padding: 26px 26px 22px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, #ffffff, #fbfdff);
+        }
+
+        .add-project-label {
+            display: inline-flex;
+            padding: 6px 9px;
+            border-radius: 7px;
+            background: #111111;
+            color: white;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: .08em;
+            margin-bottom: 13px;
+        }
+
+        .add-project-head h3 {
+            font-size: 25px;
+            letter-spacing: -.03em;
+            margin-bottom: 7px;
+        }
+
+        .add-project-head p {
+            color: var(--muted);
+            font-size: 14px;
+            max-width: 700px;
+        }
+
+        .add-project-body {
+            padding: 25px;
+        }
+
+        .guide-step {
+            position: relative;
+            display: grid;
+            grid-template-columns: 52px minmax(0, 1fr);
+            gap: 18px;
+            padding-bottom: 30px;
+        }
+
+        .guide-step:last-child {
+            padding-bottom: 0;
+        }
+
+        .guide-step:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            left: 25px;
+            top: 53px;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(#cbd5e1, #e2e8f0);
+        }
+
+        .guide-number {
+            width: 52px;
+            height: 52px;
+            display: grid;
+            place-items: center;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 900;
+            color: #475569;
+            z-index: 1;
+        }
+
+        .guide-content h4 {
+            font-size: 17px;
+            margin-bottom: 5px;
+            letter-spacing: -.015em;
+        }
+
+        .guide-content > p {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+
+        .file-name {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            padding: 8px 11px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .file-name code {
+            font-weight: 800;
+            color: #111111;
+            font-size: 12px;
+        }
+
+        .template-box {
+            border: 1px solid #1e293b;
+            border-radius: 13px;
+            overflow: hidden;
+            background: var(--code);
+        }
+
+        .template-head {
+            min-height: 44px;
+            padding: 8px 11px 8px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            background: #111827;
+            border-bottom: 1px solid #263244;
+        }
+
+        .template-head span {
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+        }
+
+        .template-copy {
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 6px 9px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 750;
+        }
+
+        .template-copy:hover {
+            background: #334155;
+        }
+
+        .template-box pre {
+            margin: 0;
+            padding: 18px;
+            overflow-x: auto;
+            color: #e2e8f0;
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+            font-size: 12px;
+            line-height: 1.9;
+        }
+
+        .root-layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 290px;
+            gap: 15px;
+            align-items: stretch;
+        }
+
+        .folder-tree {
+            padding: 17px 18px;
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                monospace;
+            font-size: 12px;
+            line-height: 2;
+            color: #475569;
+        }
+
+        .folder-tree strong {
+            color: #111111;
+        }
+
+        .root-info {
+            display: grid;
+            gap: 9px;
+        }
+
+        .root-card {
+            padding: 14px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 11px;
+        }
+
+        .root-card strong {
+            display: block;
+            font-size: 11px;
+            margin-bottom: 3px;
+        }
+
+        .root-card span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .root-card.correct {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+
+        .root-card.correct strong {
+            color: #166534;
+        }
+
+        .root-card.important {
+            border-color: #fde68a;
+            background: #fffbeb;
+        }
+
+        .root-card.important strong {
+            color: #92400e;
+        }
+
+        .commands {
+            display: grid;
+            gap: 10px;
+        }
+
+        .command {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            background: var(--code);
+            color: var(--code-text);
+            border-radius: 9px;
+            overflow-x: auto;
+        }
+
+        .command code {
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .command-number {
+            width: 22px;
+            height: 22px;
+            flex: 0 0 22px;
+            display: grid;
+            place-items: center;
+            border-radius: 6px;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 800;
+        }
+
+        .public-note {
+            margin-top: 13px;
+            padding: 12px 14px;
+            border: 1px solid #bbf7d0;
+            background: #f0fdf4;
+            color: #166534;
+            border-radius: 10px;
+            font-size: 12px;
+            font-weight: 650;
+        }
+
+        .discovery-timeline {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .timeline-card {
+            padding: 18px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 13px;
+        }
+
+        .timeline-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 9px;
+        }
+
+        .timeline-number {
+            width: 30px;
+            height: 30px;
+            display: grid;
+            place-items: center;
+            border-radius: 9px;
+            background: var(--soft-2);
+            color: #475569;
+            font-size: 10px;
+            font-weight: 900;
+        }
+
+        .timeline-card strong {
+            font-size: 13px;
+        }
+
+        .timeline-card p {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .endpoint {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            margin-bottom: 18px;
+            box-shadow: 0 8px 25px rgba(15, 23, 42, .025);
+        }
+
+        .endpoint-head {
+            padding: 17px 19px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            border-bottom: 1px solid var(--border);
+            background: #fcfdff;
+        }
+
+        .method {
+            display: inline-flex;
+            padding: 5px 9px;
+            border-radius: 6px;
+            background: #dcfce7;
+            color: #166534;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: .04em;
+        }
+
+        .endpoint-name {
+            margin-left: 10px;
+            font-weight: 800;
+            font-size: 14px;
+        }
+
+        .endpoint-body {
+            padding: 19px;
+        }
+
+        .endpoint-url {
+            display: block;
+            padding: 13px 15px;
+            border-radius: 9px;
+            background: var(--code);
+            color: #e2e8f0;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            transition: .2s;
+        }
+
+        .endpoint-url:hover {
+            background: #172033;
+        }
+
+        .endpoint-url code {
+            white-space: nowrap;
+            font-size: 12px;
+        }
+
+        .endpoint-body p {
+            color: var(--muted);
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .label {
+            display: block;
+            font-size: 10px;
+            font-weight: 850;
+            text-transform: uppercase;
+            letter-spacing: .08em;
+            margin-bottom: 7px;
+            color: #64748b;
+        }
+
+        pre {
+            background: var(--code);
+            color: var(--code-text);
+            border-radius: 11px;
+            padding: 17px;
+            overflow-x: auto;
+            font-size: 12px;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        code {
+            font-family:
+                "SFMono-Regular",
+                Consolas,
+                "Liberation Mono",
+                monospace;
+        }
+
+        .api-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 11px 15px;
+            background: var(--text);
+            color: white;
+            border-radius: 9px;
+            font-weight: 800;
+            font-size: 12px;
+            transition: .2s;
+        }
+
+        .api-button:hover {
+            background: #334155;
+            transform: translateY(-1px);
+        }
+
+        .response-box {
+            position: relative;
+        }
+
+        .response-box pre {
+            margin: 0;
+            padding: 20px;
+            border-radius: 13px;
+        }
+
+        .response-box .json-key {
+            color: #93c5fd;
+        }
+
+        .response-box .json-string {
+            color: #86efac;
+        }
+
+        .response-box .json-number {
+            color: #fcd34d;
+        }
+
+        .response-box .json-boolean {
+            color: #c4b5fd;
+        }
+
+        .response-box .json-null {
+            color: #94a3b8;
+        }
+
+        .workflow {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+        }
+
+        .workflow-item {
+            padding: 19px;
+            position: relative;
+            border-right: 1px solid var(--border);
+        }
+
+        .workflow-item:last-child {
+            border-right: 0;
+        }
+
+        .workflow-number {
+            font-size: 10px;
+            font-weight: 900;
+            color: #94a3b8;
+            margin-bottom: 7px;
+        }
+
+        .workflow-item strong {
+            display: block;
+            font-size: 13px;
+            margin-bottom: 3px;
+        }
+
+        .workflow-item span {
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .api-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .api-link-card {
+            display: block;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            background: white;
+            transition: .2s;
+        }
+
+        .api-link-card:hover {
+            transform: translateY(-2px);
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow);
+        }
+
+        .api-link-card strong {
+            display: block;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .api-link-card code {
+            color: var(--muted);
+            font-size: 10px;
+            word-break: break-all;
+        }
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 28px 24px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        footer strong {
+            color: var(--text);
+        }
+
+        @media (max-width: 900px) {
+            .layout {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .sidebar {
+                position: static;
+                display: flex;
+                gap: 4px;
+                overflow-x: auto;
+                padding-bottom: 14px;
+            }
+
+            .sidebar-title {
+                display: none;
+            }
+
+            .sidebar a {
+                white-space: nowrap;
+                border-left: 0;
+                border-bottom: 2px solid transparent;
+            }
+
+            .sidebar a:hover {
+                border-left: 0;
+                border-bottom-color: var(--text);
+                background: none;
+            }
+
+            .flow {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .root-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .workflow-item:nth-child(2) {
+                border-right: 0;
+            }
+
+            .workflow-item:nth-child(-n + 2) {
+                border-bottom: 1px solid var(--border);
+            }
+        }
+
+        @media (max-width: 620px) {
+            .topbar-inner {
+                padding: 0 15px;
+            }
+
+            .top-links a {
+                display: none;
+            }
+
+            .layout {
+                padding: 30px 15px 60px;
+            }
+
+            h1 {
+                font-size: 42px;
+            }
+
+            .hero p {
+                font-size: 15px;
+            }
+
+            .flow {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .discovery-timeline {
+                grid-template-columns: 1fr;
+            }
+
+            .api-links {
+                grid-template-columns: 1fr;
+            }
+
+            .guide-step {
+                grid-template-columns: 42px minmax(0, 1fr);
+                gap: 13px;
+            }
+
+            .guide-number {
+                width: 42px;
+                height: 42px;
+                border-radius: 11px;
+            }
+
+            .guide-step:not(:last-child)::after {
+                left: 20px;
+                top: 43px;
+            }
+
+            .add-project-head,
+            .add-project-body {
+                padding: 19px;
+            }
+
+            .workflow {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .workflow-item {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 420px) {
+            .flow {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow {
+                grid-template-columns: 1fr;
+            }
+
+            .workflow-item {
+                border-right: 0;
+                border-bottom: 1px solid var(--border);
+            }
+
+            .workflow-item:last-child {
+                border-bottom: 0;
+            }
+
+            .base-url {
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="topbar-inner">
+
+            <a href="/" class="brand">
+                <div class="brand-mark">G</div>
+                <div class="brand-name">
+                    GitPro<span>Hub</span>
+                </div>
+            </a>
+
+            <nav class="top-links">
+                <a href="#overview">Overview</a>
+                <a href="#add-project">Add Project</a>
+                <a href="#endpoints">Endpoints</a>
+                <a href="https://gitprohub.onrender.com/" target="_blank" rel="noopener">
+                    API
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-title">
+                Documentation
+            </div>
+
+            <a href="#overview">Overview</a>
+            <a href="#discovery">Discovery</a>
+            <a href="#add-project">Add Your Project</a>
+            <a href="#requirements">Requirements</a>
+            <a href="#endpoints">Endpoints</a>
+            <a href="#github-user">GitHub User</a>
+            <a href="#project">Project</a>
+            <a href="#projects">All Projects</a>
+            <a href="#response">Response</a>
+
+        </aside>
+
+        <main>
+
+            <section class="hero" id="overview">
+
+                <div class="eyebrow">
+                    <span class="status-dot"></span>
+                    GitProHub Discovery API
+                </div>
+
+                <h1>
+                    Discovery API
+                </h1>
+
+                <p>
+                    GitHub repositories se <strong>haprocard.md</strong> ko
+                    discover karke project information ko API ke through access karein.
+                    Developers apne projects ko ek simple file ke through GitProHub
+                    ecosystem me expose kar sakte hain.
+                </p>
+
+                <div class="base-url">
+
+                    <code>https://gitprohub.onrender.com</code>
+
+                    <button class="copy"
+                        data-copy="https://gitprohub.onrender.com">
+                        Copy
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <section id="discovery">
+
+                <h2 class="section-title">
+                    How Discovery Works
+                </h2>
+
+                <p class="section-description">
+                    GitProHub repository ko scan karta hai aur root level par
+                    available <code>haprocard.md</code> file ko project metadata
+                    ke source ke roop me use karta hai.
+                </p>
+
+                <div class="flow">
+
+                    <div class="flow-item">
+                        <div class="flow-number">01</div>
+                        <strong>GitHub Repository</strong>
+                        <span>Public repository available hoti hai.</span>
+                    </div>
+
+                    <div class="flow-item">
+                        <div class="flow-number">02</div>
+                        <strong>Repository Scan</strong>
+                        <span>GitProHub repository ko scan karta hai.</span>
+                    </div>
+
+                    <div class="flow-item">
+                        <div class="flow-number">03</div>
+                        <strong>File Detection</strong>
+                        <span>Root me haprocard.md detect hota hai.</span>
+                    </div>
+
+                    <div class="flow-item">
+                        <div class="flow-number">04</div>
+                        <strong>Project Discovery</strong>
+                        <span>Project information API me available hoti hai.</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section id="add-project">
+
+                <div class="add-project">
+
+                    <div class="add-project-head">
+
+                        <div class="add-project-label">
+                            GET STARTED
+                        </div>
+
+                        <h3>
+                            Add Your Project
+                        </h3>
+
+                        <p>
+                            GitHub repository me sirf
+                            <strong>haprocard.md</strong> add karein aur
+                            GitProHub aapke project ko automatically discover
+                            kar sakta hai.
+                        </p>
+
+                    </div>
+
+                    <div class="add-project-body">
+
+                        <div class="guide-step">
+
+                            <div class="guide-number">
+                                01
+                            </div>
+
+                            <div class="guide-content">
+
+                                <h4>
+                                    Create the File
+                                </h4>
+
+                                <p>
+                                    Apne GitHub repository ke main/root level par
+                                    <strong>haprocard.md</strong> file banayein.
+                                </p>
+
+                                <div class="file-name">
+                                    📄
+                                    <code>haprocard.md</code>
+                                </div>
+
+                                <div class="template-box">
+
+                                    <div class="template-head">
+                                        <span>Haprocard Template</span>
+
+                                        <button class="template-copy"
+                                            data-copy-id="template">
+                                            Copy Template
+                                        </button>
+                                    </div>
+
+                                    <pre id="template"><code># HaproID
+
+## Description
+
+HaproID is a verified digital identity and profile platform.
+
+## Status
+
+In Development
+
+## Category
+
+Developer Tool
+
+## Author
+
+Susheel Kumar
+
+## Organization
+
+Haproven
+
+## Live
+
+https://haproid.netlify.app/
+
+## GitHub
+
+https://github.com/haproven/haproid
+
+## Image
+
+https://haproid.netlify.app/assets/og-image.png</code></pre>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guide-step">
+
+                            <div class="guide-number">
+                                02
+                            </div>
+
+                            <div class="guide-content">
+
+                                <h4>
+                                    Put It in Root
+                                </h4>
+
+                                <p>
+                                    <strong>haprocard.md</strong> ko repository ke
+                                    main/root level par rakhein. GitProHub isi
+                                    location par file ko identify karta hai.
+                                </p>
+
+                                <div class="root-layout">
+
+                                    <div class="folder-tree">
+                                        📦 your-repository/<br>
+                                        &nbsp;&nbsp;├── 📄 <strong>haprocard.md</strong><br>
+                                        &nbsp;&nbsp;├── 📄 README.md<br>
+                                        &nbsp;&nbsp;└── 📁 src/
+                                    </div>
+
+                                    <div class="root-info">
+
+                                        <div class="root-card correct">
+                                            <strong>✓ Required</strong>
+                                            <span>
+                                                /haprocard.md
+                                            </span>
+                                        </div>
+
+                                        <div class="root-card">
+                                            <strong>Why Root?</strong>
+                                            <span>
+                                                Discovery scan root level par file
+                                                ko identify karta hai.
+                                            </span>
+                                        </div>
+
+                                        <div class="root-card important">
+                                            <strong>Important</strong>
+                                            <span>
+                                                /src/ ya /docs/ ke andar file na rakhein.
+                                            </span>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guide-step">
+
+                            <div class="guide-number">
+                                03
+                            </div>
+
+                            <div class="guide-content">
+
+                                <h4>
+                                    Commit & Push
+                                </h4>
+
+                                <p>
+                                    File repository me add karne ke baad GitHub par
+                                    commit aur push karein.
+                                </p>
+
+                                <div class="commands">
+
+                                    <div class="command">
+                                        <div class="command-number">1</div>
+                                        <code>git add haprocard.md</code>
+                                    </div>
+
+                                    <div class="command">
+                                        <div class="command-number">2</div>
+                                        <code>git commit -m "Add GitProHub card"</code>
+                                    </div>
+
+                                    <div class="command">
+                                        <div class="command-number">3</div>
+                                        <code>git push</code>
+                                    </div>
+
+                                </div>
+
+                                <div class="public-note">
+                                    ✓ Repository GitHub par publicly accessible honi chahiye.
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guide-step">
+
+                            <div class="guide-number">
+                                04
+                            </div>
+
+                            <div class="guide-content">
+
+                                <h4>
+                                    Wait for Discovery
+                                </h4>
+
+                                <p>
+                                    GitProHub repositories scan karta hai. Agar root
+                                    me <strong>haprocard.md</strong> milta hai, to
+                                    project discovery process me aa sakta hai.
+                                </p>
+
+                                <div class="discovery-timeline">
+
+                                    <div class="timeline-card">
+
+                                        <div class="timeline-top">
+                                            <div class="timeline-number">01</div>
+                                            <strong>GitHub</strong>
+                                        </div>
+
+                                        <p>
+                                            Repository information fetch hoti hai.
+                                        </p>
+
+                                    </div>
+
+                                    <div class="timeline-card">
+
+                                        <div class="timeline-top">
+                                            <div class="timeline-number">02</div>
+                                            <strong>Scan</strong>
+                                        </div>
+
+                                        <p>
+                                            Repository files check ki jaati hain.
+                                        </p>
+
+                                    </div>
+
+                                    <div class="timeline-card">
+
+                                        <div class="timeline-top">
+                                            <div class="timeline-number">03</div>
+                                            <strong>Detect</strong>
+                                        </div>
+
+                                        <p>
+                                            Root-level haprocard.md identify hota hai.
+                                        </p>
+
+                                    </div>
+
+                                    <div class="timeline-card">
+
+                                        <div class="timeline-top">
+                                            <div class="timeline-number">04</div>
+                                            <strong>Project</strong>
+                                        </div>
+
+                                        <p>
+                                            Project data GitProHub API me available ho sakta hai.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="guide-step">
+
+                            <div class="guide-number">
+                                05
+                            </div>
+
+                            <div class="guide-content">
+
+                                <h4>
+                                    Check Your Project
+                                </h4>
+
+                                <p>
+                                    Discovery ke baad API endpoints se check karein
+                                    ki project data available hai ya nahi.
+                                </p>
+
+                                <div class="api-links">
+
+                                    <a class="api-link-card"
+                                        href="https://gitprohub.onrender.com/api/github/USERNAME"
+                                        target="_blank"
+                                        rel="noopener">
+
+                                        <strong>GitHub Account</strong>
+
+                                        <code>
+                                            /api/github/USERNAME
+                                        </code>
+
+                                    </a>
+
+                                    <a class="api-link-card"
+                                        href="https://gitprohub.onrender.com/api/project/USERNAME/REPOSITORY"
+                                        target="_blank"
+                                        rel="noopener">
+
+                                        <strong>Specific Project</strong>
+
+                                        <code>
+                                            /api/project/USERNAME/REPOSITORY
+                                        </code>
+
+                                    </a>
+
+                                    <a class="api-link-card"
+                                        href="https://gitprohub.onrender.com/api/projects"
+                                        target="_blank"
+                                        rel="noopener">
+
+                                        <strong>All Projects</strong>
+
+                                        <code>
+                                            /api/projects
+                                        </code>
+
+                                    </a>
+
+                                    <a class="api-link-card"
+                                        href="https://gitprohub.onrender.com/api/discovery/status"
+                                        target="_blank"
+                                        rel="noopener">
+
+                                        <strong>Discovery Status</strong>
+
+                                        <code>
+                                            /api/discovery/status
+                                        </code>
+
+                                    </a>
+
+                                </div>
+
+                                <br>
+
+                                <a class="api-button"
+                                    href="https://gitprohub.onrender.com/"
+                                    target="_blank"
+                                    rel="noopener">
+                                    Open GitProHub API →
+                                </a>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section id="requirements">
+
+                <h2 class="section-title">
+                    Requirements
+                </h2>
+
+                <p class="section-description">
+                    GitProHub discovery ke liye repository ko ye basic requirements
+                    follow karni chahiye.
+                </p>
+
+                <div class="requirements">
+
+                    <div class="requirement">
+
+                        <div class="requirement-icon">
+                            ✓
+                        </div>
+
+                        <div>
+                            <strong>Public repository</strong><br>
+                            Repository GitHub par publicly accessible honi chahiye.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement">
+
+                        <div class="requirement-icon">
+                            ✓
+                        </div>
+
+                        <div>
+                            <strong>Root-level file</strong><br>
+                            <code>haprocard.md</code> repository ke root me honi chahiye.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement">
+
+                        <div class="requirement-icon">
+                            ✓
+                        </div>
+
+                        <div>
+                            <strong>Exact filename</strong><br>
+                            Filename exactly <code>haprocard.md</code> hona chahiye.
+                        </div>
+
+                    </div>
+
+                    <div class="requirement">
+
+                        <div class="requirement-icon">
+                            ✓
+                        </div>
+
+                        <div>
+                            <strong>Project metadata</strong><br>
+                            File me project ki required information available honi chahiye.
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section id="endpoints">
+
+                <h2 class="section-title">
+                    API Endpoints
+                </h2>
+
+                <p class="section-description">
+                    GitProHub project discovery aur project data access karne ke
+                    liye available endpoints.
+                </p>
+
+
+                <div class="endpoint" id="github-user">
+
+                    <div class="endpoint-head">
+
+                        <div>
+                            <span class="method">
+                                GET
+                            </span>
+
+                            <span class="endpoint-name">
+                                Discover GitHub User Projects
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="endpoint-body">
+
+                        <a class="endpoint-url"
+                            href="https://gitprohub.onrender.com/api/github/USERNAME"
+                            target="_blank"
+                            rel="noopener">
+
+                            <code>
+                                /api/github/USERNAME
+                            </code>
+
+                        </a>
+
+                        <p>
+                            GitHub username ke repositories ko scan karke
+                            discoverable GitProHub projects return karta hai.
+                        </p>
+
+                        <span class="label">
+                            Example
+                        </span>
+
+                        <pre><code>GET /api/github/codersusheel</code></pre>
+
+                        <a class="api-button"
+                            href="https://gitprohub.onrender.com/api/github/codersusheel"
+                            target="_blank"
+                            rel="noopener">
+                            Try Endpoint →
+                        </a>
+
+                    </div>
+
+                </div>
+
+
+                <div class="endpoint" id="project">
+
+                    <div class="endpoint-head">
+
+                        <div>
+                            <span class="method">
+                                GET
+                            </span>
+
+                            <span class="endpoint-name">
+                                Get Specific Project
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="endpoint-body">
+
+                        <a class="endpoint-url"
+                            href="https://gitprohub.onrender.com/api/project/USERNAME/REPOSITORY"
+                            target="_blank"
+                            rel="noopener">
+
+                            <code>
+                                /api/project/USERNAME/REPOSITORY
+                            </code>
+
+                        </a>
+
+                        <p>
+                            Kisi specific GitHub repository ke GitProHub
+                            project data ko retrieve karta hai.
+                        </p>
+
+                        <span class="label">
+                            Example
+                        </span>
+
+                        <pre><code>GET /api/project/codersusheel/haprocard</code></pre>
+
+                    </div>
+
+                </div>
+
+
+                <div class="endpoint" id="projects">
+
+                    <div class="endpoint-head">
+
+                        <div>
+                            <span class="method">
+                                GET
+                            </span>
+
+                            <span class="endpoint-name">
+                                Get All Projects
+                            </span>
+                        </div>
+
+                    </div>
+
+                    <div class="endpoint-body">
+
+                        <a class="endpoint-url"
+                            href="https://gitprohub.onrender.com/api/projects"
+                            target="_blank"
+                            rel="noopener">
+
+                            <code>
+                                /api/projects
+                            </code>
+
+                        </a>
+
+                        <p>
+                            GitProHub me currently available discovered projects
+                            ka collection return karta hai.
+                        </p>
+
+                        <a class="api-button"
+                            href="https://gitprohub.onrender.com/api/projects"
+                            target="_blank"
+                            rel="noopener">
+                            Try Endpoint →
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section id="response">
+
+                <h2 class="section-title">
+                    Response
+                </h2>
+
+                <p class="section-description">
+                    GitHub user discovery endpoint project discovery information
+                    ke saath JSON response return kar sakta hai.
+                </p>
+
+                <span class="label">
+                    Example JSON Response
+                </span>
+
+                <div class="response-box">
+
+                    <pre><code>{
+    "success": true,
+    "username": "USERNAME",
+    "total": 1,
+    "projects": [
+        {
+            "name": "Project Name",
+            "description": "Project description",
+            "status": "In Development",
+            "category": "Developer Tool",
+            "author": "Developer Name",
+            "organization": "Organization",
+            "live": "https://example.com/",
+            "github": "https://github.com/USERNAME/REPOSITORY"
+        }
+    ]
+}</code></pre>
+
+                </div>
+
+            </section>
+
+
+            <section>
+
+                <h2 class="section-title">
+                    Simple Workflow
+                </h2>
+
+                <p class="section-description">
+                    One file se project discovery tak ka simple workflow.
+                </p>
+
+                <div class="workflow">
+
+                    <div class="workflow-item">
+                        <div class="workflow-number">01</div>
+                        <strong>Create</strong>
+                        <span>haprocard.md</span>
+                    </div>
+
+                    <div class="workflow-item">
+                        <div class="workflow-number">02</div>
+                        <strong>Add</strong>
+                        <span>Repository Root</span>
+                    </div>
+
+                    <div class="workflow-item">
+                        <div class="workflow-number">03</div>
+                        <strong>Push</strong>
+                        <span>GitHub Repository</span>
+                    </div>
+
+                    <div class="workflow-item">
+                        <div class="workflow-number">04</div>
+                        <strong>Discover</strong>
+                        <span>GitProHub</span>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <section>
+
+                <h2 class="section-title">
+                    Start Building
+                </h2>
+
+                <p class="section-description">
+                    Apne GitHub repository ke root me
+                    <code>haprocard.md</code> add karein aur GitProHub
+                    discovery workflow ka use karein.
+                </p>
+
+                <a class="api-button"
+                    href="https://gitprohub.onrender.com/"
+                    target="_blank"
+                    rel="noopener">
+                    Open GitProHub API →
+                </a>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <footer>
+        <strong>GitProHub</strong> API · Discovery Documentation · Powered by Haproven
+    </footer>
+
+
+    <script>
+        document.querySelectorAll("[data-copy]").forEach(button => {
+
+            button.addEventListener("click", async () => {
+
+                const value = button.dataset.copy;
+                const original = button.textContent;
+
+                try {
+
+                    await navigator.clipboard.writeText(value);
+
+                    button.textContent = "Copied ✓";
+
+                    setTimeout(() => {
+                        button.textContent = original;
+                    }, 1400);
+
+                } catch {
+
+                    button.textContent = "Copy failed";
+
+                    setTimeout(() => {
+                        button.textContent = original;
+                    }, 1400);
+
+                }
+
+            });
+
+        });
+
+
+        document.querySelectorAll("[data-copy-id]").forEach(button => {
+
+            button.addEventListener("click", async () => {
+
+                const target = document.getElementById(
+                    button.dataset.copyId
+                );
+
+                if (!target) return;
+
+                const value = target.innerText;
+                const original = button.textContent;
+
+                try {
+
+                    await navigator.clipboard.writeText(value);
+
+                    button.textContent = "Copied ✓";
+
+                    setTimeout(() => {
+                        button.textContent = original;
+                    }, 1500);
+
+                } catch {
+
+                    const textarea = document.createElement("textarea");
+
+                    textarea.value = value;
+                    document.body.appendChild(textarea);
+
+                    textarea.select();
+                    document.execCommand("copy");
+
+                    textarea.remove();
+
+                    button.textContent = "Copied ✓";
+
+                    setTimeout(() => {
+                        button.textContent = original;
+                    }, 1500);
+
+                }
+
+            });
+
+        });
+    </script>
+
+</body>
+
+</html>

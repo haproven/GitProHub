@@ -5,7 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GitProHub API</title>
+    <title>GitProHub API — GitHub Project Discovery API</title>
+
+    <meta name="description"
+        content="GitProHub API automatically discovers GitHub projects using haprocard.md and provides project data through a simple API.">
+    <meta name="theme-color" content="#111827">
 
     <style>
         * {
@@ -14,58 +18,88 @@
             padding: 0;
         }
 
+        :root {
+            --bg: #f6f8fb;
+            --card: #fff;
+            --text: #111827;
+            --muted: #64748b;
+            --border: #e5e7eb;
+            --primary: #2563eb;
+            --green: #16a34a;
+            --green-bg: #dcfce7;
+            --dark: #111827;
+            --radius: 18px;
+        }
+
         body {
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f6f8fb;
-            color: #172033;
+            background:
+                radial-gradient(circle at top left, rgba(37, 99, 235, .06), transparent 30%),
+                var(--bg);
+            color: var(--text);
             min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        a {
+            color: inherit;
         }
 
         .container {
-            width: 100%;
-            max-width: 1400px;
+            width: min(1400px, 100%);
             margin: auto;
-            padding: 30px 22px;
+            padding: 28px 22px 45px;
         }
 
+        /* HERO */
+
         .hero {
-            background: linear-gradient(135deg, #effdf8, #f5fbff);
-            border: 1px solid #bce9df;
-            border-radius: 20px;
-            padding: 30px;
+            position: relative;
+            overflow: hidden;
             margin-bottom: 22px;
+            padding: 38px;
+            border: 1px solid #dbeafe;
+            border-radius: 24px;
+            background:
+                radial-gradient(circle at 90% 10%, rgba(37, 99, 235, .12), transparent 30%),
+                linear-gradient(135deg, #effdf8, #f5fbff 55%, #f8fbff);
         }
 
         .hero-top {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 25px;
+            gap: 30px;
         }
 
         .hero-content {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 19px;
         }
 
         .hero-icon {
-            width: 64px;
-            height: 64px;
-            border-radius: 18px;
-            background: #16b364;
-            color: white;
+            width: 68px;
+            height: 68px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
-            font-weight: 800;
             flex-shrink: 0;
+            border-radius: 19px;
+            background: var(--green);
+            color: #fff;
+            font-size: 30px;
+            font-weight: 900;
+            box-shadow: 0 10px 25px rgba(22, 163, 74, .16);
         }
 
         .hero h1 {
-            font-size: 34px;
             margin-bottom: 6px;
+            font-size: clamp(29px, 4vw, 38px);
+            line-height: 1.1;
+            letter-spacing: -.8px;
         }
 
         .hero p {
@@ -73,101 +107,162 @@
             font-size: 15px;
         }
 
-        .hero-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .hero-button {
-            text-decoration: none;
-            background: #172033;
-            color: white;
-            padding: 11px 16px;
-            border-radius: 11px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .hero-button.secondary {
-            background: white;
-            color: #334155;
-            border: 1px solid #dce5e1;
-        }
-
         .status {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            margin-top: 16px;
-            background: #dcfce7;
-            color: #15803d;
+            margin-top: 15px;
+            padding: 7px 13px;
             border-radius: 30px;
-            padding: 7px 14px;
-            font-size: 13px;
-            font-weight: 700;
+            background: var(--green-bg);
+            color: #15803d;
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .status-dot {
             width: 8px;
             height: 8px;
-            background: #16a34a;
             border-radius: 50%;
+            background: var(--green);
         }
+
+        .hero-actions {
+            display: flex;
+            gap: 9px;
+            flex-wrap: wrap;
+        }
+
+        .hero-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 10px 15px;
+            border-radius: 11px;
+            background: var(--dark);
+            color: #fff;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 800;
+            transition: .2s ease;
+        }
+
+        .hero-button:hover {
+            transform: translateY(-2px);
+        }
+
+        .hero-button.secondary {
+            background: #fff;
+            color: #334155;
+            border: 1px solid #dce5e1;
+        }
+
+        /* QUICK NAV */
+
+        .dashboard-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 22px;
+        }
+
+        .dashboard-link {
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: #fff;
+            text-decoration: none;
+            transition: .2s ease;
+        }
+
+        .dashboard-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(15, 23, 42, .07);
+        }
+
+        .quick-icon {
+            width: 35px;
+            height: 35px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 12px;
+            border-radius: 10px;
+            background: #eff6ff;
+            color: var(--primary);
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .dashboard-link strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 15px;
+        }
+
+        .dashboard-link span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* COMMON CARD */
+
+        .card {
+            overflow: hidden;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background: var(--card);
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            padding: 19px 22px;
+            border-bottom: 1px solid #edf0f4;
+        }
+
+        .card-header h2 {
+            font-size: 20px;
+        }
+
+        .header-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 800;
+        }
+
+        .blue {
+            background: #1677ff
+        }
+
+        .purple {
+            background: #7c3aed
+        }
+
+        .green {
+            background: #10b981
+        }
+
+        .orange {
+            background: #f59e0b
+        }
+
+        /* STATUS */
 
         .top-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 22px;
             margin-bottom: 22px;
-        }
-
-        .card {
-            background: #ffffff;
-            border: 1px solid #e3e8ef;
-            border-radius: 18px;
-            overflow: hidden;
-        }
-
-        .card-header {
-            padding: 19px 22px;
-            border-bottom: 1px solid #edf0f4;
-            display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        .card-header h2 {
-            font-size: 21px;
-        }
-
-        .header-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: white;
-            font-weight: 800;
-            flex-shrink: 0;
-        }
-
-        .blue {
-            background: #1677ff;
-        }
-
-        .purple {
-            background: #7c3aed;
-        }
-
-        .green {
-            background: #10b981;
-        }
-
-        .orange {
-            background: #f59e0b;
         }
 
         .info-list {
@@ -192,34 +287,40 @@
             align-items: center;
             gap: 11px;
             color: #334155;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .info-value {
+            max-width: 60%;
             font-weight: 700;
             text-align: right;
+            word-break: break-word;
+        }
+
+        .true,
+        .false,
+        .interval {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
         }
 
         .true {
-            background: #dcfce7;
+            background: var(--green-bg);
             color: #15803d;
-            padding: 6px 12px;
-            border-radius: 20px;
         }
 
         .false {
             background: #fee2e2;
             color: #dc2626;
-            padding: 6px 12px;
-            border-radius: 20px;
         }
 
         .interval {
             background: #eaf2ff;
             color: #2563eb;
-            padding: 6px 12px;
-            border-radius: 20px;
         }
+
+        /* ENDPOINTS */
 
         .endpoint-card {
             margin-bottom: 22px;
@@ -230,10 +331,10 @@
         }
 
         .endpoint {
+            min-height: 59px;
             display: flex;
             align-items: center;
             gap: 15px;
-            min-height: 57px;
             border-bottom: 1px solid #edf0f4;
         }
 
@@ -242,17 +343,17 @@
         }
 
         .endpoint-number {
-            width: 33px;
-            height: 33px;
-            border-radius: 50%;
-            background: #dff7ed;
-            color: #166534;
+            width: 34px;
+            height: 34px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
             flex-shrink: 0;
-            font-size: 13px;
+            border-radius: 50%;
+            background: #dff7ed;
+            color: #166534;
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .endpoint-content {
@@ -265,25 +366,27 @@
         }
 
         .endpoint code {
-            font-family: Consolas, monospace;
-            font-size: 14px;
+            font-family: Consolas, "SFMono-Regular", monospace;
             color: #172033;
+            font-size: 13px;
+            word-break: break-all;
         }
 
-        .endpoint code:hover {
-            color: #1677ff;
+        .endpoint a:hover code {
+            color: var(--primary);
         }
 
         .endpoint-method {
             margin-left: auto;
+            padding: 5px 8px;
+            border-radius: 7px;
             background: #eff6ff;
             color: #2563eb;
-            border-radius: 7px;
-            padding: 5px 8px;
             font-size: 10px;
             font-weight: 800;
-            flex-shrink: 0;
         }
+
+        /* PROJECTS */
 
         .projects-card {
             margin-bottom: 22px;
@@ -291,20 +394,20 @@
 
         .projects-count {
             margin-left: auto;
-            background: #eef2ff;
-            color: #4338ca;
             padding: 6px 12px;
             border-radius: 20px;
-            font-size: 13px;
-            font-weight: 700;
+            background: #eef2ff;
+            color: #4338ca;
+            font-size: 12px;
+            font-weight: 800;
         }
 
         .view-all {
-            text-decoration: none;
-            background: #172033;
-            color: white;
             padding: 8px 12px;
             border-radius: 9px;
+            background: var(--dark);
+            color: #fff;
+            text-decoration: none;
             font-size: 12px;
             font-weight: 700;
         }
@@ -317,16 +420,15 @@
         }
 
         .project {
-            border: 1px solid #e3e8ef;
-            border-radius: 16px;
             padding: 19px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
             background: #fff;
             transition: .2s ease;
         }
 
         .project:hover {
             transform: translateY(-3px);
-            border-color: #cbd5e1;
             box-shadow: 0 10px 30px rgba(15, 23, 42, .08);
         }
 
@@ -341,43 +443,41 @@
         .project-icon {
             width: 47px;
             height: 47px;
-            border-radius: 12px;
-            background: #eef2ff;
-            color: #4f46e5;
             display: flex;
             align-items: center;
             justify-content: center;
+            border-radius: 12px;
+            background: #eef2ff;
+            color: #4f46e5;
             font-size: 20px;
             font-weight: 800;
         }
 
         .project-status {
-            font-size: 11px;
-            font-weight: 700;
             padding: 6px 9px;
             border-radius: 20px;
             background: #dcfce7;
             color: #15803d;
+            font-size: 11px;
+            font-weight: 700;
         }
 
         .project h3 {
-            font-size: 18px;
             margin-bottom: 6px;
-            word-break: break-word;
+            font-size: 18px;
         }
 
         .project-developer {
-            font-size: 13px;
-            color: #64748b;
             margin-bottom: 11px;
+            color: #64748b;
+            font-size: 13px;
         }
 
         .project-description {
-            color: #475569;
-            font-size: 13px;
-            line-height: 1.6;
             min-height: 42px;
             margin-bottom: 15px;
+            color: #475569;
+            font-size: 13px;
         }
 
         .project-links {
@@ -387,98 +487,390 @@
         }
 
         .project-links a {
-            text-decoration: none;
-            border: 1px solid #e2e8f0;
-            color: #334155;
             padding: 7px 10px;
+            border: 1px solid #e2e8f0;
             border-radius: 9px;
+            color: #334155;
+            text-decoration: none;
             font-size: 12px;
             font-weight: 700;
         }
 
         .project-links a:hover {
-            background: #172033;
-            border-color: #172033;
-            color: white;
-        }
-
-        .dashboard-links {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin-bottom: 22px;
-        }
-
-        .dashboard-link {
-            text-decoration: none;
-            background: white;
-            border: 1px solid #e3e8ef;
-            border-radius: 15px;
-            padding: 18px;
-            color: #172033;
-            transition: .2s ease;
-        }
-
-        .dashboard-link:hover {
-            transform: translateY(-3px);
-            border-color: #cbd5e1;
-            box-shadow: 0 8px 25px rgba(15, 23, 42, .07);
-        }
-
-        .dashboard-link strong {
-            display: block;
-            font-size: 15px;
-            margin-bottom: 5px;
-        }
-
-        .dashboard-link span {
-            color: #64748b;
-            font-size: 12px;
-            line-height: 1.5;
+            background: var(--dark);
+            border-color: var(--dark);
+            color: #fff;
         }
 
         .loading,
         .empty,
         .error {
-            grid-column: 1 / -1;
+            grid-column: 1/-1;
             padding: 42px 20px;
             text-align: center;
-            color: #64748b;
+            color: var(--muted);
         }
 
         .error {
             color: #dc2626;
         }
 
+        /* GUIDE */
+
+        .gitprohub-guide {
+            padding: 65px 0 25px;
+        }
+
+        .gph-container {
+            width: min(1250px, 100%);
+            margin: auto;
+        }
+
+        .gph-heading {
+            max-width: 760px;
+            margin: 0 auto 40px;
+            text-align: center;
+        }
+
+        .gph-eyebrow {
+            display: inline-flex;
+            padding: 6px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            color: #3f54b1;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .gph-heading h2 {
+            margin: 15px 0 12px;
+            font-size: clamp(32px, 5vw, 48px);
+            line-height: 1.1;
+            letter-spacing: -1.5px;
+        }
+
+        .gph-heading p {
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        .gph-heading strong {
+            color: #3f54b1;
+        }
+
+        .gph-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .gph-card {
+            position: relative;
+            padding: 25px;
+            overflow: hidden;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
+        }
+
+        .gph-wide {
+            grid-column: span 2;
+        }
+
+        .gph-number {
+            position: absolute;
+            top: 17px;
+            right: 20px;
+            color: #e5e7eb;
+            font-size: 40px;
+            font-weight: 800;
+        }
+
+        .gph-icon {
+            width: 42px;
+            height: 42px;
+            display: grid;
+            place-items: center;
+            margin-bottom: 17px;
+            border: 1px solid #e5e7eb;
+            border-radius: 11px;
+            font-size: 18px;
+        }
+
+        .gph-card h3 {
+            margin-bottom: 8px;
+            font-size: 21px;
+        }
+
+        .gph-card p {
+            margin-bottom: 17px;
+            color: #6b7280;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .gph-card strong {
+            color: #374151;
+        }
+
+        /* COPY TEMPLATE */
+
+        .template-box {
+            position: relative;
+            margin-top: 15px;
+        }
+
+        .template-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            border: 1px solid #e5e7eb;
+            border-bottom: 0;
+            border-radius: 10px 10px 0 0;
+            background: #f8fafc;
+        }
+
+        .template-header span {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .copy-btn {
+            border: 1px solid #dbe3ee;
+            border-radius: 8px;
+            padding: 7px 11px;
+            background: #fff;
+            color: #334155;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 800;
+            transition: .2s ease;
+        }
+
+        .copy-btn:hover {
+            background: #111827;
+            border-color: #111827;
+            color: #fff;
+        }
+
+        .copy-btn.copied {
+            background: #dcfce7;
+            border-color: #bbf7d0;
+            color: #15803d;
+        }
+
+        .markdown-code {
+            margin: 0;
+            padding: 18px;
+            overflow: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 0 0 10px 10px;
+            background: #fafafa;
+            color: #374151;
+            font-family: "SFMono-Regular", Consolas, monospace;
+            font-size: 12px;
+            line-height: 1;
+            white-space: pre;
+        }
+
+        /* SHORT STEPS */
+
+        .short-steps {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .short-step {
+            padding: 13px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .short-step strong {
+            display: block;
+            margin-bottom: 3px;
+            color: #3f54b1;
+            font-size: 11px;
+        }
+
+        .short-step span {
+            display: block;
+            color: #374151;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .short-step small {
+            color: #9ca3af;
+            font-size: 10px;
+        }
+
+        /* VERIFY */
+
+        .verify-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .verify-box {
+            padding: 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .verify-box span {
+            display: block;
+            margin-bottom: 6px;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .verify-box a {
+            display: block;
+            overflow: auto;
+            color: #3f54b1;
+            font-family: Consolas, monospace;
+            font-size: 11px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .verify-box a:hover {
+            text-decoration: underline;
+        }
+
+        .gph-api-btn {
+            display: inline-flex;
+            margin-top: 14px;
+            padding: 10px 15px;
+            border: 1px solid #3f54b1;
+            border-radius: 9px;
+            color: #3f54b1;
+            text-decoration: none;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .gph-api-btn:hover {
+            background: #3f54b1;
+            color: #fff;
+        }
+
+        /* FINAL */
+
+        .gph-final {
+            display: grid;
+            grid-template-columns: .9fr 1.1fr;
+            gap: 25px;
+            align-items: center;
+            margin-top: 18px;
+            padding: 28px;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            background: #fff;
+        }
+
+        .gph-final-content h3 {
+            margin: 13px 0 9px;
+            font-size: clamp(23px, 3vw, 31px);
+            letter-spacing: -.7px;
+        }
+
+        .gph-final-content p {
+            color: #6b7280;
+            font-size: 13px;
+        }
+
+        .gph-final-flow {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gph-final-flow div {
+            padding: 14px 8px;
+            text-align: center;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #fafafa;
+        }
+
+        .gph-final-flow strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #3f54b1;
+            font-size: 10px;
+        }
+
+        .gph-final-flow span {
+            display: block;
+            color: #374151;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .gph-final-flow small {
+            display: block;
+            margin-top: 4px;
+            color: #9ca3af;
+            font-size: 9px;
+        }
+
+        .gph-final-flow i {
+            color: #9ca3af;
+            font-style: normal;
+        }
+
+        .gph-note{
+            padding: 10px 0;
+        }
+
+
+        /* FOOTER */
+
         footer {
+            padding: 25px 0 0;
             text-align: center;
             color: #64748b;
             font-size: 13px;
-            padding: 10px 0 25px;
         }
 
-        @media (max-width: 1050px) {
+        /* RESPONSIVE */
+
+        @media(max-width:1050px) {
             .dashboard-links {
                 grid-template-columns: repeat(2, 1fr);
             }
+
+            .verify-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .gph-final {
+                grid-template-columns: 1fr;
+            }
         }
 
-        @media (max-width: 800px) {
-            .container {
-                padding: 20px 14px;
-            }
-
-            .hero {
-                padding: 22px;
-            }
-
+        @media(max-width:850px) {
             .hero-top {
                 flex-direction: column;
                 align-items: flex-start;
-            }
-
-            .hero h1 {
-                font-size: 28px;
             }
 
             .hero-actions {
@@ -487,11 +879,91 @@
 
             .hero-button {
                 flex: 1;
-                text-align: center;
             }
 
-            .top-grid {
+            .top-grid,
+            .gph-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .gph-wide {
+                grid-column: span 1;
+            }
+
+            .short-steps {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .gph-final-flow {
+                grid-template-columns: 1fr;
+            }
+
+            .gph-final-flow i {
+                transform: rotate(90deg);
+                justify-self: center;
+            }
+        }
+
+        @media(max-width:600px) {
+            .container {
+                padding: 18px 13px 35px;
+            }
+
+            .hero {
+                padding: 22px;
+                border-radius: 18px;
+            }
+
+            .hero-content {
+                align-items: flex-start;
+            }
+
+            .hero-icon {
+                width: 54px;
+                height: 54px;
+                border-radius: 15px;
+                font-size: 24px;
+            }
+
+            .hero h1 {
+                font-size: 27px;
+            }
+
+            .hero p {
+                font-size: 13px;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+            }
+
+            .hero-button {
+                width: 100%;
+            }
+
+            .dashboard-links {
+                grid-template-columns: 1fr;
+            }
+
+            .card-header {
+                flex-wrap: wrap;
+            }
+
+            .projects-count {
+                margin-left: auto;
+            }
+
+            .projects {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+
+            .endpoint code {
+                font-size: 11px;
+            }
+
+            .endpoint-method {
+                display: none;
             }
 
             .info-row {
@@ -503,37 +975,36 @@
             }
 
             .info-value {
+                max-width: 100%;
                 text-align: left;
             }
 
-            .endpoint {
-                min-height: 62px;
+            .gitprohub-guide {
+                padding: 50px 0 20px;
             }
 
-            .endpoint code {
-                font-size: 12px;
-                word-break: break-all;
+            .gph-heading h2 {
+                font-size: 32px;
             }
 
-            .endpoint-method {
-                display: none;
+            .gph-heading p {
+                font-size: 14px;
             }
 
-            .dashboard-links {
+            .gph-card {
+                padding: 21px;
+            }
+
+            .gph-card h3 {
+                font-size: 19px;
+            }
+
+            .short-steps {
                 grid-template-columns: 1fr;
             }
 
-            .projects {
-                grid-template-columns: 1fr;
-                padding: 15px;
-            }
-
-            .card-header {
-                flex-wrap: wrap;
-            }
-
-            .projects-count {
-                margin-left: auto;
+            .gph-final {
+                padding: 22px;
             }
         }
     </style>
@@ -549,25 +1020,19 @@
 
                 <div class="hero-content">
 
-                    <div class="hero-icon">
-                        ✓
-                    </div>
+                    <div class="hero-icon">✓</div>
 
                     <div>
 
-                        <h1 id="apiName">
-                            GitProHub API
-                        </h1>
+                        <h1 id="apiName">GitProHub API</h1>
 
                         <p id="apiMessage">
-                            GitProHub is running
+                            GitHub Project Discovery & Project Data API
                         </p>
 
                         <div class="status">
                             <span class="status-dot"></span>
-                            <span id="statusText">
-                                API Online
-                            </span>
+                            <span id="statusText">Checking API...</span>
                         </div>
 
                     </div>
@@ -576,11 +1041,12 @@
 
                 <div class="hero-actions">
 
-                    <a class="hero-button" href="api/projects/">
-                        View Projects
+                    <a class="hero-button" href="https://gitprohub.onrender.com/" target="_blank" rel="noopener">
+                        Open API →
                     </a>
 
-                    <a class="hero-button secondary" href="/docs">
+                    <a class="hero-button secondary" href="api/discovery/docs/" 
+                        rel="noopener">
                         API Docs
                     </a>
 
@@ -590,37 +1056,38 @@
 
         </section>
 
+
         <section class="dashboard-links">
 
-            <a class="dashboard-link" href="/public/api/projects/index.html">
+            <a class="dashboard-link" href="api/projects/"  rel="noopener">
+                <div class="quick-icon">◆</div>
                 <strong>Projects</strong>
-                <span>
-                    Browse all discovered GitProHub projects.
-                </span>
+                <span>Browse all discovered GitProHub projects.</span>
             </a>
 
-            <a class="dashboard-link" href="/public/api/discovery/status/">
+            <a class="dashboard-link" href="api/projects/stats/" 
+                rel="noopener">
+                <div class="quick-icon">▤</div>
                 <strong>Project Stats</strong>
-                <span>
-                    View project and developer statistics.
-                </span>
+                <span>View project and developer statistics.</span>
             </a>
 
-            <a class="dashboard-link" href="/public/api/discovery/">
-                <strong>Discovery</strong>
-                <span>
-                    Monitor automatic project discovery.
-                </span>
+            <a class="dashboard-link" href="api/discovery/status/" 
+                rel="noopener">
+                <div class="quick-icon">◷</div>
+                <strong>Discovery Status</strong>
+                <span>Check automatic discovery status.</span>
             </a>
 
-            <a class="dashboard-link" href="/docs">
+            <a class="dashboard-link" href="api/discovery/docs/"  rel="noopener">
+                <div class="quick-icon">&lt;/&gt;</div>
                 <strong>Documentation</strong>
-                <span>
-                    Explore GitProHub API endpoints.
-                </span>
+                <span>Explore API endpoints and usage.</span>
             </a>
 
         </section>
+
+       
 
 
         <section class="top-grid">
@@ -629,92 +1096,76 @@
 
                 <div class="card-header">
 
-                    <div class="header-icon blue">
-                        ⌕
-                    </div>
+                    <div class="header-icon blue">⌕</div>
 
-                    <h2>
-                        Discovery
-                    </h2>
+                    <h2>Discovery</h2>
 
                 </div>
 
                 <div class="info-list">
 
                     <div class="info-row">
-
                         <div class="info-label">
                             <span>▶</span>
                             <span>Running</span>
                         </div>
 
                         <div id="running" class="info-value true">
-                            true
+                            Checking...
                         </div>
-
                     </div>
 
                     <div class="info-row">
-
                         <div class="info-label">
                             <span>◫</span>
                             <span>Scheduled</span>
                         </div>
 
                         <div id="scheduled" class="info-value true">
-                            true
+                            Checking...
                         </div>
-
                     </div>
 
                     <div class="info-row">
-
                         <div class="info-label">
                             <span>◷</span>
                             <span>Interval</span>
                         </div>
 
                         <div id="interval" class="info-value interval">
-                            1 minute
+                            Checking...
                         </div>
-
                     </div>
 
                 </div>
 
             </div>
 
+
             <div class="card">
 
                 <div class="card-header">
 
-                    <div class="header-icon purple">
-                        i
-                    </div>
+                    <div class="header-icon purple">i</div>
 
-                    <h2>
-                        API Information
-                    </h2>
+                    <h2>API Information</h2>
 
                 </div>
 
                 <div class="info-list">
 
                     <div class="info-row">
-
                         <div class="info-label">
                             <span>✓</span>
                             <span>Success</span>
                         </div>
 
                         <div id="success" class="info-value true">
-                            true
+                            Checking...
                         </div>
-
                     </div>
 
                     <div class="info-row">
-
                         <div class="info-label">
                             <span>▤</span>
                             <span>Name</span>
@@ -723,11 +1174,9 @@
                         <div id="name" class="info-value">
                             GitProHub API
                         </div>
-
                     </div>
 
                     <div class="info-row">
-
                         <div class="info-label">
                             <span>▣</span>
                             <span>Message</span>
@@ -736,7 +1185,6 @@
                         <div id="message" class="info-value">
                             GitProHub is running
                         </div>
-
                     </div>
 
                 </div>
@@ -744,6 +1192,7 @@
             </div>
 
         </section>
+
 
         <section class="card endpoint-card">
 
@@ -753,151 +1202,91 @@
                     &lt;/&gt;
                 </div>
 
-                <h2>
-                    API Endpoints
-                </h2>
+                <h2>API Endpoints</h2>
 
             </div>
 
             <div class="endpoint-list">
 
                 <div class="endpoint">
-
-                    <div class="endpoint-number">
-                        1
-                    </div>
-
+                    <div class="endpoint-number">1</div>
                     <div class="endpoint-content">
-                        <a href="api/projects/">
+                        <a href="api/projects/"  rel="noopener">
                             <code>/api/projects</code>
                         </a>
                     </div>
-
-                    <span class="endpoint-method">
-                        GET
-                    </span>
-
+                    <span class="endpoint-method">GET</span>
                 </div>
 
                 <div class="endpoint">
-
-                    <div class="endpoint-number">
-                        2
-                    </div>
-
+                    <div class="endpoint-number">2</div>
                     <div class="endpoint-content">
-                        <a href="api/projects/stats/" target="_blank">
+                        <a href="api/projects/stats/" rel="noopener">
                             <code>/api/projects/stats</code>
                         </a>
                     </div>
-
-                    <span class="endpoint-method">
-                        GET
-                    </span>
-
+                    <span class="endpoint-method">GET</span>
                 </div>
 
                 <div class="endpoint">
-
-                    <div class="endpoint-number">
-                        3
-                    </div>
-
+                    <div class="endpoint-number">3</div>
                     <div class="endpoint-content">
-                        <a href="api/projects/username/repo/">
-                            <code>
-                        /api/project/:username/:repo
-                    </code>
+                        <a href="api/projects/username/repo/"
+                            rel="noopener">
+                            <code>/api/project/:username/:repo</code>
                         </a>
                     </div>
-
-                    <span class="endpoint-method">
-                        GET
-                    </span>
-
+                    <span class="endpoint-method">GET</span>
                 </div>
 
                 <div class="endpoint">
-
-                    <div class="endpoint-number">
-                        4
-                    </div>
-
+                    <div class="endpoint-number">4</div>
                     <div class="endpoint-content">
-                        <a href="api/projects/username/">
-                            <code>
-                        /api/github/:username
-                    </code>
+                        <a href="api/projects/username/"  rel="noopener">
+                            <code>/api/github/:username</code>
                         </a>
                     </div>
-
-                    <span class="endpoint-method">
-                        GET
-                    </span>
-
+                    <span class="endpoint-method">GET</span>
                 </div>
 
                 <div class="endpoint">
-
-                    <div class="endpoint-number">
-                        5
-                    </div>
-
+                    <div class="endpoint-number">5</div>
                     <div class="endpoint-content">
-                        <a href="api/discovery/run" target="_blank">
-                            <code>
-                            /api/discovery/run
-                        </code>
+                        <a href="api/discovery/run/"  rel="noopener">
+                            <code>/api/discovery/run</code>
                         </a>
                     </div>
-
-                    <span class="endpoint-method">
-                        GET
-                    </span>
-
+                    <span class="endpoint-method">GET</span>
                 </div>
 
                 <div class="endpoint">
-
-                    <div class="endpoint-number">
-                        6
-                    </div>
-
+                    <div class="endpoint-number">6</div>
                     <div class="endpoint-content">
-                        <a href="api/discovery/status" target="_blank">
-                            <code>
-                            /api/discovery/status
-                        </code>
+                        <a href="api/discovery/status/" rel="noopener">
+                            <code>/api/discovery/status</code>
                         </a>
                     </div>
-
-                    <span class="endpoint-method">
-                        GET
-                    </span>
-
+                    <span class="endpoint-method">GET</span>
                 </div>
 
             </div>
 
         </section>
 
+
         <section class="card projects-card">
 
             <div class="card-header">
 
-                <div class="header-icon orange">
-                    ◆
-                </div>
+                <div class="header-icon orange">◆</div>
 
-                <h2>
-                    GitProHub Projects
-                </h2>
+                <h2>GitProHub Projects</h2>
 
                 <span id="projectCount" class="projects-count">
                     0 Projects
                 </span>
 
-                <a href="api/projects/" class="view-all">
+                <a href="api/projects/" class="view-all"  rel="noopener">
                     View All
                 </a>
 
@@ -914,213 +1303,304 @@
         </section>
 
 
-
-
-
-
-
-
-
-
         <section class="gitprohub-guide" id="add-project">
+
             <div class="gph-container">
 
                 <div class="gph-heading">
-                    <span class="gph-eyebrow">GitProHub</span>
-                    <h2>Add Your Project</h2>
+
+                    <span class="gph-eyebrow">
+                        GitProHub
+                    </span>
+
+                    <h2>
+                        Add Your Project
+                    </h2>
+
                     <p>
-                        Apne GitHub repository me sirf <strong>haprocard.md</strong> add karke
-                        apne project ko GitProHub par discoverable banayein.
+                        GitHub repository me sirf
+                        <strong>haprocard.md</strong>
+                        add karein aur GitProHub aapke project ko automatically discover kar sakta hai.
                     </p>
+
                 </div>
+
 
                 <div class="gph-grid">
 
-                    <!-- Step 1 -->
-                    <article class="gph-card">
-                        <div class="gph-number">01</div>
-                        <div class="gph-icon">📁</div>
 
-                        <h3>File Create Karein</h3>
+
+                    <article class="gph-card">
+
+                        <div class="gph-number">01</div>
+
+                        <div class="gph-icon">📄</div>
+
+                        <h3>Create the File</h3>
 
                         <p>
-                            Apne GitHub repository ke <strong>root directory</strong> me
-                            ek file create karein.
+                            Repository ke <strong>root</strong> me ye file banayein.
                         </p>
 
-                        <div class="gph-code">
-                            <span>File Name</span>
-                            <code>haprocard.md</code>
+                        <div class="template-box">
+
+                            <div class="template-header">
+
+                                <span>haprocard.md</span>
+
+                                <button class="copy-btn" id="copyTemplate" type="button">
+                                    Copy Template
+                                </button>
+
+                            </div>
+
+                            <pre class="markdown-code" id="templateCode"># HaproID
+
+## Description
+
+HaproID is a verified digital identity and profile platform.
+
+## Status
+
+In Development
+
+## Category
+
+Developer Tool
+
+## Author
+
+Susheel Kumar
+
+## Organization
+
+Haproven
+
+## Live
+
+https://haproid.netlify.app/
+
+## GitHub
+
+https://github.com/haproven/haproid
+
+## Image
+
+https://haproid.netlify.app/assets/og-image.png</pre>
+
+                        </div>
+
+                    </article>
+
+
+
+
+                    <article class="gph-card">
+
+                        <div class="gph-number">02</div>
+
+                        <div class="gph-icon">📍</div>
+
+                        <h3>Put It in Root</h3>
+
+                        <p>
+                            Apne GitHub repository ke main/root level par
+                            <strong>haprocard.md</strong> file add karein.
+                            GitProHub isi file ko project card ki information ke liye read karta hai.
+                        </p>
+
+                        <div class="folder-tree">
+                            📦 your-repository/
+                            <br>
+                            &nbsp;&nbsp;├── 📄 <strong>haprocard.md</strong>
+                            <br>
+                            &nbsp;&nbsp;├── 📄 README.md
+                            <br>
+                            &nbsp;&nbsp;└── 📁 src/
+                        </div>
+
+
+                        <br><br><br><br>
+
+                        <hr>
+                        <div class="gph-note">
+                            <strong>Required:</strong>
+                            <code>/haprocard.md</code>
+                        </div>
+
+                        <div class="gph-note">
+                            <strong>Why Root?</strong>
+                            GitProHub repository scan karte waqt root level par
+                            <code>haprocard.md</code> ko identify karke project details read karta hai.
+                        </div>
+
+                        <div class="gph-note">
+                            <strong>What Happens?</strong>
+                            File detect hone ke baad usme di gayi project information
+                            GitProHub ke project card/API data me use ki ja sakti hai.
                         </div>
 
                         <div class="gph-note">
                             <strong>Important:</strong>
-                            File ka naam exactly
-                            <code>haprocard.md</code>
-                            hona chahiye.
+                            File ka naam exactly <code>haprocard.md</code> rakhein.
+                            <code>/src/</code>, <code>/docs/</code> ya kisi subfolder ke andar na rakhein.
                         </div>
+
                     </article>
 
-                    <!-- Step 2 -->
+
+
+
+
                     <article class="gph-card">
-                        <div class="gph-number">02</div>
-                        <div class="gph-icon">📍</div>
 
-                        <h3>File Kahan Rakhein?</h3>
-
-                        <p>
-                            File ko kisi folder ke andar nahi, repository ke
-                            main/root level par rakhein.
-                        </p>
-
-                        <div class="folder-tree">
-                            <div>📦 your-repository/</div>
-                            <div class="tree-file">└── 📄 haprocard.md</div>
-                            <div class="tree-file">└── 📄 README.md</div>
-                            <div class="tree-file">└── 📁 src/</div>
-                        </div>
-
-                        <div class="gph-note">
-                            <strong>Correct:</strong>
-                            <code>/haprocard.md</code>
-                        </div>
-                    </article>
-
-                    <!-- Step 3 -->
-                    <article class="gph-card gph-wide">
                         <div class="gph-number">03</div>
-                        <div class="gph-icon">✍️</div>
 
-                        <h3>haprocard.md Ke Andar Kya Likhein?</h3>
-
-                        <p>
-                            Project ki basic information Markdown format me add karein.
-                        </p>
-
-                        <pre class="markdown-code"><code># HaproID
-
-## Description
-HaproID is a verified digital identity and profile platform.
-
-## Status
-In Development
-
-## Category
-Developer Tool
-
-## Author
-Susheel Kumar
-
-## Organization
-Haproven
-
-## Live
-https://haproid.netlify.app/
-
-## GitHub
-https://github.com/haproven/haproid
-
-## Image
-https://haproid.netlify.app/assets/og-image.png</code></pre>
-                    </article>
-
-                    <!-- Step 4 -->
-                    <article class="gph-card">
-                        <div class="gph-number">04</div>
                         <div class="gph-icon">🚀</div>
 
-                        <h3>GitHub Par Push Karein</h3>
+                        <h3>Commit & Push</h3>
 
                         <p>
-                            File add karne ke baad changes ko commit karke
-                            GitHub repository par push karein.
+                            File add karne ke baad GitHub par push karein.
                         </p>
 
-                        <div class="gph-command">
-                            <code>git add haprocard.md</code>
-                            <code>git commit -m "Add GitProHub card"</code>
-                            <code>git push</code>
+                        <div class="template-box">
+
+                            <pre class="markdown-code">git add haprocard.md
+git commit -m "Add GitProHub card"
+git push</pre>
+
                         </div>
 
                         <div class="gph-note">
-                            GitHub repository public honi chahiye taaki
-                            GitProHub project ko discover kar sake.
+                            Repository <strong>public</strong> honi chahiye.
                         </div>
+
                     </article>
 
-                    <!-- Step 5 -->
+
                     <article class="gph-card">
+
                         <div class="gph-number">05</div>
+
                         <div class="gph-icon">🔍</div>
 
-                        <h3>Project Discover Hone Dein</h3>
+                        <h3>Wait for Discovery</h3>
 
                         <p>
-                            GitProHub repository ko scan karta hai aur
-                            <strong>haprocard.md</strong> milne par project ko detect karta hai.
+                            GitProHub repositories scan karta hai. Agar root me
+                            <strong>haprocard.md</strong> milta hai, project discover ho sakta hai.
                         </p>
 
-                        <div class="gph-flow">
-                            <span>GitHub</span>
-                            <b>→</b>
-                            <span>Scan</span>
-                            <b>→</b>
-                            <span>Detect</span>
-                            <b>→</b>
-                            <span>Project</span>
+                        <div class="short-steps">
+
+                            <div class="short-step">
+                                <strong>01</strong>
+                                <span>GitHub</span>
+                                <small>Repository</small>
+                            </div>
+
+                            <div class="short-step">
+                                <strong>02</strong>
+                                <span>Scan</span>
+                                <small>Repository scan</small>
+                            </div>
+
+                            <div class="short-step">
+                                <strong>03</strong>
+                                <span>Detect</span>
+                                <small>haprocard.md</small>
+                            </div>
+
+                            <div class="short-step">
+                                <strong>04</strong>
+                                <span>Project</span>
+                                <small>GitProHub</small>
+                            </div>
+
                         </div>
+
                     </article>
 
-                    <!-- Step 6 -->
+
                     <article class="gph-card gph-wide">
+
                         <div class="gph-number">06</div>
+
                         <div class="gph-icon">✅</div>
 
-                        <h3>Project Add Hua Ya Nahi — Kaise Check Karein?</h3>
+                        <h3>Check Your Project</h3>
 
                         <p>
-                            Apne GitHub username se GitProHub API ko check karein.
+                            Project discover hua ya nahi, ye API endpoints se check karein.
                         </p>
 
-                        <div class="verify-box">
-                            <span>GitHub Account Check</span>
-                            <code>https://gitprohub.onrender.com/api/github/USERNAME</code>
-                        </div>
+                        <div class="verify-grid">
 
-                        <div class="verify-box">
-                            <span>Specific Project Check</span>
-                            <code>https://gitprohub.onrender.com/api/project/USERNAME/REPOSITORY</code>
-                        </div>
+                            <div class="verify-box">
 
-                        <div class="verify-box">
-                            <span>All Projects</span>
-                            <code>https://gitprohub.onrender.com/api/projects</code>
+                                <span>GitHub Account</span>
+
+                                <a href="https://gitprohub.onrender.com/api/github/USERNAME" target="_blank"
+                                    rel="noopener">
+                                    /api/github/USERNAME
+                                </a>
+
+                            </div>
+
+                            <div class="verify-box">
+
+                                <span>Specific Project</span>
+
+                                <a href="https://gitprohub.onrender.com/api/project/USERNAME/REPOSITORY" target="_blank"
+                                    rel="noopener">
+                                    /api/project/USERNAME/REPOSITORY
+                                </a>
+
+                            </div>
+
+                            <div class="verify-box">
+
+                                <span>All Projects</span>
+
+                                <a href="https://gitprohub.onrender.com/api/projects" target="_blank" rel="noopener">
+                                    /api/projects
+                                </a>
+
+                            </div>
+
                         </div>
 
                         <a class="gph-api-btn" href="https://gitprohub.onrender.com/" target="_blank" rel="noopener">
                             Open GitProHub API →
                         </a>
+
                     </article>
 
                 </div>
 
-                <!-- Final Flow -->
+
                 <div class="gph-final">
+
                     <div class="gph-final-content">
-                        <span class="gph-eyebrow">Simple Workflow</span>
+
+                        <span class="gph-eyebrow">
+                            Simple Workflow
+                        </span>
 
                         <h3>
                             One File → Auto Discover → Project Card
                         </h3>
 
                         <p>
-                            Repository ke root me <strong>haprocard.md</strong> add karein,
-                            project information fill karein aur GitProHub ko project discover
-                            karne dein.
+                            <strong>haprocard.md</strong> ko repository root me add karein,
+                            details fill karein, GitHub par push karein aur GitProHub ko project discover karne dein.
                         </p>
+
                     </div>
 
                     <div class="gph-final-flow">
+
                         <div>
                             <strong>01</strong>
                             <span>Create</span>
@@ -1150,431 +1630,14 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                             <span>Discover</span>
                             <small>GitProHub</small>
                         </div>
+
                     </div>
+
                 </div>
 
             </div>
+
         </section>
-
-
-
-
-<style>
-    .gitprohub-guide {
-        width: 100%;
-        padding: 80px 20px;
-        color: #171717;
-        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        box-sizing: border-box;
-    }
-
-    .gitprohub-guide *,
-    .gitprohub-guide *::before,
-    .gitprohub-guide *::after {
-        box-sizing: border-box;
-    }
-
-    .gph-container {
-        width: min(1500px, 100%);
-        margin: auto;
-    }
-
-    .gph-heading {
-        max-width: 700px;
-        margin: 0 auto 45px;
-        text-align: center;
-    }
-
-    .gph-eyebrow {
-        display: inline-flex;
-        align-items: center;
-        padding: 6px 12px;
-        border: 1px solid #e5e7eb;
-        border-radius: 50px;
-        color: #3f54b1;
-        font-size: 12px;
-        font-weight: 700;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-
-    .gph-heading h2 {
-        margin: 15px 0 12px;
-        color: #111827;
-        font-size: clamp(32px, 5vw, 50px);
-        line-height: 1.1;
-        letter-spacing: -1.5px;
-    }
-
-    .gph-heading p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 16px;
-        line-height: 1.7;
-    }
-
-    .gph-heading strong {
-        color: #3f54b1;
-    }
-
-    .gph-grid {
-        display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-        gap: 18px;
-    }
-
-    .gph-card {
-        position: relative;
-        min-width: 0;
-        padding: 26px;
-        overflow: hidden;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        background: transparent;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, .04);
-        transition: .2s ease;
-    }
-
-    .gph-card:hover {
-        transform: translateY(-3px);
-        border-color: #cfd5e1;
-        box-shadow: 0 5px 16px rgba(0, 0, 0, .06);
-    }
-
-    .gph-wide {
-        grid-column: span 2;
-    }
-
-    .gph-number {
-        position: absolute;
-        top: 18px;
-        right: 22px;
-        color: #e5e7eb;
-        font-size: 42px;
-        line-height: 1;
-        font-weight: 800;
-    }
-
-    .gph-icon {
-        width: 42px;
-        height: 42px;
-        display: grid;
-        place-items: center;
-        margin-bottom: 18px;
-        border: 1px solid #e5e7eb;
-        border-radius: 11px;
-        font-size: 18px;
-    }
-
-    .gph-card h3 {
-        margin: 0 0 9px;
-        color: #111827;
-        font-size: 21px;
-        letter-spacing: -.3px;
-    }
-
-    .gph-card p {
-        margin: 0 0 18px;
-        color: #6b7280;
-        font-size: 14px;
-        line-height: 1.7;
-    }
-
-    .gph-card strong {
-        color: #374151;
-    }
-
-    .gph-code {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 15px;
-        padding: 13px 15px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-    }
-
-    .gph-code span {
-        color: #6b7280;
-        font-size: 12px;
-    }
-
-    .gph-code code,
-    .gph-note code {
-        color: #3f54b1;
-        font-family: "SFMono-Regular", Consolas, monospace;
-    }
-
-    .gph-code code {
-        font-size: 13px;
-    }
-
-    .gph-note {
-        margin-top: 12px;
-        padding: 11px 13px;
-        border-left: 3px solid #3f54b1;
-        color: #6b7280;
-        font-size: 12px;
-        line-height: 1.6;
-    }
-
-    .folder-tree {
-        padding: 16px;
-        overflow-x: auto;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        color: #4b5563;
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 13px;
-        line-height: 1.9;
-    }
-
-    .folder-tree .tree-file {
-        padding-left: 20px;
-    }
-
-    .folder-tree .tree-file:first-of-type {
-        color: #3f54b1;
-        font-weight: 600;
-    }
-
-    .markdown-code {
-        margin: 0;
-        padding: 20px;
-        overflow-x: auto;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-        background: #fafafa;
-        color: #374151;
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 12px;
-        line-height: 1.8;
-        white-space: pre;
-    }
-
-    .gph-command {
-        display: grid;
-        gap: 7px;
-    }
-
-    .gph-command code {
-        display: block;
-        padding: 10px 12px;
-        overflow-x: auto;
-        border: 1px solid #e5e7eb;
-        border-radius: 8px;
-        color: #374151;
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 12px;
-    }
-
-    .gph-flow {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 8px;
-    }
-
-    .gph-flow span {
-        padding: 7px 11px;
-        border: 1px solid #e5e7eb;
-        border-radius: 7px;
-        color: #4b5563;
-        font-size: 12px;
-        font-weight: 600;
-    }
-
-    .gph-flow b {
-        color: #3f54b1;
-    }
-
-    .verify-box {
-        margin-bottom: 10px;
-        padding: 12px 14px;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-    }
-
-    .verify-box span {
-        display: block;
-        margin-bottom: 6px;
-        color: #6b7280;
-        font-size: 11px;
-        font-weight: 600;
-    }
-
-    .verify-box code {
-        display: block;
-        overflow-x: auto;
-        color: #3f54b1;
-        font-family: "SFMono-Regular", Consolas, monospace;
-        font-size: 12px;
-        white-space: nowrap;
-    }
-
-    .gph-api-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        margin-top: 7px;
-        padding: 10px 15px;
-        border: 1px solid #3f54b1;
-        border-radius: 9px;
-        color: #3f54b1;
-        text-decoration: none;
-        font-size: 12px;
-        font-weight: 700;
-        transition: .2s ease;
-    }
-
-    .gph-api-btn:hover {
-        background: #3f54b1;
-        color: #fff;
-    }
-
-    .gph-final {
-        display: grid;
-        grid-template-columns: .9fr 1.1fr;
-        gap: 25px;
-        align-items: center;
-        margin-top: 18px;
-        padding: 28px;
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-    }
-
-    .gph-final-content h3 {
-        margin: 13px 0 9px;
-        color: #111827;
-        font-size: clamp(23px, 3vw, 31px);
-        letter-spacing: -.7px;
-    }
-
-    .gph-final-content p {
-        margin: 0;
-        color: #6b7280;
-        font-size: 13px;
-        line-height: 1.7;
-    }
-
-    .gph-final-flow {
-        display: grid;
-        grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .gph-final-flow div {
-        min-width: 0;
-        padding: 14px 8px;
-        text-align: center;
-        border: 1px solid #e5e7eb;
-        border-radius: 10px;
-    }
-
-    .gph-final-flow strong {
-        display: block;
-        margin-bottom: 4px;
-        color: #3f54b1;
-        font-size: 10px;
-    }
-
-    .gph-final-flow span {
-        display: block;
-        color: #374151;
-        font-size: 12px;
-        font-weight: 700;
-    }
-
-    .gph-final-flow small {
-        display: block;
-        margin-top: 4px;
-        color: #9ca3af;
-        font-size: 9px;
-    }
-
-    .gph-final-flow i {
-        color: #9ca3af;
-        font-size: 16px;
-        font-style: normal;
-    }
-
-    @media (max-width: 850px) {
-        .gph-grid {
-            grid-template-columns: 1fr;
-        }
-
-        .gph-wide {
-            grid-column: span 1;
-        }
-
-        .gph-final {
-            grid-template-columns: 1fr;
-        }
-
-        .gph-final-flow {
-            grid-template-columns: 1fr;
-        }
-
-        .gph-final-flow i {
-            transform: rotate(90deg);
-            justify-self: center;
-        }
-    }
-
-    @media (max-width: 520px) {
-        .gitprohub-guide {
-            padding: 60px 14px;
-        }
-
-        .gph-heading {
-            margin-bottom: 32px;
-        }
-
-        .gph-heading h2 {
-            font-size: 32px;
-        }
-
-        .gph-heading p {
-            font-size: 14px;
-        }
-
-        .gph-card {
-            padding: 21px;
-            border-radius: 13px;
-        }
-
-        .gph-card h3 {
-            font-size: 19px;
-        }
-
-        .gph-code {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-        .markdown-code {
-            padding: 15px;
-            font-size: 11px;
-        }
-
-        .gph-final {
-            padding: 22px;
-        }
-    }
-</style>
-
-
-
-
-
-
-
-
-
-
-
 
 
         <footer>
@@ -1583,94 +1646,85 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
 
     </div>
 
+
     <script>
+
         const API_BASE = "https://gitprohub.onrender.com";
-
-        const API_URL =
-            `${API_BASE}/api/projects`;
-
-        const API_ROOT =
-            `${API_BASE}/`;
+        const API_ROOT = `${API_BASE}/`;
+        const API_URL = `${API_BASE}/api/projects`;
 
         let projectsLoaded = false;
         let apiRequestRunning = false;
         let projectRequestRunning = false;
 
+
         function escapeHtml(value) {
+
             return String(value)
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
+
         }
 
+
         function getValue(project, keys, fallback = "") {
+
             for (const key of keys) {
+
                 const parts = key.split(".");
                 let value = project;
 
                 for (const part of parts) {
-                    if (
-                        value === null ||
-                        value === undefined
-                    ) {
+
+                    if (value === null || value === undefined) {
                         break;
                     }
 
                     value = value[part];
+
                 }
 
-                if (
-                    value !== undefined &&
-                    value !== null &&
-                    value !== ""
-                ) {
+                if (value !== undefined && value !== null && value !== "") {
                     return value;
                 }
+
             }
 
             return fallback;
+
         }
 
-        function getProjects(data) {
-            if (Array.isArray(data)) {
-                return data;
-            }
 
-            if (
-                data &&
-                Array.isArray(data.projects)
-            ) {
+        function getProjects(data) {
+
+            if (Array.isArray(data)) return data;
+
+            if (data && Array.isArray(data.projects)) {
                 return data.projects;
             }
 
-            if (
-                data &&
-                data.data &&
-                Array.isArray(data.data.projects)
-            ) {
+            if (data && data.data && Array.isArray(data.data.projects)) {
                 return data.data.projects;
             }
 
-            if (
-                data &&
-                Array.isArray(data.data)
-            ) {
+            if (data && Array.isArray(data.data)) {
                 return data.data;
             }
 
-            if (
-                data &&
-                Array.isArray(data.items)
-            ) {
+            if (data && Array.isArray(data.items)) {
                 return data.items;
             }
 
             return [];
+
         }
 
+
         function createProjectCard(project) {
+
             const name = getValue(
                 project,
                 [
@@ -1682,6 +1736,7 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 ],
                 "Unnamed Project"
             );
+
 
             const developer = getValue(
                 project,
@@ -1696,6 +1751,7 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 "Unknown Developer"
             );
 
+
             const description = getValue(
                 project,
                 [
@@ -1706,6 +1762,7 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 ],
                 "No description available."
             );
+
 
             const github = getValue(
                 project,
@@ -1721,6 +1778,7 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 ""
             );
 
+
             const live = getValue(
                 project,
                 [
@@ -1735,6 +1793,7 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 ""
             );
 
+
             const status = getValue(
                 project,
                 [
@@ -1744,79 +1803,85 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 "Active"
             );
 
+
+            const initial = String(name).charAt(0).toUpperCase();
+
+
             return `
-            <article class="project">
 
-                <div class="project-top">
+<article class="project">
 
-                    <div class="project-icon">
-                        ${escapeHtml(
-                String(name)
-                    .charAt(0)
-                    .toUpperCase()
-            )}
-                    </div>
+<div class="project-top">
 
-                    <span class="project-status">
-                        ${escapeHtml(status)}
-                    </span>
+<div class="project-icon">
+${escapeHtml(initial)}
+</div>
 
-                </div>
+<span class="project-status">
+${escapeHtml(status)}
+</span>
 
-                <h3>
-                    ${escapeHtml(name)}
-                </h3>
+</div>
 
-                <div class="project-developer">
-                    Developer: @${escapeHtml(developer)}
-                </div>
+<h3>
+${escapeHtml(name)}
+</h3>
 
-                <div class="project-description">
-                    ${escapeHtml(description)}
-                </div>
+<div class="project-developer">
+Developer: @${escapeHtml(developer)}
+</div>
 
-                <div class="project-links">
+<div class="project-description">
+${escapeHtml(description)}
+</div>
 
-                    ${github
-                    ? `
-                                <a
-                                    href="${escapeHtml(github)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    GitHub ↗
-                                </a>
-                            `
+<div class="project-links">
+
+${github
+                    ?
+                    `
+<a
+href="${escapeHtml(github)}"
+target="_blank"
+rel="noopener noreferrer"
+>
+GitHub ↗
+</a>
+`
                     : ""
                 }
 
-                    ${live
-                    ? `
-                                <a
-                                    href="${escapeHtml(live)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Live ↗
-                                </a>
-                            `
+${live
+                    ?
+                    `
+<a
+href="${escapeHtml(live)}"
+target="_blank"
+rel="noopener noreferrer"
+>
+Live ↗
+</a>
+`
                     : ""
                 }
 
-                </div>
+</div>
 
-            </article>
-        `;
+</article>
+
+`;
+
         }
 
+
         async function loadApiStatus() {
-            if (apiRequestRunning) {
-                return;
-            }
+
+            if (apiRequestRunning) return;
 
             apiRequestRunning = true;
 
             try {
+
                 const response = await fetch(
                     API_ROOT,
                     {
@@ -1829,158 +1894,157 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                 );
 
                 if (!response.ok) {
-                    throw new Error(
-                        `HTTP ${response.status}`
-                    );
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
-                const data =
-                    await response.json();
+                const data = await response.json();
 
-                const success =
-                    document.getElementById("success");
 
-                const apiName =
-                    document.getElementById("apiName");
+                const success = document.getElementById("success");
+                const apiName = document.getElementById("apiName");
+                const name = document.getElementById("name");
+                const apiMessage = document.getElementById("apiMessage");
+                const message = document.getElementById("message");
+                const statusText = document.getElementById("statusText");
 
-                const name =
-                    document.getElementById("name");
-
-                const apiMessage =
-                    document.getElementById("apiMessage");
-
-                const message =
-                    document.getElementById("message");
-
-                const statusText =
-                    document.getElementById("statusText");
 
                 if (success) {
-                    success.textContent =
-                        data.success ?? false;
+
+                    const value = data.success ?? false;
+
+                    success.textContent = value;
+
+                    success.className =
+                        `info-value ${value ? "true" : "false"}`;
+
                 }
 
+
                 if (data.name) {
+
                     if (apiName) {
-                        apiName.textContent =
-                            data.name;
+                        apiName.textContent = data.name;
                     }
 
                     if (name) {
-                        name.textContent =
-                            data.name;
+                        name.textContent = data.name;
                     }
+
                 }
 
+
                 if (data.message) {
+
                     if (apiMessage) {
-                        apiMessage.textContent =
-                            data.message;
+                        apiMessage.textContent = data.message;
                     }
 
                     if (message) {
-                        message.textContent =
-                            data.message;
+                        message.textContent = data.message;
                     }
+
                 }
+
 
                 if (data.discovery) {
-                    const running =
-                        data.discovery.running ??
-                        false;
 
-                    const scheduled =
-                        data.discovery.scheduled ??
-                        false;
+                    const running = data.discovery.running ?? false;
+                    const scheduled = data.discovery.scheduled ?? false;
+                    const interval = data.discovery.interval ?? "Unknown";
 
-                    const interval =
-                        data.discovery.interval ??
-                        "Unknown";
 
-                    const runningElement =
-                        document.getElementById("running");
+                    const runningElement = document.getElementById("running");
+                    const scheduledElement = document.getElementById("scheduled");
+                    const intervalElement = document.getElementById("interval");
 
-                    const scheduledElement =
-                        document.getElementById("scheduled");
-
-                    const intervalElement =
-                        document.getElementById("interval");
 
                     if (runningElement) {
-                        runningElement.textContent =
-                            running;
+
+                        runningElement.textContent = running;
 
                         runningElement.className =
-                            `info-value ${running
-                                ? "true"
-                                : "false"
-                            }`;
+                            `info-value ${running ? "true" : "false"}`;
+
                     }
+
 
                     if (scheduledElement) {
-                        scheduledElement.textContent =
-                            scheduled;
+
+                        scheduledElement.textContent = scheduled;
 
                         scheduledElement.className =
-                            `info-value ${scheduled
-                                ? "true"
-                                : "false"
-                            }`;
+                            `info-value ${scheduled ? "true" : "false"}`;
+
                     }
+
 
                     if (intervalElement) {
-                        intervalElement.textContent =
-                            interval;
+                        intervalElement.textContent = interval;
                     }
+
                 }
 
+
                 if (statusText) {
-                    statusText.textContent =
-                        "API Online";
+                    statusText.textContent = "API Online";
                 }
+
 
             } catch (error) {
-                console.error(
-                    "GitProHub API:",
-                    error
-                );
 
-                const apiMessage =
-                    document.getElementById("apiMessage");
+                console.error("GitProHub API:", error);
 
-                const statusText =
-                    document.getElementById("statusText");
+
+                const apiMessage = document.getElementById("apiMessage");
+                const statusText = document.getElementById("statusText");
+                const success = document.getElementById("success");
+
 
                 if (apiMessage) {
-                    apiMessage.textContent =
-                        "Unable to connect to API";
+                    apiMessage.textContent = "Unable to connect to API";
                 }
 
                 if (statusText) {
-                    statusText.textContent =
-                        "API Offline";
+                    statusText.textContent = "API Offline";
                 }
+
+                if (success) {
+
+                    success.textContent = "false";
+
+                    success.className = "info-value false";
+
+                }
+
             } finally {
+
                 apiRequestRunning = false;
+
             }
+
         }
 
+
         async function loadProjects() {
-            if (projectRequestRunning) {
-                return;
-            }
+
+            if (projectRequestRunning) return;
 
             projectRequestRunning = true;
 
-            const container =
-                document.getElementById("projects");
+
+            const container = document.getElementById("projects");
+
 
             if (!container) {
+
                 projectRequestRunning = false;
                 return;
+
             }
 
+
             try {
+
                 const response = await fetch(
                     API_URL,
                     {
@@ -1992,95 +2056,154 @@ https://haproid.netlify.app/assets/og-image.png</code></pre>
                     }
                 );
 
+
                 if (!response.ok) {
-                    throw new Error(
-                        `HTTP ${response.status}`
-                    );
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
-                const result =
-                    await response.json();
 
-                const projects =
-                    getProjects(result);
+                const result = await response.json();
 
-                const projectCount =
-                    document.getElementById(
-                        "projectCount"
-                    );
+                const projects = getProjects(result);
+
+                const projectCount = document.getElementById("projectCount");
+
 
                 if (projectCount) {
+
                     projectCount.textContent =
-                        `${projects.length} ${projects.length === 1
-                            ? "Project"
-                            : "Projects"
-                        }`;
+                        `${projects.length} ${projects.length === 1 ? "Project" : "Projects"}`;
+
                 }
+
 
                 if (!projects.length) {
-                    if (!projectsLoaded) {
-                        container.innerHTML = `
-                        <div class="empty">
-                            No GitProHub projects found.
-                        </div>
-                    `;
-                    }
+
+                    container.innerHTML = `
+<div class="empty">
+No GitProHub projects found.
+</div>
+`;
 
                     projectsLoaded = true;
+
                     return;
+
                 }
 
-                const newHtml =
+
+                container.innerHTML =
                     projects
                         .slice(0, 6)
                         .map(createProjectCard)
                         .join("");
 
-                container.innerHTML =
-                    newHtml;
 
                 projectsLoaded = true;
 
+
             } catch (error) {
-                console.error(
-                    "GitProHub Projects:",
-                    error
-                );
+
+                console.error("GitProHub Projects:", error);
+
 
                 if (!projectsLoaded) {
-                    const projectCount =
-                        document.getElementById(
-                            "projectCount"
-                        );
+
+                    const projectCount = document.getElementById("projectCount");
 
                     if (projectCount) {
-                        projectCount.textContent =
-                            "0 Projects";
+                        projectCount.textContent = "0 Projects";
                     }
 
+
                     container.innerHTML = `
-                    <div class="error">
-                        Unable to load projects.
-                        <br><br>
-                        <small>
-                            API:
-                            ${escapeHtml(API_URL)}
-                        </small>
-                    </div>
-                `;
+<div class="error">
+Unable to load projects.
+<br><br>
+<small>
+API: ${escapeHtml(API_URL)}
+</small>
+</div>
+`;
+
                 }
+
             } finally {
+
                 projectRequestRunning = false;
+
             }
+
         }
+
+
+        /* COPY TEMPLATE */
+
+        const copyButton = document.getElementById("copyTemplate");
+        const template = document.getElementById("templateCode");
+
+
+        if (copyButton && template) {
+
+            copyButton.addEventListener("click", async () => {
+
+                const text = template.textContent.trim();
+
+                try {
+
+                    await navigator.clipboard.writeText(text);
+
+                    copyButton.textContent = "Copied ✓";
+                    copyButton.classList.add("copied");
+
+                    setTimeout(() => {
+
+                        copyButton.textContent = "Copy Template";
+                        copyButton.classList.remove("copied");
+
+                    }, 1800);
+
+                } catch (error) {
+
+                    const textarea = document.createElement("textarea");
+
+                    textarea.value = text;
+
+                    document.body.appendChild(textarea);
+
+                    textarea.select();
+
+                    document.execCommand("copy");
+
+                    textarea.remove();
+
+                    copyButton.textContent = "Copied ✓";
+                    copyButton.classList.add("copied");
+
+                    setTimeout(() => {
+
+                        copyButton.textContent = "Copy Template";
+                        copyButton.classList.remove("copied");
+
+                    }, 1800);
+
+                }
+
+            });
+
+        }
+
 
         document.addEventListener(
             "DOMContentLoaded",
             () => {
+
                 loadApiStatus();
                 loadProjects();
+
             }
         );
+
     </script>
 
 </body>
