@@ -408,7 +408,7 @@
                 https://gitprohub.onrender.com/api/projects
             </div>
 
-            
+
         </div>
 
         <section id="projects" class="projects">
@@ -418,6 +418,682 @@
             </div>
 
         </section>
+
+
+
+
+
+
+
+
+
+
+
+<section class="gitprohub-guide" id="add-project">
+    <div class="gph-container">
+
+        <div class="gph-heading">
+            <span class="gph-eyebrow">GitProHub</span>
+            <h2>Add Your Project</h2>
+            <p>
+                Apne GitHub repository me sirf <strong>haprocard.md</strong> add karke
+                apne project ko GitProHub par discoverable banayein.
+            </p>
+        </div>
+
+        <div class="gph-grid">
+
+            <!-- Step 1 -->
+            <article class="gph-card">
+                <div class="gph-number">01</div>
+                <div class="gph-icon">📁</div>
+
+                <h3>File Create Karein</h3>
+
+                <p>
+                    Apne GitHub repository ke <strong>root directory</strong> me
+                    ek file create karein.
+                </p>
+
+                <div class="gph-code">
+                    <span>File Name</span>
+                    <code>haprocard.md</code>
+                </div>
+
+                <div class="gph-note">
+                    <strong>Important:</strong>
+                    File ka naam exactly
+                    <code>haprocard.md</code>
+                    hona chahiye.
+                </div>
+            </article>
+
+            <!-- Step 2 -->
+            <article class="gph-card">
+                <div class="gph-number">02</div>
+                <div class="gph-icon">📍</div>
+
+                <h3>File Kahan Rakhein?</h3>
+
+                <p>
+                    File ko kisi folder ke andar nahi, repository ke
+                    main/root level par rakhein.
+                </p>
+
+                <div class="folder-tree">
+                    <div>📦 your-repository/</div>
+                    <div class="tree-file">└── 📄 haprocard.md</div>
+                    <div class="tree-file">└── 📄 README.md</div>
+                    <div class="tree-file">└── 📁 src/</div>
+                </div>
+
+                <div class="gph-note">
+                    <strong>Correct:</strong>
+                    <code>/haprocard.md</code>
+                </div>
+            </article>
+
+            <!-- Step 3 -->
+            <article class="gph-card gph-wide">
+                <div class="gph-number">03</div>
+                <div class="gph-icon">✍️</div>
+
+                <h3>haprocard.md Ke Andar Kya Likhein?</h3>
+
+                <p>
+                    Project ki basic information Markdown format me add karein.
+                </p>
+
+                <pre class="markdown-code"><code># HaproID
+
+## Description
+HaproID is a verified digital identity and profile platform.
+
+## Status
+In Development
+
+## Category
+Developer Tool
+
+## Author
+Susheel Kumar
+
+## Organization
+Haproven
+
+## Live
+https://haproid.netlify.app/
+
+## GitHub
+https://github.com/haproven/haproid
+
+## Image
+https://haproid.netlify.app/assets/og-image.png</code></pre>
+            </article>
+
+            <!-- Step 4 -->
+            <article class="gph-card">
+                <div class="gph-number">04</div>
+                <div class="gph-icon">🚀</div>
+
+                <h3>GitHub Par Push Karein</h3>
+
+                <p>
+                    File add karne ke baad changes ko commit karke
+                    GitHub repository par push karein.
+                </p>
+
+                <div class="gph-command">
+                    <code>git add haprocard.md</code>
+                    <code>git commit -m "Add GitProHub card"</code>
+                    <code>git push</code>
+                </div>
+
+                <div class="gph-note">
+                    GitHub repository public honi chahiye taaki
+                    GitProHub project ko discover kar sake.
+                </div>
+            </article>
+
+            <!-- Step 5 -->
+            <article class="gph-card">
+                <div class="gph-number">05</div>
+                <div class="gph-icon">🔍</div>
+
+                <h3>Project Discover Hone Dein</h3>
+
+                <p>
+                    GitProHub repository ko scan karta hai aur
+                    <strong>haprocard.md</strong> milne par project ko detect karta hai.
+                </p>
+
+                <div class="gph-flow">
+                    <span>GitHub</span>
+                    <b>→</b>
+                    <span>Scan</span>
+                    <b>→</b>
+                    <span>Detect</span>
+                    <b>→</b>
+                    <span>Project</span>
+                </div>
+            </article>
+
+            <!-- Step 6 -->
+            <article class="gph-card gph-wide">
+                <div class="gph-number">06</div>
+                <div class="gph-icon">✅</div>
+
+                <h3>Project Add Hua Ya Nahi — Kaise Check Karein?</h3>
+
+                <p>
+                    Apne GitHub username se GitProHub API ko check karein.
+                </p>
+
+                <div class="verify-box">
+                    <span>GitHub Account Check</span>
+                    <code>https://gitprohub.onrender.com/api/github/USERNAME</code>
+                </div>
+
+                <div class="verify-box">
+                    <span>Specific Project Check</span>
+                    <code>https://gitprohub.onrender.com/api/project/USERNAME/REPOSITORY</code>
+                </div>
+
+                <div class="verify-box">
+                    <span>All Projects</span>
+                    <code>https://gitprohub.onrender.com/api/projects</code>
+                </div>
+
+                <a
+                    class="gph-api-btn"
+                    href="https://gitprohub.onrender.com/"
+                    target="_blank"
+                    rel="noopener"
+                >
+                    Open GitProHub API →
+                </a>
+            </article>
+
+        </div>
+
+        <!-- Final Flow -->
+        <div class="gph-final">
+            <div class="gph-final-content">
+                <span class="gph-eyebrow">Simple Workflow</span>
+
+                <h3>
+                    One File → Auto Discover → Project Card
+                </h3>
+
+                <p>
+                    Repository ke root me <strong>haprocard.md</strong> add karein,
+                    project information fill karein aur GitProHub ko project discover
+                    karne dein.
+                </p>
+            </div>
+
+            <div class="gph-final-flow">
+                <div>
+                    <strong>01</strong>
+                    <span>Create</span>
+                    <small>haprocard.md</small>
+                </div>
+
+                <i>→</i>
+
+                <div>
+                    <strong>02</strong>
+                    <span>Add</span>
+                    <small>Repository Root</small>
+                </div>
+
+                <i>→</i>
+
+                <div>
+                    <strong>03</strong>
+                    <span>Push</span>
+                    <small>GitHub</small>
+                </div>
+
+                <i>→</i>
+
+                <div>
+                    <strong>04</strong>
+                    <span>Discover</span>
+                    <small>GitProHub</small>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<style>
+.gitprohub-guide {
+    width: 100%;
+    padding: 100px 20px;
+    background:
+        radial-gradient(circle at 10% 10%, rgba(99, 102, 241, .12), transparent 30%),
+        radial-gradient(circle at 90% 80%, rgba(16, 185, 129, .10), transparent 30%),
+        #070b12;
+    color: #fff;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    box-sizing: border-box;
+}
+
+.gitprohub-guide *,
+.gitprohub-guide *::before,
+.gitprohub-guide *::after {
+    box-sizing: border-box;
+}
+
+.gph-container {
+    width: min(1180px, 100%);
+    margin: auto;
+}
+
+.gph-heading {
+    max-width: 760px;
+    margin: 0 auto 55px;
+    text-align: center;
+}
+
+.gph-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    padding: 7px 13px;
+    border: 1px solid rgba(255, 255, 255, .12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .05);
+    color: #a5b4fc;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+
+.gph-heading h2 {
+    margin: 18px 0 14px;
+    font-size: clamp(34px, 5vw, 58px);
+    line-height: 1.05;
+    letter-spacing: -2px;
+}
+
+.gph-heading p {
+    margin: 0;
+    color: #9ca3af;
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.gph-heading strong {
+    color: #fff;
+}
+
+.gph-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.gph-card {
+    position: relative;
+    padding: 30px;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, .09);
+    border-radius: 22px;
+    background: rgba(255, 255, 255, .045);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, .20);
+    transition: transform .25s ease, border-color .25s ease, background .25s ease;
+}
+
+.gph-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(165, 180, 252, .35);
+    background: rgba(255, 255, 255, .065);
+}
+
+.gph-wide {
+    grid-column: span 2;
+}
+
+.gph-number {
+    position: absolute;
+    top: 20px;
+    right: 25px;
+    color: rgba(255, 255, 255, .08);
+    font-size: 55px;
+    line-height: 1;
+    font-weight: 900;
+}
+
+.gph-icon {
+    width: 48px;
+    height: 48px;
+    display: grid;
+    place-items: center;
+    margin-bottom: 22px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, .06);
+    font-size: 21px;
+}
+
+.gph-card h3 {
+    margin: 0 0 10px;
+    font-size: 23px;
+    letter-spacing: -.5px;
+}
+
+.gph-card p {
+    margin: 0 0 22px;
+    color: #9ca3af;
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.gph-card strong {
+    color: #fff;
+}
+
+.gph-code {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 15px 17px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 13px;
+    background: #05080d;
+}
+
+.gph-code span {
+    color: #9ca3af;
+    font-size: 13px;
+}
+
+.gph-code code,
+.gph-note code {
+    color: #c4b5fd;
+    font-family: "SFMono-Regular", Consolas, monospace;
+}
+
+.gph-code code {
+    font-size: 14px;
+}
+
+.gph-note {
+    margin-top: 14px;
+    padding: 13px 15px;
+    border-left: 3px solid #6366f1;
+    border-radius: 8px;
+    background: rgba(99, 102, 241, .08);
+    color: #aeb5c1;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.folder-tree {
+    padding: 19px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 14px;
+    background: #05080d;
+    color: #d1d5db;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 14px;
+    line-height: 2;
+    overflow-x: auto;
+}
+
+.folder-tree .tree-file {
+    padding-left: 22px;
+    color: #9ca3af;
+}
+
+.folder-tree .tree-file:first-of-type {
+    color: #c4b5fd;
+}
+
+.markdown-code {
+    margin: 0;
+    padding: 24px;
+    overflow-x: auto;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 15px;
+    background: #05080d;
+    color: #d1d5db;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    white-space: pre;
+}
+
+.gph-command {
+    display: grid;
+    gap: 8px;
+}
+
+.gph-command code {
+    display: block;
+    padding: 12px 14px;
+    overflow-x: auto;
+    border-radius: 9px;
+    background: #05080d;
+    color: #a7f3d0;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 13px;
+}
+
+.gph-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 15px;
+    background: #05080d;
+}
+
+.gph-flow span {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, .07);
+    color: #d1d5db;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.gph-flow b {
+    color: #818cf8;
+}
+
+.verify-box {
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 12px;
+    background: #05080d;
+}
+
+.verify-box span {
+    display: block;
+    margin-bottom: 8px;
+    color: #9ca3af;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.verify-box code {
+    display: block;
+    overflow-x: auto;
+    color: #c4b5fd;
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.gph-api-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 8px;
+    padding: 12px 18px;
+    border: 1px solid rgba(165, 180, 252, .25);
+    border-radius: 11px;
+    background: rgba(99, 102, 241, .12);
+    color: #c7d2fe;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 700;
+    transition: .2s ease;
+}
+
+.gph-api-btn:hover {
+    background: rgba(99, 102, 241, .20);
+    transform: translateY(-2px);
+}
+
+.gph-final {
+    display: grid;
+    grid-template-columns: .9fr 1.1fr;
+    gap: 30px;
+    align-items: center;
+    margin-top: 20px;
+    padding: 35px;
+    border: 1px solid rgba(255, 255, 255, .10);
+    border-radius: 24px;
+    background: linear-gradient(
+        135deg,
+        rgba(99, 102, 241, .10),
+        rgba(16, 185, 129, .06)
+    );
+}
+
+.gph-final-content h3 {
+    margin: 15px 0 10px;
+    font-size: clamp(25px, 3vw, 34px);
+    letter-spacing: -1px;
+}
+
+.gph-final-content p {
+    margin: 0;
+    color: #9ca3af;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.gph-final-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    align-items: center;
+    gap: 10px;
+}
+
+.gph-final-flow div {
+    min-width: 0;
+    padding: 18px 10px;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, .08);
+    border-radius: 13px;
+    background: rgba(0, 0, 0, .18);
+}
+
+.gph-final-flow strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #818cf8;
+    font-size: 11px;
+}
+
+.gph-final-flow span {
+    display: block;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.gph-final-flow small {
+    display: block;
+    margin-top: 5px;
+    color: #6b7280;
+    font-size: 10px;
+}
+
+.gph-final-flow i {
+    color: #818cf8;
+    font-size: 18px;
+    font-style: normal;
+}
+
+@media (max-width: 850px) {
+    .gph-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .gph-wide {
+        grid-column: span 1;
+    }
+
+    .gph-final {
+        grid-template-columns: 1fr;
+    }
+
+    .gph-final-flow {
+        grid-template-columns: 1fr;
+    }
+
+    .gph-final-flow i {
+        transform: rotate(90deg);
+        justify-self: center;
+    }
+}
+
+@media (max-width: 520px) {
+    .gitprohub-guide {
+        padding: 70px 14px;
+    }
+
+    .gph-card {
+        padding: 23px;
+        border-radius: 18px;
+    }
+
+    .gph-heading h2 {
+        letter-spacing: -1px;
+    }
+
+    .gph-heading p {
+        font-size: 15px;
+    }
+
+    .gph-code {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .markdown-code {
+        padding: 17px;
+        font-size: 12px;
+    }
+
+    .gph-final {
+        padding: 24px;
+    }
+}
+</style>
+
+
+
+
+
+
+
+
+
+
 
         <footer>
             GitProHub · Powered by Haproven
