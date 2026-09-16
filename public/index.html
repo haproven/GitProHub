@@ -621,6 +621,7 @@
             </a>
 
         </section>
+        
 
         <section class="top-grid">
 
@@ -918,192 +919,178 @@
 
     </div>
 
-    <script>
-        const API_BASE =
-            window.location.port === "5500" ||
-                window.location.port === "5501"
-                ? "http://localhost:3000"
-                : "";
+<script>
+    const API_BASE = "https://gitprohub.onrender.com";
 
-        const API_URL =
-            `${API_BASE}/api/projects`;
+    const API_URL =
+        `${API_BASE}/api/projects`;
 
-        const API_ROOT =
-            `${API_BASE}/`;
+    const API_ROOT =
+        `${API_BASE}/`;
 
-        let projectsLoaded = false;
-        let apiRequestRunning = false;
-        let projectRequestRunning = false;
+    let projectsLoaded = false;
+    let apiRequestRunning = false;
+    let projectRequestRunning = false;
 
-        function escapeHtml(value) {
-            return String(value)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
+    function escapeHtml(value) {
+        return String(value)
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
 
-        function getValue(
-            project,
-            keys,
-            fallback = ""
-        ) {
-            for (const key of keys) {
-                const parts = key.split(".");
-                let value = project;
+    function getValue(project, keys, fallback = "") {
+        for (const key of keys) {
+            const parts = key.split(".");
+            let value = project;
 
-                for (const part of parts) {
-                    if (
-                        value === null ||
-                        value === undefined
-                    ) {
-                        break;
-                    }
-
-                    value = value[part];
-                }
-
+            for (const part of parts) {
                 if (
-                    value !== undefined &&
-                    value !== null &&
-                    value !== ""
+                    value === null ||
+                    value === undefined
                 ) {
-                    return value;
+                    break;
                 }
+
+                value = value[part];
             }
 
-            return fallback;
+            if (
+                value !== undefined &&
+                value !== null &&
+                value !== ""
+            ) {
+                return value;
+            }
         }
 
-        function getProjects(data) {
-            if (Array.isArray(data)) {
-                return data;
-            }
+        return fallback;
+    }
 
-            if (
-                data &&
-                Array.isArray(data.projects)
-            ) {
-                return data.projects;
-            }
-
-            if (
-                data &&
-                data.data &&
-                Array.isArray(data.data.projects)
-            ) {
-                return data.data.projects;
-            }
-
-            if (
-                data &&
-                Array.isArray(data.data)
-            ) {
-                return data.data;
-            }
-
-            if (
-                data &&
-                Array.isArray(data.items)
-            ) {
-                return data.items;
-            }
-
-            return [];
+    function getProjects(data) {
+        if (Array.isArray(data)) {
+            return data;
         }
 
-        function createProjectCard(project) {
-            const name =
-                getValue(
-                    project,
-                    [
-                        "name",
-                        "projectName",
-                        "title",
-                        "repository.name",
-                        "repo"
-                    ],
-                    "Unnamed Project"
-                );
+        if (
+            data &&
+            Array.isArray(data.projects)
+        ) {
+            return data.projects;
+        }
 
-            const developer =
-                getValue(
-                    project,
-                    [
-                        "username",
-                        "developer.username",
-                        "github.owner.login",
-                        "owner.login",
-                        "owner",
-                        "author"
-                    ],
-                    "Unknown Developer"
-                );
+        if (
+            data &&
+            data.data &&
+            Array.isArray(data.data.projects)
+        ) {
+            return data.data.projects;
+        }
 
-            const description =
-                getValue(
-                    project,
-                    [
-                        "description",
-                        "project.description",
-                        "about",
-                        "summary"
-                    ],
-                    "No description available."
-                );
+        if (
+            data &&
+            Array.isArray(data.data)
+        ) {
+            return data.data;
+        }
 
-            const github =
-                getValue(
-                    project,
-                    [
-                        "github",
-                        "githubUrl",
-                        "repository.html_url",
-                        "repoUrl",
-                        "repositoryUrl",
-                        "github_url",
-                        "url"
-                    ],
-                    ""
-                );
+        if (
+            data &&
+            Array.isArray(data.items)
+        ) {
+            return data.items;
+        }
 
-            const live =
-                getValue(
-                    project,
-                    [
-                        "live",
-                        "liveUrl",
-                        "website",
-                        "demo",
-                        "demoUrl",
-                        "projectUrl",
-                        "live_url"
-                    ],
-                    ""
-                );
+        return [];
+    }
 
-            const status =
-                getValue(
-                    project,
-                    [
-                        "status",
-                        "projectStatus"
-                    ],
-                    "Active"
-                );
+    function createProjectCard(project) {
+        const name = getValue(
+            project,
+            [
+                "name",
+                "projectName",
+                "title",
+                "repository.name",
+                "repo"
+            ],
+            "Unnamed Project"
+        );
 
-            return `
+        const developer = getValue(
+            project,
+            [
+                "username",
+                "developer.username",
+                "github.owner.login",
+                "owner.login",
+                "owner",
+                "author"
+            ],
+            "Unknown Developer"
+        );
+
+        const description = getValue(
+            project,
+            [
+                "description",
+                "project.description",
+                "about",
+                "summary"
+            ],
+            "No description available."
+        );
+
+        const github = getValue(
+            project,
+            [
+                "github",
+                "githubUrl",
+                "repository.html_url",
+                "repoUrl",
+                "repositoryUrl",
+                "github_url",
+                "url"
+            ],
+            ""
+        );
+
+        const live = getValue(
+            project,
+            [
+                "live",
+                "liveUrl",
+                "website",
+                "demo",
+                "demoUrl",
+                "projectUrl",
+                "live_url"
+            ],
+            ""
+        );
+
+        const status = getValue(
+            project,
+            [
+                "status",
+                "projectStatus"
+            ],
+            "Active"
+        );
+
+        return `
             <article class="project">
 
                 <div class="project-top">
 
                     <div class="project-icon">
                         ${escapeHtml(
-                String(name)
-                    .charAt(0)
-                    .toUpperCase()
-            )}
+                            String(name)
+                                .charAt(0)
+                                .toUpperCase()
+                        )}
                     </div>
 
                     <span class="project-status">
@@ -1126,8 +1113,9 @@
 
                 <div class="project-links">
 
-                    ${github
-                    ? `
+                    ${
+                        github
+                            ? `
                                 <a
                                     href="${escapeHtml(github)}"
                                     target="_blank"
@@ -1136,11 +1124,12 @@
                                     GitHub ↗
                                 </a>
                             `
-                    : ""
-                }
+                            : ""
+                    }
 
-                    ${live
-                    ? `
+                    ${
+                        live
+                            ? `
                                 <a
                                     href="${escapeHtml(live)}"
                                     target="_blank"
@@ -1149,251 +1138,291 @@
                                     Live ↗
                                 </a>
                             `
-                    : ""
-                }
+                            : ""
+                    }
 
                 </div>
 
             </article>
         `;
+    }
+
+    async function loadApiStatus() {
+        if (apiRequestRunning) {
+            return;
         }
 
-        async function loadApiStatus() {
-            if (apiRequestRunning) {
-                return;
+        apiRequestRunning = true;
+
+        try {
+            const response = await fetch(
+                API_ROOT,
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    cache: "no-store"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
             }
 
-            apiRequestRunning = true;
+            const data =
+                await response.json();
 
-            try {
-                const response =
-                    await fetch(
-                        API_ROOT,
-                        {
-                            method: "GET",
-                            headers: {
-                                "Accept":
-                                    "application/json"
-                            },
-                            cache: "no-store"
-                        }
-                    );
+            const success =
+                document.getElementById("success");
 
-                if (!response.ok) {
-                    throw new Error(
-                        `HTTP ${response.status}`
-                    );
-                }
+            const apiName =
+                document.getElementById("apiName");
 
-                const data =
-                    await response.json();
+            const name =
+                document.getElementById("name");
 
-                document.getElementById(
-                    "success"
-                ).textContent =
+            const apiMessage =
+                document.getElementById("apiMessage");
+
+            const message =
+                document.getElementById("message");
+
+            const statusText =
+                document.getElementById("statusText");
+
+            if (success) {
+                success.textContent =
                     data.success ?? false;
+            }
 
-                if (data.name) {
-                    document.getElementById(
-                        "apiName"
-                    ).textContent =
-                        data.name;
-
-                    document.getElementById(
-                        "name"
-                    ).textContent =
+            if (data.name) {
+                if (apiName) {
+                    apiName.textContent =
                         data.name;
                 }
 
-                if (data.message) {
-                    document.getElementById(
-                        "apiMessage"
-                    ).textContent =
-                        data.message;
+                if (name) {
+                    name.textContent =
+                        data.name;
+                }
+            }
 
-                    document.getElementById(
-                        "message"
-                    ).textContent =
+            if (data.message) {
+                if (apiMessage) {
+                    apiMessage.textContent =
                         data.message;
                 }
 
-                if (data.discovery) {
-                    const running =
-                        data.discovery.running ??
-                        false;
+                if (message) {
+                    message.textContent =
+                        data.message;
+                }
+            }
 
-                    const scheduled =
-                        data.discovery.scheduled ??
-                        false;
+            if (data.discovery) {
+                const running =
+                    data.discovery.running ??
+                    false;
 
-                    document.getElementById(
-                        "running"
-                    ).textContent =
+                const scheduled =
+                    data.discovery.scheduled ??
+                    false;
+
+                const interval =
+                    data.discovery.interval ??
+                    "Unknown";
+
+                const runningElement =
+                    document.getElementById("running");
+
+                const scheduledElement =
+                    document.getElementById("scheduled");
+
+                const intervalElement =
+                    document.getElementById("interval");
+
+                if (runningElement) {
+                    runningElement.textContent =
                         running;
 
-                    document.getElementById(
-                        "scheduled"
-                    ).textContent =
+                    runningElement.className =
+                        `info-value ${
+                            running
+                                ? "true"
+                                : "false"
+                        }`;
+                }
+
+                if (scheduledElement) {
+                    scheduledElement.textContent =
                         scheduled;
 
-                    document.getElementById(
-                        "interval"
-                    ).textContent =
-                        data.discovery.interval ??
-                        "Unknown";
-
-                    document.getElementById(
-                        "running"
-                    ).className =
-                        `info-value ${running
-                            ? "true"
-                            : "false"
-                        }`;
-
-                    document.getElementById(
-                        "scheduled"
-                    ).className =
-                        `info-value ${scheduled
-                            ? "true"
-                            : "false"
+                    scheduledElement.className =
+                        `info-value ${
+                            scheduled
+                                ? "true"
+                                : "false"
                         }`;
                 }
 
-                document.getElementById(
-                    "statusText"
-                ).textContent =
-                    "API Online";
-
-            } catch (error) {
-                console.error(
-                    "GitProHub API:",
-                    error
-                );
-
-                document.getElementById(
-                    "apiMessage"
-                ).textContent =
-                    "Unable to connect to API";
-
-                document.getElementById(
-                    "statusText"
-                ).textContent =
-                    "API Offline";
-            } finally {
-                apiRequestRunning = false;
+                if (intervalElement) {
+                    intervalElement.textContent =
+                        interval;
+                }
             }
+
+            if (statusText) {
+                statusText.textContent =
+                    "API Online";
+            }
+
+        } catch (error) {
+            console.error(
+                "GitProHub API:",
+                error
+            );
+
+            const apiMessage =
+                document.getElementById("apiMessage");
+
+            const statusText =
+                document.getElementById("statusText");
+
+            if (apiMessage) {
+                apiMessage.textContent =
+                    "Unable to connect to API";
+            }
+
+            if (statusText) {
+                statusText.textContent =
+                    "API Offline";
+            }
+        } finally {
+            apiRequestRunning = false;
+        }
+    }
+
+    async function loadProjects() {
+        if (projectRequestRunning) {
+            return;
         }
 
-        async function loadProjects() {
-            if (projectRequestRunning) {
-                return;
+        projectRequestRunning = true;
+
+        const container =
+            document.getElementById("projects");
+
+        if (!container) {
+            projectRequestRunning = false;
+            return;
+        }
+
+        try {
+            const response = await fetch(
+                API_URL,
+                {
+                    method: "GET",
+                    headers: {
+                        "Accept": "application/json"
+                    },
+                    cache: "no-store"
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
             }
 
-            projectRequestRunning = true;
+            const result =
+                await response.json();
 
-            const container =
-                document.getElementById(
-                    "projects"
-                );
+            const projects =
+                getProjects(result);
 
-            try {
-                const response =
-                    await fetch(
-                        API_URL,
-                        {
-                            method: "GET",
-                            headers: {
-                                "Accept":
-                                    "application/json"
-                            },
-                            cache: "no-store"
-                        }
-                    );
-
-                if (!response.ok) {
-                    throw new Error(
-                        `HTTP ${response.status}`
-                    );
-                }
-
-                const result =
-                    await response.json();
-
-                const projects =
-                    getProjects(result);
-
+            const projectCount =
                 document.getElementById(
                     "projectCount"
-                ).textContent =
-                    `${projects.length} ${projects.length === 1
-                        ? "Project"
-                        : "Projects"
-                    }`;
+                );
 
-                if (!projects.length) {
-                    if (!projectsLoaded) {
-                        container.innerHTML = `
+            if (projectCount) {
+                projectCount.textContent =
+                    `${projects.length} ${
+                        projects.length === 1
+                            ? "Project"
+                            : "Projects"
+                    }`;
+            }
+
+            if (!projects.length) {
+                if (!projectsLoaded) {
+                    container.innerHTML = `
                         <div class="empty">
                             No GitProHub projects found.
                         </div>
                     `;
-                    }
-
-                    projectsLoaded = true;
-                    return;
-                }
-
-                const newHtml =
-                    projects
-                        .slice(0, 6)
-                        .map(createProjectCard)
-                        .join("");
-
-                if (
-                    container.innerHTML !==
-                    newHtml
-                ) {
-                    container.innerHTML =
-                        newHtml;
                 }
 
                 projectsLoaded = true;
+                return;
+            }
 
-            } catch (error) {
-                console.error(
-                    "GitProHub Projects:",
-                    error
-                );
+            const newHtml =
+                projects
+                    .slice(0, 6)
+                    .map(createProjectCard)
+                    .join("");
 
-                if (!projectsLoaded) {
+            container.innerHTML =
+                newHtml;
+
+            projectsLoaded = true;
+
+        } catch (error) {
+            console.error(
+                "GitProHub Projects:",
+                error
+            );
+
+            if (!projectsLoaded) {
+                const projectCount =
                     document.getElementById(
                         "projectCount"
-                    ).textContent =
-                        "0 Projects";
+                    );
 
-                    container.innerHTML = `
+                if (projectCount) {
+                    projectCount.textContent =
+                        "0 Projects";
+                }
+
+                container.innerHTML = `
                     <div class="error">
                         Unable to load projects.
                         <br><br>
                         <small>
-                            API: ${escapeHtml(API_URL)}
+                            API:
+                            ${escapeHtml(API_URL)}
                         </small>
                     </div>
                 `;
-                }
-            } finally {
-                projectRequestRunning = false;
             }
+        } finally {
+            projectRequestRunning = false;
         }
+    }
 
-        document.addEventListener(
-            "DOMContentLoaded",
-            () => {
-                loadApiStatus();
-                loadProjects();
-            }
-        );
-    </script>
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+            loadApiStatus();
+            loadProjects();
+        }
+    );
+</script>
 
 </body>
 
