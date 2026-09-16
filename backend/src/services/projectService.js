@@ -106,7 +106,6 @@ async function getProject(
 
 
     if (!image) {
-
         image =
             getImageFromReadme(
                 readme

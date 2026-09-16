@@ -2,10 +2,7 @@
 // GitProHub Markdown Parser
 // =========================================================
 
-
-function cleanValue(
-    value
-) {
+function cleanValue(value) {
 
     if (
         value === undefined ||
@@ -24,12 +21,9 @@ function cleanValue(
 // Parse GitProHub
 // =========================================================
 
-function parseGitProHub(
-    content
-) {
+function parseGitProHub(content) {
 
     if (!content) {
-
         return {
             title: "",
             description: "",
@@ -45,7 +39,6 @@ function parseGitProHub(
 
 
     const metadata = {
-
         title: "",
         description: "",
         category: "",
@@ -55,7 +48,6 @@ function parseGitProHub(
         github: "",
         image: "",
         tags: []
-
     };
 
 
@@ -85,10 +77,10 @@ function parseGitProHub(
             if (
                 lines[i].trim() === "---"
             ) {
-
                 endIndex = i;
                 break;
             }
+
         }
 
 
@@ -112,20 +104,26 @@ function parseGitProHub(
                     continue;
                 }
 
+
                 const key =
                     match[1]
                         .trim()
                         .toLowerCase();
+
 
                 const value =
                     cleanValue(
                         match[2]
                     );
 
+
                 frontMatter[key] =
                     value;
+
             }
+
         }
+
     }
 
 
@@ -133,25 +131,67 @@ function parseGitProHub(
     // Helper
     // =====================================================
 
-    function findField(
-        names
-    ) {
+    function findField(names) {
 
-        for (
-            const name of names
-        ) {
+        // First check YAML front matter
+
+        for (const name of names) {
 
             if (
-                frontMatter[name] !== undefined
+                frontMatter[name] !== undefined &&
+                frontMatter[name] !== ""
             ) {
 
-                return frontMatter[name];
+                return cleanValue(
+                    frontMatter[name]
+                );
+
             }
+
         }
 
+
+        // Then check normal GitProHub markdown fields
+
+        for (const line of lines) {
+
+            const match =
+                line.match(
+                    /^\s*([A-Za-z0-9_-]+)\s*:\s*(.+?)\s*$/
+                );
+
+            if (!match) {
+                continue;
+            }
+
+
+            const key =
+                match[1]
+                    .trim()
+                    .toLowerCase();
+
+
+            if (
+                names.includes(key)
+            ) {
+
+                return cleanValue(
+                    match[2]
+                );
+
+            }
+
+        }
+
+
         return "";
+
     }
 
+
+    // =====================================================
+    // Basic Fields
+    // =====================================================
 
     metadata.title =
         findField([
@@ -207,6 +247,10 @@ function parseGitProHub(
         ]);
 
 
+    // =====================================================
+    // Image
+    // =====================================================
+
     metadata.image =
         findField([
             "image",
@@ -214,6 +258,10 @@ function parseGitProHub(
             "thumbnail"
         ]);
 
+
+    // =====================================================
+    // Tags
+    // =====================================================
 
     const tags =
         findField([
@@ -233,9 +281,13 @@ function parseGitProHub(
                     tag =>
                         tag
                             .trim()
-                            .replace(/^["']|["']$/g, "")
+                            .replace(
+                                /^["']|["']$/g,
+                                ""
+                            )
                 )
                 .filter(Boolean);
+
     }
 
 
@@ -250,11 +302,14 @@ function parseGitProHub(
                 /^#\s+(.+)$/m
             );
 
+
         if (heading) {
 
             metadata.title =
                 heading[1].trim();
+
         }
+
     }
 
 
@@ -266,9 +321,15 @@ function parseGitProHub(
 
         const description =
             content
-                .replace(/^---[\s\S]*?---/, "")
+                .replace(
+                    /^---[\s\S]*?---/,
+                    ""
+                )
                 .split(/\r?\n/)
-                .map(line => line.trim())
+                .map(
+                    line =>
+                        line.trim()
+                )
                 .filter(
                     line =>
                         line &&
@@ -278,12 +339,19 @@ function parseGitProHub(
                 .slice(0, 2)
                 .join(" ");
 
+
         metadata.description =
             description;
+
     }
 
 
+    // =====================================================
+    // Return
+    // =====================================================
+
     return metadata;
+
 }
 
 
