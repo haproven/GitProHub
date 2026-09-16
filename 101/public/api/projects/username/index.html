@@ -3,231 +3,453 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitProHub Projects</title>
-
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * {
-            box-sizing: border-box;
+        :root {
+            --bg: #f1f5f9;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #0f172a;
+            --muted: #64748b;
+            --green: #10b981;
+            --indigo: #6366f1;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+            --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 20px 48px rgba(15, 23, 42, 0.12);
+            --radius: 18px;
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
         body {
-            margin: 0;
-            padding: 30px;
-            font-family: Arial, sans-serif;
-            background: #f5f7fb;
-            color: #222;
+            font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            padding: 28px 16px 40px;
         }
 
         .container {
             width: 100%;
-            max-width: 1200px;
-            margin: auto;
+            max-width: 1100px;
+            margin: 0 auto;
         }
 
+        /* Search box */
         .search-box {
-            background: #fff;
-            padding: 25px;
-            border-radius: 16px;
-            margin-bottom: 25px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0f9ff 50%, #faf5ff 100%);
+            border: 1px solid #a7f3d0;
+            padding: 28px 30px;
+            border-radius: 22px;
+            margin-bottom: 22px;
+            box-shadow: 0 4px 24px rgba(16, 185, 129, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-box::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -8%;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+            pointer-events: none;
         }
 
         .search-box h1 {
-            margin: 0 0 8px;
-            font-size: 28px;
+            margin: 0 0 6px;
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: #064e3b;
+            position: relative;
         }
 
-        .search-box p {
+        .search-box > p {
             margin: 0 0 20px;
-            color: #666;
+            color: var(--muted);
+            font-size: 14px;
+            font-weight: 500;
+            position: relative;
         }
 
         .search-form {
             display: flex;
             gap: 10px;
+            position: relative;
         }
 
         #githubUsername {
             flex: 1;
             width: 100%;
-            height: 48px;
-            padding: 0 15px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
+            height: 50px;
+            padding: 0 16px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
             outline: none;
-            font-size: 16px;
+            font-size: 15px;
+            font-family: inherit;
+            background: white;
+            color: var(--text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: var(--shadow-sm);
         }
 
         #githubUsername:focus {
-            border-color: #111;
+            border-color: #a7f3d0;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        #githubUsername::placeholder {
+            color: #94a3b8;
         }
 
         #searchButton {
-            height: 48px;
-            padding: 0 22px;
+            height: 50px;
+            padding: 0 24px;
             border: 0;
-            border-radius: 10px;
-            background: #111;
+            border-radius: 12px;
+            background: #0f172a;
             color: #fff;
             cursor: pointer;
-            font-size: 15px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
             flex-shrink: 0;
+            transition: transform 0.15s, opacity 0.15s, box-shadow 0.15s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         #searchButton:hover {
-            opacity: 0.85;
+            opacity: 0.92;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
         }
 
         #searchButton:disabled {
-            opacity: 0.6;
+            opacity: 0.55;
             cursor: wait;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .spin {
+            display: none;
+            width: 14px;
+            height: 14px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        #searchButton:disabled .spin {
+            display: block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .hint {
-            margin-top: 10px;
-            color: #888;
-            font-size: 12px;
-            line-height: 1.5;
+            margin-top: 12px;
+            color: #94a3b8;
+            font-size: 12.5px;
+            line-height: 1.6;
+            position: relative;
         }
 
         .hint strong {
-            color: #555;
+            color: #475569;
+            font-weight: 600;
         }
 
         .status {
-            margin-top: 15px;
-            padding: 12px 15px;
-            border-radius: 10px;
-            background: #f1f3f5;
-            font-size: 14px;
+            margin-top: 14px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            font-size: 13.5px;
+            font-weight: 500;
+            color: var(--muted);
+            position: relative;
+            box-shadow: var(--shadow-sm);
         }
 
+        .status.success {
+            color: #15803d;
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+
+        .status.error {
+            color: #dc2626;
+            border-color: #fecaca;
+            background: #fef2f2;
+        }
+
+        .status.loading {
+            color: #4338ca;
+            border-color: #c7d2fe;
+            background: #eef2ff;
+        }
+
+        /* Grid */
         .projects-grid {
             display: grid;
-            grid-template-columns:
-                repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 18px;
         }
 
         .project-card {
-            background: #fff;
-            border-radius: 16px;
-            padding: 20px;
-            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-            transition: 0.2s ease;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s;
+            min-height: 280px;
+            animation: fadeUp 0.35s ease both;
         }
 
         .project-card:hover {
-            transform: translateY(-3px);
+            transform: translateY(-5px);
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-lg);
         }
 
-        .project-card h2 {
-            margin: 0 0 10px;
-            font-size: 21px;
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .project-cover {
+            height: 100px;
+            background: linear-gradient(135deg, #e0e7ff, #ecfdf5);
+            overflow: hidden;
+        }
+
+        .project-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.35s ease;
+        }
+
+        .project-card:hover .project-cover img {
+            transform: scale(1.05);
+        }
+
+        .project-cover-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--indigo);
+            background: linear-gradient(135deg, #eef2ff, #ecfdf5);
+        }
+
+        .project-body {
+            padding: 16px 18px 18px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .project-body h2 {
+            margin: 0 0 6px;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: -0.015em;
             word-break: break-word;
+            line-height: 1.3;
         }
 
-        .project-card p {
-            margin: 7px 0;
-            color: #666;
-            line-height: 1.5;
+        .project-body .desc {
+            margin: 0 0 12px;
+            color: #475569;
+            font-size: 13px;
+            line-height: 1.55;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            flex: 1;
         }
 
         .project-info {
-            margin-top: 15px;
             display: flex;
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 7px;
+            margin-bottom: 14px;
+            align-items: center;
         }
 
         .badge {
-            padding: 6px 10px;
-            border-radius: 8px;
-            background: #f1f3f5;
-            font-size: 13px;
+            padding: 4px 9px;
+            border-radius: 7px;
+            background: #f1f5f9;
+            font-size: 11.5px;
+            font-weight: 700;
+            color: #475569;
+        }
+
+        .badge.lang {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .badge.stars {
+            background: #fffbeb;
+            color: #b45309;
         }
 
         .links {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 18px;
+            gap: 8px;
+            margin-top: auto;
         }
 
         .links a {
             text-decoration: none;
-            padding: 9px 13px;
-            border-radius: 9px;
-            background: #111;
-            color: #fff;
-            font-size: 14px;
+            padding: 8px 14px;
+            border-radius: 10px;
+            font-size: 12.5px;
+            font-weight: 700;
+            transition: all 0.18s;
+            flex: 1;
+            min-width: 90px;
+            text-align: center;
         }
 
-        .links a:hover {
-            opacity: 0.85;
+        .links a.github-btn {
+            background: #0f172a;
+            color: #fff;
+            border: 1px solid #0f172a;
+        }
+
+        .links a.github-btn:hover {
+            background: #1e293b;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
+        }
+
+        .links a.live-btn {
+            background: #ecfdf5;
+            color: #047857;
+            border: 1px solid #a7f3d0;
+        }
+
+        .links a.live-btn:hover {
+            background: var(--green);
+            color: white;
+            border-color: var(--green);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .empty {
-            background: #fff;
-            padding: 30px;
-            border-radius: 16px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 48px 24px;
+            border-radius: var(--radius);
             text-align: center;
-            color: #666;
+            color: var(--muted);
+            font-size: 14.5px;
+            font-weight: 500;
             grid-column: 1 / -1;
         }
 
         .error {
-            background: #fff0f0;
-            color: #c00;
-            padding: 18px;
-            border-radius: 12px;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            padding: 20px;
+            border-radius: 14px;
             grid-column: 1 / -1;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Skeleton */
+        .skeleton-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            min-height: 280px;
+        }
+
+        .skeleton-cover {
+            height: 100px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+        }
+
+        .skeleton-body { padding: 18px; }
+
+        .skeleton-line {
+            height: 12px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.4s infinite;
+            margin-bottom: 10px;
+        }
+
+        .skeleton-line.short { width: 40%; }
+        .skeleton-line.medium { width: 65%; }
+        .skeleton-line.long { width: 100%; }
+
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
 
         @media (max-width: 600px) {
-            body {
-                padding: 15px;
+            body { padding: 14px 10px 30px; }
+
+            .search-box {
+                padding: 20px;
+                border-radius: 16px;
             }
 
-            .search-box h1 {
-                font-size: 23px;
-            }
+            .search-box h1 { font-size: 22px; }
 
-            .search-form {
-                flex-direction: column;
-            }
+            .search-form { flex-direction: column; }
 
-            #searchButton {
-                width: 100%;
-            }
+            #searchButton { width: 100%; justify-content: center; }
 
-            .projects-grid {
-                grid-template-columns: 1fr;
-            }
+            .projects-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 
 <body>
-
     <div class="container">
-
         <section class="search-box">
-
             <h1>GitProHub Projects</h1>
-
-            <p>
-                GitHub username ya GitHub profile link enter karke projects search karein.
-            </p>
+            <p>GitHub username ya GitHub profile link enter karke projects search karein.</p>
 
             <div class="search-form">
-
                 <input
                     type="text"
                     id="githubUsername"
@@ -235,689 +457,329 @@
                     autocomplete="off"
                     spellcheck="false"
                 >
-
-                <button
-                    type="button"
-                    id="searchButton"
-                >
+                <button type="button" id="searchButton">
+                    <span class="spin"></span>
                     Search
                 </button>
-
             </div>
 
             <div class="hint">
                 <strong>Hint:</strong>
-                Username likhein jaise
-                <strong>haproven</strong>
+                Username likhein jaise <strong>haproven</strong>
                 ya profile link paste karein:
                 <strong>https://github.com/haproven</strong>
             </div>
 
-            <div
-                class="status"
-                id="status"
-            >
+            <div class="status" id="status">
                 GitHub username ya profile link enter karein.
             </div>
-
         </section>
 
-        <div
-            id="projects"
-            class="projects-grid"
-        ></div>
-
+        <div id="projects" class="projects-grid"></div>
     </div>
 
     <script>
         (() => {
+            const API_BASE = "https://gitprohub.onrender.com";
+            const STORAGE_KEY = "gitprohub_github_username";
 
-            const API_BASE =
-                "https://gitprohub.onrender.com";
-
-            const STORAGE_KEY =
-                "gitprohub_github_username";
-
-            const usernameInput =
-                document.getElementById(
-                    "githubUsername"
-                );
-
-            const searchButton =
-                document.getElementById(
-                    "searchButton"
-                );
-
-            const status =
-                document.getElementById(
-                    "status"
-                );
-
-            const projectsContainer =
-                document.getElementById(
-                    "projects"
-                );
-
+            const usernameInput = document.getElementById("githubUsername");
+            const searchButton = document.getElementById("searchButton");
+            const status = document.getElementById("status");
+            const projectsContainer = document.getElementById("projects");
 
             function extractUsername(value) {
+                value = String(value || "").trim();
+                if (!value) return "";
 
-                value = String(
-                    value || ""
-                ).trim();
-
-                if (!value) {
-                    return "";
-                }
-
-                value = value
-                    .replace(
-                        /^["']|["']$/g,
-                        ""
-                    )
-                    .trim();
+                value = value.replace(/^["']|["']$/g, "").trim();
 
                 try {
-
-                    if (
-                        /^https?:\/\//i.test(
-                            value
-                        )
-                    ) {
-
-                        const url =
-                            new URL(value);
-
-                        if (
-                            url.hostname
-                                .toLowerCase()
-                                .includes("github.com")
-                        ) {
-
-                            const parts =
-                                url.pathname
-                                    .split("/")
-                                    .filter(Boolean);
-
+                    if (/^https?:\/\//i.test(value)) {
+                        const url = new URL(value);
+                        if (url.hostname.toLowerCase().includes("github.com")) {
+                            const parts = url.pathname.split("/").filter(Boolean);
                             return parts[0] || "";
                         }
-
                     }
+                } catch {}
 
-                } catch {
-                }
-
-                value =
-                    value.replace(
-                        /^github\.com\//i,
-                        ""
-                    );
-
-                value =
-                    value.replace(
-                        /^www\.github\.com\//i,
-                        ""
-                    );
-
-                value =
-                    value.split("/")[0];
-
-                value =
-                    value.replace(
-                        /^@/,
-                        ""
-                    );
-
+                value = value.replace(/^github\.com\//i, "");
+                value = value.replace(/^www\.github\.com\//i, "");
+                value = value.split("/")[0];
+                value = value.replace(/^@/, "");
                 return value.trim();
             }
 
-
             function isValidUsername(username) {
-
-                return /^[a-zA-Z0-9-]+$/.test(
-                    username
-                );
+                return /^[a-zA-Z0-9-]+$/.test(username);
             }
 
-
             function getProjects(data) {
-
-                if (
-                    Array.isArray(data)
-                ) {
-                    return data;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.projects
-                    )
-                ) {
-                    return data.projects;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.data
-                    )
-                ) {
-                    return data.data;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.results
-                    )
-                ) {
-                    return data.results;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.result
-                    )
-                ) {
-                    return data.result;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.result?.projects
-                    )
-                ) {
-                    return data.result.projects;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.data?.projects
-                    )
-                ) {
-                    return data.data.projects;
-                }
-
-                if (
-                    Array.isArray(
-                        data?.items
-                    )
-                ) {
-                    return data.items;
-                }
-
+                if (Array.isArray(data)) return data;
+                if (Array.isArray(data?.projects)) return data.projects;
+                if (Array.isArray(data?.data)) return data.data;
+                if (Array.isArray(data?.results)) return data.results;
+                if (Array.isArray(data?.result)) return data.result;
+                if (Array.isArray(data?.result?.projects)) return data.result.projects;
+                if (Array.isArray(data?.data?.projects)) return data.data.projects;
+                if (Array.isArray(data?.items)) return data.items;
                 return [];
             }
 
-
-            function getValue(
-                object,
-                paths,
-                fallback = ""
-            ) {
-
-                for (
-                    const path of paths
-                ) {
-
-                    let value =
-                        object;
-
-                    for (
-                        const key of
-                        path.split(".")
-                    ) {
-
-                        value =
-                            value?.[key];
-
+            function getValue(object, paths, fallback = "") {
+                for (const path of paths) {
+                    let value = object;
+                    for (const key of path.split(".")) {
+                        value = value?.[key];
                     }
-
-                    if (
-                        value !== undefined &&
-                        value !== null &&
-                        value !== ""
-                    ) {
-
+                    if (value !== undefined && value !== null && value !== "") {
                         return value;
-
                     }
-
                 }
-
                 return fallback;
             }
 
-
             function escapeHtml(value) {
-
-                return String(
-                    value ?? ""
-                )
-                    .replace(
-                        /&/g,
-                        "&amp;"
-                    )
-                    .replace(
-                        /</g,
-                        "&lt;"
-                    )
-                    .replace(
-                        />/g,
-                        "&gt;"
-                    )
-                    .replace(
-                        /"/g,
-                        "&quot;"
-                    )
-                    .replace(
-                        /'/g,
-                        "&#039;"
-                    );
-
+                return String(value ?? "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
             }
 
+            function cleanDescription(raw) {
+                if (!raw) return "No description available.";
+                let text = String(raw);
+                text = text.replace(/^title:\s*[\s\S]*?description:\s*/i, "");
+                text = text.replace(/^\*\*ID:\*\*[^*]*\*\*Category:\*\*[^*]*/i, "");
+                text = text.trim();
+                return text || "No description available.";
+            }
 
-            function renderProjects(
-                projects
-            ) {
+            function setStatus(text, type = "") {
+                status.textContent = text;
+                status.className = "status" + (type ? " " + type : "");
+            }
 
-                if (
-                    !projects.length
-                ) {
+            function showSkeletons(count = 4) {
+                let html = "";
+                for (let i = 0; i < count; i++) {
+                    html += `
+                    <div class="skeleton-card">
+                        <div class="skeleton-cover"></div>
+                        <div class="skeleton-body">
+                            <div class="skeleton-line medium"></div>
+                            <div class="skeleton-line long"></div>
+                            <div class="skeleton-line long"></div>
+                            <div class="skeleton-line short" style="margin-top:14px"></div>
+                        </div>
+                    </div>`;
+                }
+                projectsContainer.innerHTML = html;
+            }
 
+            function renderProjects(projects) {
+                if (!projects.length) {
                     projectsContainer.innerHTML = `
                         <div class="empty">
                             Is username ke liye koi GitProHub project nahi mila.
                         </div>
                     `;
-
                     return;
                 }
 
+                projectsContainer.innerHTML = projects.map((project, index) => {
+                    const name = getValue(project, [
+                        "title",
+                        "name",
+                        "projectName",
+                        "github.name",
+                        "repository.name",
+                        "repo"
+                    ], "Unnamed Project");
 
-                projectsContainer.innerHTML =
-                    projects
-                        .map(
-                            project => {
+                    const description = cleanDescription(getValue(project, [
+                        "description",
+                        "github.description",
+                        "repository.description"
+                    ], "No description available."));
 
-                                const name =
-                                    getValue(
-                                        project,
-                                        [
-                                            "name",
-                                            "projectName",
-                                            "github.name",
-                                            "repository.name",
-                                            "repo"
-                                        ],
-                                        "Unnamed Project"
-                                    );
+                    const language = getValue(project, [
+                        "github.language",
+                        "language",
+                        "repository.language"
+                    ], "");
 
+                    const stars = getValue(project, [
+                        "github.stars",
+                        "stars",
+                        "github.stargazers_count",
+                        "repository.stargazers_count"
+                    ], 0);
 
-                                const description =
-                                    getValue(
-                                        project,
-                                        [
-                                            "description",
-                                            "github.description",
-                                            "repository.description"
-                                        ],
-                                        "No description available."
-                                    );
+                    const forks = getValue(project, [
+                        "github.forks",
+                        "forks",
+                        "github.forks_count",
+                        "repository.forks_count"
+                    ], 0);
 
+                    // Fixed: API uses github.url
+                    const githubUrl = getValue(project, [
+                        "github.url",
+                        "github.html_url",
+                        "repository.html_url",
+                        "githubUrl",
+                        "github_url",
+                        "repoUrl",
+                        "repositoryUrl"
+                    ], "");
 
-                                const language =
-                                    getValue(
-                                        project,
-                                        [
-                                            "language",
-                                            "github.language",
-                                            "repository.language"
-                                        ],
-                                        "Unknown"
-                                    );
+                    let liveUrl = getValue(project, [
+                        "live",
+                        "liveUrl",
+                        "live_url",
+                        "website",
+                        "demo",
+                        "demoUrl",
+                        "projectUrl",
+                        "project_url"
+                    ], "");
 
+                    if (typeof liveUrl === "object") liveUrl = "";
 
-                                const stars =
-                                    getValue(
-                                        project,
-                                        [
-                                            "stars",
-                                            "github.stars",
-                                            "github.stargazers_count",
-                                            "repository.stargazers_count"
-                                        ],
-                                        0
-                                    );
+                    const coverImage = getValue(project, [
+                        "image",
+                        "imageUrl",
+                        "thumbnail",
+                        "logo"
+                    ], "");
 
+                    const initial = String(name).charAt(0).toUpperCase();
 
-                                const forks =
-                                    getValue(
-                                        project,
-                                        [
-                                            "forks",
-                                            "github.forks",
-                                            "github.forks_count",
-                                            "repository.forks_count"
-                                        ],
-                                        0
-                                    );
+                    const coverHtml = coverImage
+                        ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(name)}" loading="lazy">`
+                        : `<div class="project-cover-placeholder">${escapeHtml(initial)}</div>`;
 
+                    const langBadge = language
+                        ? `<span class="badge lang">${escapeHtml(language)}</span>`
+                        : "";
 
-                                const githubUrl =
-                                    getValue(
-                                        project,
-                                        [
-                                            "github.html_url",
-                                            "repository.html_url",
-                                            "githubUrl",
-                                            "github_url",
-                                            "repoUrl",
-                                            "repositoryUrl",
-                                            "github"
-                                        ],
-                                        ""
-                                    );
+                    const delay = Math.min(index * 0.04, 0.35);
 
-
-                                const liveUrl =
-                                    getValue(
-                                        project,
-                                        [
-                                            "liveUrl",
-                                            "live_url",
-                                            "live",
-                                            "website",
-                                            "demo",
-                                            "projectUrl",
-                                            "project_url"
-                                        ],
-                                        ""
-                                    );
-
-
-                                return `
-                                    <article class="project-card">
-
-                                        <h2>
-                                            ${escapeHtml(name)}
-                                        </h2>
-
-                                        <p>
-                                            ${escapeHtml(description)}
-                                        </p>
-
-                                        <div class="project-info">
-
-                                            <span class="badge">
-                                                Language:
-                                                ${escapeHtml(language)}
-                                            </span>
-
-                                            <span class="badge">
-                                                ⭐
-                                                ${escapeHtml(String(stars))}
-                                            </span>
-
-                                            <span class="badge">
-                                                Forks:
-                                                ${escapeHtml(String(forks))}
-                                            </span>
-
-                                        </div>
-
-                                        <div class="links">
-
-                                            ${
-                                                githubUrl
-                                                    ? `
-                                                        <a
-                                                            href="${escapeHtml(githubUrl)}"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            GitHub
-                                                        </a>
-                                                    `
-                                                    : ""
-                                            }
-
-                                            ${
-                                                liveUrl
-                                                    ? `
-                                                        <a
-                                                            href="${escapeHtml(liveUrl)}"
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                        >
-                                                            Live
-                                                        </a>
-                                                    `
-                                                    : ""
-                                            }
-
-                                        </div>
-
-                                    </article>
-                                `;
-
-                            }
-                        )
-                        .join("");
-
+                    return `
+                        <article class="project-card" style="animation-delay: ${delay}s">
+                            <div class="project-cover">${coverHtml}</div>
+                            <div class="project-body">
+                                <h2>${escapeHtml(name)}</h2>
+                                <p class="desc">${escapeHtml(description)}</p>
+                                <div class="project-info">
+                                    ${langBadge}
+                                    <span class="badge stars">★ ${escapeHtml(String(stars))}</span>
+                                    <span class="badge">⑂ ${escapeHtml(String(forks))}</span>
+                                </div>
+                                <div class="links">
+                                    ${githubUrl
+                                        ? `<a class="github-btn" href="${escapeHtml(githubUrl)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>`
+                                        : ""
+                                    }
+                                    ${liveUrl
+                                        ? `<a class="live-btn" href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer">Live Demo ↗</a>`
+                                        : ""
+                                    }
+                                </div>
+                            </div>
+                        </article>
+                    `;
+                }).join("");
             }
 
-
-            async function searchUsername(
-                input
-            ) {
-
-                const username =
-                    extractUsername(
-                        input
-                    );
-
+            async function searchUsername(input) {
+                const username = extractUsername(input);
 
                 if (!username) {
-
-                    status.textContent =
-                        "GitHub username ya profile link enter karein.";
-
-                    projectsContainer.innerHTML =
-                        "";
-
+                    setStatus("GitHub username ya profile link enter karein.");
+                    projectsContainer.innerHTML = "";
                     return;
                 }
 
-
-                if (
-                    !isValidUsername(
-                        username
-                    )
-                ) {
-
-                    status.textContent =
-                        "Valid GitHub username enter karein.";
-
-                    projectsContainer.innerHTML =
-                        "";
-
+                if (!isValidUsername(username)) {
+                    setStatus("Valid GitHub username enter karein.", "error");
+                    projectsContainer.innerHTML = "";
                     return;
                 }
 
+                localStorage.setItem(STORAGE_KEY, username);
 
-                localStorage.setItem(
-                    STORAGE_KEY,
-                    username
-                );
-
-
-                searchButton.disabled =
-                    true;
-
-                searchButton.textContent =
-                    "Searching...";
-
-
-                status.textContent =
-                    `@${username} ke projects search ho rahe hain...`;
-
-
-                projectsContainer.innerHTML =
-                    "";
-
+                searchButton.disabled = true;
+                setStatus(`@${username} ke projects search ho rahe hain...`, "loading");
+                showSkeletons();
 
                 try {
+                    const endpoint = `${API_BASE}/api/github/${encodeURIComponent(username)}`;
 
-                    const endpoint =
-                        `${API_BASE}/api/github/${encodeURIComponent(username)}`;
+                    const response = await fetch(endpoint, {
+                        method: "GET",
+                        cache: "no-store",
+                        headers: { "Accept": "application/json" }
+                    });
 
-
-                    const response =
-                        await fetch(
-                            endpoint,
-                            {
-                                method: "GET",
-                                cache: "no-store",
-                                headers: {
-                                    "Accept":
-                                        "application/json"
-                                }
-                            }
-                        );
-
-
-                    if (
-                        !response.ok
-                    ) {
-
-                        throw new Error(
-                            `API Error: ${response.status}`
-                        );
-
+                    if (!response.ok) {
+                        throw new Error(`API Error: ${response.status}`);
                     }
 
+                    const data = await response.json();
 
-                    const data =
-                        await response.json();
-
-
-                    if (
-                        data?.success === false
-                    ) {
-
+                    if (data?.success === false) {
                         throw new Error(
-                            data?.error ||
-                            data?.message ||
-                            "GitHub account not found."
+                            data?.error || data?.message || "GitHub account not found."
                         );
-
                     }
 
+                    const projects = getProjects(data);
+                    renderProjects(projects);
 
-                    const projects =
-                        getProjects(
-                            data
-                        );
-
-
-                    renderProjects(
-                        projects
+                    setStatus(
+                        `${projects.length} GitProHub project${projects.length === 1 ? "" : "s"} found for @${username}.`,
+                        "success"
                     );
 
-
-                    status.textContent =
-                        `${projects.length} GitProHub project${projects.length === 1 ? "" : "s"} found for @${username}.`;
-
-
-                } catch (
-                    error
-                ) {
-
-                    console.error(
-                        "GitProHub API Error:",
-                        error
-                    );
-
+                } catch (error) {
+                    console.error("GitProHub API Error:", error);
 
                     projectsContainer.innerHTML = `
                         <div class="error">
-                            ${escapeHtml(
-                                error?.message ||
-                                "GitHub username ke projects load nahi ho paaye."
-                            )}
+                            ${escapeHtml(error?.message || "GitHub username ke projects load nahi ho paaye.")}
                         </div>
                     `;
 
-
-                    status.textContent =
-                        "API connection failed.";
+                    setStatus("API connection failed.", "error");
 
                 } finally {
-
-                    searchButton.disabled =
-                        false;
-
-                    searchButton.textContent =
-                        "Search";
-
+                    searchButton.disabled = false;
                 }
-
             }
 
+            searchButton.addEventListener("click", () => {
+                searchUsername(usernameInput.value);
+            });
 
-            searchButton.addEventListener(
-                "click",
-                () => {
-
-                    searchUsername(
-                        usernameInput.value
-                    );
-
+            usernameInput.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    event.preventDefault();
+                    searchUsername(usernameInput.value);
                 }
-            );
+            });
 
-
-            usernameInput.addEventListener(
-                "keydown",
-                event => {
-
-                    if (
-                        event.key === "Enter"
-                    ) {
-
-                        event.preventDefault();
-
-                        searchUsername(
-                            usernameInput.value
-                        );
-
-                    }
-
-                }
-            );
-
-
-            const savedUsername =
-                localStorage.getItem(
-                    STORAGE_KEY
-                );
-
-
-            if (
-                savedUsername
-            ) {
-
-                usernameInput.value =
-                    savedUsername;
-
-                searchUsername(
-                    savedUsername
-                );
-
+            const savedUsername = localStorage.getItem(STORAGE_KEY);
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                searchUsername(savedUsername);
             }
-
         })();
     </script>
-
 </body>
 
 </html>

@@ -4,9 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>GitProHub Projects</title>
-
     <style>
         * {
             box-sizing: border-box;
@@ -16,24 +14,26 @@
 
         body {
             font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            background: #f6f8fb;
-            color: #172033;
+            background: #f0f4f8;
+            color: #0f172a;
             min-height: 100vh;
+            line-height: 1.5;
         }
 
         .container {
             width: 100%;
-            max-width: 1400px;
+            max-width: 1280px;
             margin: auto;
-            padding: 35px 22px;
+            padding: 28px 20px 40px;
         }
 
         .hero {
-            background: linear-gradient(135deg, #effdf8, #f5fbff);
-            border: 1px solid #bce9df;
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 22px;
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0f9ff 50%, #faf5ff 100%);
+            border: 1px solid #a7f3d0;
+            border-radius: 22px;
+            padding: 28px 32px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.08);
         }
 
         .hero-top {
@@ -41,6 +41,7 @@
             align-items: center;
             justify-content: space-between;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .hero-content {
@@ -50,27 +51,31 @@
         }
 
         .hero-icon {
-            width: 62px;
-            height: 62px;
+            width: 58px;
+            height: 58px;
             border-radius: 16px;
-            background: #16b364;
+            background: linear-gradient(135deg, #10b981, #059669);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             flex-shrink: 0;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
         }
 
         .hero h1 {
-            font-size: 34px;
-            margin-bottom: 6px;
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+            color: #064e3b;
         }
 
         .hero p {
             color: #475569;
-            font-size: 15px;
+            font-size: 14px;
         }
 
         .actions {
@@ -81,60 +86,66 @@
 
         .count {
             background: white;
-            border: 1px solid #dce5e1;
-            color: #166534;
-            padding: 10px 15px;
+            border: 1px solid #d1fae5;
+            color: #047857;
+            padding: 10px 16px;
             border-radius: 12px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 700;
             white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
         .refresh {
             border: 0;
-            background: #172033;
+            background: #0f172a;
             color: white;
-            padding: 11px 17px;
-            border-radius: 11px;
-            font-size: 14px;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
             font-weight: 700;
             cursor: pointer;
+            transition: transform 0.15s, opacity 0.15s;
         }
 
         .refresh:hover {
-            opacity: .9;
+            opacity: 0.9;
+            transform: translateY(-1px);
         }
 
         .refresh:disabled {
-            opacity: .6;
+            opacity: 0.55;
             cursor: wait;
+            transform: none;
         }
 
         .api-bar {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 15px;
+            gap: 14px;
             background: white;
-            border: 1px solid #e3e8ef;
-            border-radius: 15px;
-            padding: 14px 17px;
-            margin-bottom: 22px;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
         }
 
         .api-status {
             display: flex;
             align-items: center;
-            gap: 9px;
+            gap: 8px;
             font-size: 13px;
             font-weight: 700;
         }
 
         .api-dot {
-            width: 9px;
-            height: 9px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #94a3b8;
+            flex-shrink: 0;
         }
 
         .api-status.online {
@@ -142,7 +153,8 @@
         }
 
         .api-status.online .api-dot {
-            background: #16a34a;
+            background: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.25);
         }
 
         .api-status.offline {
@@ -150,141 +162,250 @@
         }
 
         .api-status.offline .api-dot {
-            background: #dc2626;
+            background: #ef4444;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.2);
         }
 
         .api-url {
             color: #64748b;
-            font-family: Consolas, monospace;
-            font-size: 13px;
+            font-family: ui-monospace, Consolas, monospace;
+            font-size: 12px;
             word-break: break-all;
         }
 
         .projects {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 22px;
         }
 
         .project {
             background: #fff;
-            border: 1px solid #e3e8ef;
-            border-radius: 18px;
-            padding: 21px;
-            min-height: 290px;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            padding: 0;
             display: flex;
             flex-direction: column;
-            transition: .2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s;
+            overflow: hidden;
+            min-height: 320px;
         }
 
         .project:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px);
             border-color: #cbd5e1;
-            box-shadow: 0 12px 35px rgba(15, 23, 42, .08);
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+        }
+
+        .project-cover {
+            height: 120px;
+            background: linear-gradient(135deg, #e0e7ff, #f0fdf4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .project-cover-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 42px;
+            font-weight: 800;
+            color: #6366f1;
+            background: linear-gradient(135deg, #eef2ff, #ecfdf5);
+        }
+
+        .project-body {
+            padding: 18px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
 
         .project-top {
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            gap: 12px;
-            margin-bottom: 17px;
+            gap: 10px;
+            margin-bottom: 10px;
+            margin-top: -36px;
+            position: relative;
+            z-index: 1;
         }
 
-        .project-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 13px;
-            background: #eef2ff;
-            color: #4f46e5;
+        .project-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: #fff;
+            border: 3px solid #fff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 21px;
+            font-size: 20px;
             font-weight: 800;
-            overflow: hidden;
+            color: #4f46e5;
+            flex-shrink: 0;
         }
 
-        .project-icon img {
+        .project-avatar img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
         .project-status {
-            padding: 6px 10px;
+            padding: 5px 11px;
             border-radius: 20px;
             background: #dcfce7;
             color: #15803d;
             font-size: 11px;
             font-weight: 800;
             white-space: nowrap;
+            margin-top: 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .project-status.empty {
+            background: #f1f5f9;
+            color: #64748b;
         }
 
         .project h2 {
-            font-size: 20px;
+            font-size: 18px;
+            font-weight: 800;
             line-height: 1.3;
-            margin-bottom: 7px;
+            margin-bottom: 6px;
             word-break: break-word;
+            color: #0f172a;
+            letter-spacing: -0.01em;
         }
 
         .developer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             color: #64748b;
             font-size: 13px;
-            margin-bottom: 13px;
+            margin-bottom: 10px;
+        }
+
+        .developer a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .developer a:hover {
+            text-decoration: underline;
         }
 
         .description {
             color: #475569;
-            font-size: 14px;
-            line-height: 1.65;
-            margin-bottom: 18px;
+            font-size: 13.5px;
+            line-height: 1.6;
+            margin-bottom: 14px;
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
             overflow: hidden;
+            flex: 1;
         }
 
-        .project-info {
+        .meta-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 7px;
-            margin-bottom: 18px;
+            gap: 8px;
+            margin-bottom: 14px;
+            align-items: center;
         }
 
         .tag {
             background: #f1f5f9;
             color: #475569;
             border-radius: 8px;
-            padding: 5px 8px;
+            padding: 4px 9px;
             font-size: 11px;
             font-weight: 700;
         }
 
+        .tag.lang {
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        .stats {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+        }
+
+        .stats span {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
         .links {
             display: flex;
-            gap: 9px;
+            gap: 8px;
             flex-wrap: wrap;
             margin-top: auto;
+            padding-top: 4px;
         }
 
         .links a {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 5px;
             text-decoration: none;
-            border: 1px solid #dfe5ec;
+            border: 1px solid #e2e8f0;
             color: #334155;
-            padding: 9px 12px;
+            padding: 8px 14px;
             border-radius: 10px;
             font-size: 12px;
             font-weight: 700;
-            transition: .2s;
+            transition: all 0.18s;
+            background: #fafafa;
         }
 
         .links a:hover {
-            background: #172033;
-            border-color: #172033;
+            background: #0f172a;
+            border-color: #0f172a;
+            color: white;
+        }
+
+        .links a.github-btn {
+            background: #0f172a;
+            border-color: #0f172a;
+            color: white;
+        }
+
+        .links a.github-btn:hover {
+            background: #1e293b;
+        }
+
+        .links a.live-btn {
+            background: #ecfdf5;
+            border-color: #a7f3d0;
+            color: #047857;
+        }
+
+        .links a.live-btn:hover {
+            background: #10b981;
+            border-color: #10b981;
             color: white;
         }
 
@@ -293,42 +414,43 @@
         .error {
             grid-column: 1 / -1;
             background: white;
-            border: 1px solid #e3e8ef;
+            border: 1px solid #e2e8f0;
             border-radius: 18px;
-            padding: 55px 20px;
+            /* padding: 60px 24px; */
             text-align: center;
             color: #64748b;
+            font-size: 15px;
         }
 
         .error {
             color: #dc2626;
             border-color: #fecaca;
-            background: #fff7f7;
+            background: #fef2f2;
         }
 
         footer {
             text-align: center;
-            padding: 30px 0 10px;
-            color: #64748b;
+            padding: 32px 0 12px;
+            color: #94a3b8;
             font-size: 13px;
         }
 
-        @media (max-width: 800px) {
+        @media (max-width: 700px) {
             .container {
-                padding: 20px 14px;
+                padding: 16px 12px 30px;
             }
 
             .hero {
-                padding: 22px;
+                padding: 20px;
             }
 
             .hero-top {
-                align-items: flex-start;
                 flex-direction: column;
+                align-items: flex-start;
             }
 
             .hero h1 {
-                font-size: 28px;
+                font-size: 24px;
             }
 
             .actions {
@@ -338,11 +460,12 @@
             .count,
             .refresh {
                 flex: 1;
+                text-align: center;
             }
 
             .api-bar {
-                align-items: flex-start;
                 flex-direction: column;
+                align-items: flex-start;
             }
 
             .projects {
@@ -353,119 +476,50 @@
 </head>
 
 <body>
-
     <div class="container">
-
         <section class="hero">
-
             <div class="hero-top">
-
                 <div class="hero-content">
-
-                    <div class="hero-icon">
-                        ◆
-                    </div>
-
+                    <div class="hero-icon">◆</div>
                     <div>
                         <h1>GitProHub Projects</h1>
-
-                        <p>
-                            Projects automatically discovered and served by GitProHub API.
-                        </p>
+                        <p>Projects automatically discovered and served by GitProHub API.</p>
                     </div>
-
                 </div>
-
                 <div class="actions">
-
-                    <div id="projectCount" class="count">
-                        0 Projects
-                    </div>
-
-                    <button id="refreshButton" class="refresh" type="button">
-                        Refresh
-                    </button>
-
+                    <div id="projectCount" class="count">0 Projects</div>
+                    <button id="refreshButton" class="refresh" type="button">Refresh</button>
                 </div>
-
             </div>
-
         </section>
 
         <div class="api-bar">
-
             <div id="apiStatus" class="api-status">
-
                 <span class="api-dot"></span>
-
-                <span id="apiStatusText">
-                    Connecting to API...
-                </span>
-
+                <span id="apiStatusText">Connecting to API...</span>
             </div>
-
-            <div class="api-url">
-                https://gitprohub.onrender.com/api/projects
-            </div>
-
-
+            <div class="api-url">https://gitprohub.onrender.com/api/projects</div>
         </div>
 
         <section id="projects" class="projects">
-
-            <div class="loading">
-                Loading projects...
-            </div>
-
+            <div class="loading">Loading projects...</div>
         </section>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        <footer>
-            GitProHub · Powered by Haproven
-        </footer>
-
+        <footer>GitProHub · Powered by Haproven</footer>
     </div>
 
-
     <script>
-        const API_BASE =
-            "https://gitprohub.onrender.com";
+        const API_BASE = "https://gitprohub.onrender.com";
+        const API_URL = `${API_BASE}/api/projects`;
 
-        const API_URL =
-            `${API_BASE}/api/projects`;
-
-        const projectsContainer =
-            document.getElementById("projects");
-
-        const projectCount =
-            document.getElementById("projectCount");
-
-        const apiStatus =
-            document.getElementById("apiStatus");
-
-        const apiStatusText =
-            document.getElementById("apiStatusText");
-
-        const refreshButton =
-            document.getElementById("refreshButton");
-
+        const projectsContainer = document.getElementById("projects");
+        const projectCount = document.getElementById("projectCount");
+        const apiStatus = document.getElementById("apiStatus");
+        const apiStatusText = document.getElementById("apiStatusText");
+        const refreshButton = document.getElementById("refreshButton");
 
         function escapeHtml(value) {
-            return String(value)
+            return String(value ?? "")
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
                 .replace(/>/g, "&gt;")
@@ -473,489 +527,248 @@
                 .replace(/'/g, "&#039;");
         }
 
-
-        function getValue(
-            object,
-            keys,
-            fallback = ""
-        ) {
+        function getValue(object, keys, fallback = "") {
             for (const key of keys) {
-
-                const parts =
-                    key.split(".");
-
-                let value =
-                    object;
-
+                const parts = key.split(".");
+                let value = object;
                 for (const part of parts) {
-
-                    if (
-                        value === null ||
-                        value === undefined
-                    ) {
-                        break;
-                    }
-
-                    value =
-                        value[part];
+                    if (value === null || value === undefined) break;
+                    value = value[part];
                 }
-
-                if (
-                    value !== undefined &&
-                    value !== null &&
-                    value !== ""
-                ) {
+                if (value !== undefined && value !== null && value !== "") {
                     return value;
                 }
             }
-
             return fallback;
         }
 
-
         function getProjects(data) {
-
-            if (Array.isArray(data)) {
-                return data;
-            }
-
-            if (
-                data &&
-                Array.isArray(data.projects)
-            ) {
-                return data.projects;
-            }
-
-            if (
-                data &&
-                data.result &&
-                Array.isArray(data.result)
-            ) {
-                return data.result;
-            }
-
-            if (
-                data &&
-                data.result &&
-                Array.isArray(data.result.projects)
-            ) {
-                return data.result.projects;
-            }
-
-            if (
-                data &&
-                Array.isArray(data.data)
-            ) {
-                return data.data;
-            }
-
-            if (
-                data &&
-                data.data &&
-                Array.isArray(data.data.projects)
-            ) {
-                return data.data.projects;
-            }
-
-            if (
-                data &&
-                Array.isArray(data.items)
-            ) {
-                return data.items;
-            }
-
+            if (Array.isArray(data)) return data;
+            if (data && Array.isArray(data.projects)) return data.projects;
+            if (data && data.result && Array.isArray(data.result)) return data.result;
+            if (data && data.result && Array.isArray(data.result.projects)) return data.result.projects;
+            if (data && Array.isArray(data.data)) return data.data;
+            if (data && data.data && Array.isArray(data.data.projects)) return data.data.projects;
+            if (data && Array.isArray(data.items)) return data.items;
             return [];
         }
 
-
-        function setApiStatus(
-            online,
-            text
-        ) {
-
-            apiStatus.classList.remove(
-                "online",
-                "offline"
-            );
-
-            apiStatus.classList.add(
-                online
-                    ? "online"
-                    : "offline"
-            );
-
-            apiStatusText.textContent =
-                text;
+        function setApiStatus(online, text) {
+            apiStatus.classList.remove("online", "offline");
+            apiStatus.classList.add(online ? "online" : "offline");
+            apiStatusText.textContent = text;
         }
 
+        function cleanDescription(raw) {
+            if (!raw) return "No description available.";
+            let text = String(raw);
+            text = text.replace(/^title:\s*[^]*?description:\s*/i, "");
+            text = text.replace(/^\*\*ID:\*\*[^*]*\*\*Category:\*\*[^*]*/i, "");
+            text = text.trim();
+            return text || "No description available.";
+        }
 
         function createProjectCard(project) {
+            const name = getValue(project, [
+                "title",
+                "name",
+                "projectName",
+                "github.name",
+                "repository.name"
+            ], "Unnamed Project");
 
-            const name =
-                getValue(
-                    project,
-                    [
-                        "name",
-                        "projectName",
-                        "title",
-                        "repository.name",
-                        "repo",
-                        "repository"
-                    ],
-                    "Unnamed Project"
-                );
+            const developerUsername = getValue(project, [
+                "developer.username",
+                "username",
+                "developer.name",
+                "owner.login",
+                "author"
+            ], "Unknown");
 
+            const developerGithub = getValue(project, [
+                "developer.github",
+                "developer.url"
+            ], developerUsername !== "Unknown" ? `https://github.com/${developerUsername}` : "");
 
-            const developer =
-                getValue(
-                    project,
-                    [
-                        "username",
-                        "developer.username",
-                        "developer",
-                        "owner.login",
-                        "owner",
-                        "github.owner.login",
-                        "author"
-                    ],
-                    "Unknown Developer"
-                );
+            const developerAvatar = getValue(project, [
+                "developer.avatar",
+                "image"
+            ], "");
 
+            const description = cleanDescription(getValue(project, [
+                "description",
+                "github.description",
+                "about",
+                "summary"
+            ], "No description available."));
 
-            const description =
-                getValue(
-                    project,
-                    [
-                        "description",
-                        "project.description",
-                        "about",
-                        "summary"
-                    ],
-                    "No description available."
-                );
+            const status = getValue(project, [
+                "status",
+                "projectStatus"
+            ], "");
 
+            const githubUrl = getValue(project, [
+                "github.url",
+                "github",
+                "githubUrl",
+                "repository.html_url",
+                "repoUrl",
+                "repositoryUrl",
+                "github_url"
+            ], "");
 
-            const status =
-                getValue(
-                    project,
-                    [
-                        "status",
-                        "projectStatus"
-                    ],
-                    "Active"
-                );
+            const liveUrl = getValue(project, [
+                "live",
+                "liveUrl",
+                "website",
+                "demo",
+                "demoUrl",
+                "projectUrl",
+                "live_url"
+            ], "");
 
+            const language = getValue(project, [
+                "github.language",
+                "language",
+                "repository.language"
+            ], "");
 
-            const github =
-                getValue(
-                    project,
-                    [
-                        "github",
-                        "githubUrl",
-                        "repository.html_url",
-                        "repoUrl",
-                        "repositoryUrl",
-                        "github_url",
-                        "github_url"
-                    ],
-                    ""
-                );
+            const stars = getValue(project, [
+                "github.stars",
+                "stars",
+                "stargazers_count"
+            ], null);
 
+            const forks = getValue(project, [
+                "github.forks",
+                "forks",
+                "forks_count"
+            ], null);
 
-            const live =
-                getValue(
-                    project,
-                    [
-                        "live",
-                        "liveUrl",
-                        "website",
-                        "demo",
-                        "demoUrl",
-                        "projectUrl",
-                        "live_url"
-                    ],
-                    ""
-                );
+            const type = getValue(project, [
+                "type",
+                "projectType",
+                "category"
+            ], "");
 
+            const coverImage = getValue(project, [
+                "image",
+                "imageUrl",
+                "thumbnail",
+                "logo"
+            ], "");
 
-            const language =
-                getValue(
-                    project,
-                    [
-                        "language",
-                        "repository.language"
-                    ],
-                    ""
-                );
+            const initial = String(name).charAt(0).toUpperCase();
 
+            const coverHtml = coverImage
+                ? `<img src="${escapeHtml(coverImage)}" alt="${escapeHtml(name)}" loading="lazy">`
+                : `<div class="project-cover-placeholder">${escapeHtml(initial)}</div>`;
 
-            const type =
-                getValue(
-                    project,
-                    [
-                        "type",
-                        "projectType",
-                        "category"
-                    ],
-                    ""
-                );
+            const avatarHtml = developerAvatar
+                ? `<img src="${escapeHtml(developerAvatar)}" alt="${escapeHtml(developerUsername)}" loading="lazy">`
+                : escapeHtml(initial);
 
+            const statusClass = status ? "" : "empty";
+            const statusText = status || "Active";
 
-            const image =
-                getValue(
-                    project,
-                    [
-                        "image",
-                        "imageUrl",
-                        "thumbnail",
-                        "logo"
-                    ],
-                    ""
-                );
+            const statsHtml = (stars !== null || forks !== null)
+                ? `<div class="stats">
+                    ${stars !== null ? `<span>★ ${escapeHtml(String(stars))}</span>` : ""}
+                    ${forks !== null ? `<span>⑂ ${escapeHtml(String(forks))}</span>` : ""}
+                   </div>`
+                : "";
 
+            const tagsHtml = `
+                ${language ? `<span class="tag lang">${escapeHtml(language)}</span>` : ""}
+                ${type ? `<span class="tag">${escapeHtml(type)}</span>` : ""}
+            `;
 
-            const initial =
-                String(name)
-                    .charAt(0)
-                    .toUpperCase();
+            const githubBtn = githubUrl
+                ? `<a class="github-btn" href="${escapeHtml(githubUrl)}" target="_blank" rel="noopener noreferrer">GitHub ↗</a>`
+                : "";
 
+            const liveBtn = liveUrl
+                ? `<a class="live-btn" href="${escapeHtml(liveUrl)}" target="_blank" rel="noopener noreferrer">Live Demo ↗</a>`
+                : "";
 
-            const icon =
-                image
-                    ? `
-                    <img
-                        src="${escapeHtml(image)}"
-                        alt="${escapeHtml(name)}"
-                        loading="lazy"
-                    >
-                `
-                    : escapeHtml(initial);
-
+            const developerLink = developerGithub
+                ? `<a href="${escapeHtml(developerGithub)}" target="_blank" rel="noopener noreferrer">@${escapeHtml(developerUsername)}</a>`
+                : `@${escapeHtml(developerUsername)}`;
 
             return `
             <article class="project">
-
-                <div class="project-top">
-
-                    <div class="project-icon">
-                        ${icon}
+                <div class="project-cover">
+                    ${coverHtml}
+                </div>
+                <div class="project-body">
+                    <div class="project-top">
+                        <div class="project-avatar">${avatarHtml}</div>
+                        <span class="project-status ${statusClass}">${escapeHtml(statusText)}</span>
                     </div>
-
-                    <span class="project-status">
-                        ${escapeHtml(status)}
-                    </span>
-
+                    <h2>${escapeHtml(name)}</h2>
+                    <div class="developer">Developer: ${developerLink}</div>
+                    <div class="description">${escapeHtml(description)}</div>
+                    <div class="meta-row">
+                        ${tagsHtml}
+                        ${statsHtml}
+                    </div>
+                    <div class="links">
+                        ${githubBtn}
+                        ${liveBtn}
+                    </div>
                 </div>
-
-
-                <h2>
-                    ${escapeHtml(name)}
-                </h2>
-
-
-                <div class="developer">
-                    Developer: @${escapeHtml(developer)}
-                </div>
-
-
-                <div class="description">
-                    ${escapeHtml(description)}
-                </div>
-
-
-                <div class="project-info">
-
-                    ${language
-                    ? `
-                                <span class="tag">
-                                    ${escapeHtml(language)}
-                                </span>
-                            `
-                    : ""
-                }
-
-
-                    ${type
-                    ? `
-                                <span class="tag">
-                                    ${escapeHtml(type)}
-                                </span>
-                            `
-                    : ""
-                }
-
-                </div>
-
-
-                <div class="links">
-
-                    ${github
-                    ? `
-                                <a
-                                    href="${escapeHtml(github)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    GitHub ↗
-                                </a>
-                            `
-                    : ""
-                }
-
-
-                    ${live
-                    ? `
-                                <a
-                                    href="${escapeHtml(live)}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Live Demo ↗
-                                </a>
-                            `
-                    : ""
-                }
-
-                </div>
-
             </article>
-        `;
+            `;
         }
 
-
         async function loadProjects() {
-
-            refreshButton.disabled =
-                true;
-
-            projectsContainer.innerHTML = `
-            <div class="loading">
-                Loading projects...
-            </div>
-        `;
-
-            setApiStatus(
-                false,
-                "Connecting to GitProHub API..."
-            );
-
+            refreshButton.disabled = true;
+            projectsContainer.innerHTML = `<div class="loading">Loading projects...</div>`;
+            setApiStatus(false, "Connecting to GitProHub API...");
 
             try {
-
-                const response =
-                    await fetch(
-                        API_URL,
-                        {
-                            method: "GET",
-
-                            headers: {
-                                "Accept":
-                                    "application/json"
-                            },
-
-                            cache:
-                                "no-store"
-                        }
-                    );
-
+                const response = await fetch(API_URL, {
+                    method: "GET",
+                    headers: { "Accept": "application/json" },
+                    cache: "no-store"
+                });
 
                 if (!response.ok) {
-
-                    throw new Error(
-                        `HTTP ${response.status}`
-                    );
+                    throw new Error(`HTTP ${response.status}`);
                 }
 
+                const data = await response.json();
+                const projects = getProjects(data);
 
-                const data =
-                    await response.json();
-
-
-                const projects =
-                    getProjects(data);
-
-
-                projectCount.textContent =
-                    `${projects.length} ${projects.length === 1
-                        ? "Project"
-                        : "Projects"
-                    }`;
-
-
-                setApiStatus(
-                    true,
-                    `API Online · ${projects.length} projects loaded`
-                );
-
+                projectCount.textContent = `${projects.length} ${projects.length === 1 ? "Project" : "Projects"}`;
+                setApiStatus(true, `API Online · ${projects.length} projects loaded`);
 
                 if (!projects.length) {
-
-                    projectsContainer.innerHTML = `
-                    <div class="empty">
-                        No GitProHub projects found.
-                    </div>
-                `;
-
+                    projectsContainer.innerHTML = `<div class="empty">No GitProHub projects found.</div>`;
                     return;
                 }
 
-
-                projectsContainer.innerHTML =
-                    projects
-                        .map(createProjectCard)
-                        .join("");
-
+                projectsContainer.innerHTML = projects.map(createProjectCard).join("");
 
             } catch (error) {
-
-                console.error(
-                    "GitProHub API Error:",
-                    error
-                );
-
-
-                projectCount.textContent =
-                    "0 Projects";
-
-
-                setApiStatus(
-                    false,
-                    "GitProHub API Offline"
-                );
-
-
+                console.error("GitProHub API Error:", error);
+                projectCount.textContent = "0 Projects";
+                setApiStatus(false, "GitProHub API Offline");
                 projectsContainer.innerHTML = `
-                <div class="error">
-
-                    Unable to load GitProHub projects.
-
-                    <br><br>
-
-                    <small>
-                        API:
-                        ${escapeHtml(API_URL)}
-                    </small>
-
-                </div>
-            `;
-
+                    <div class="error">
+                        Unable to load GitProHub projects.
+                        <br><br>
+                        <small>API: ${escapeHtml(API_URL)}</small>
+                    </div>
+                `;
             } finally {
-
-                refreshButton.disabled =
-                    false;
+                refreshButton.disabled = false;
             }
         }
 
-
-        refreshButton.addEventListener(
-            "click",
-            loadProjects
-        );
-
-
+        refreshButton.addEventListener("click", loadProjects);
         loadProjects();
     </script>
-
 </body>
 
 </html>
