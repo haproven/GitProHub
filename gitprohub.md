@@ -7,11 +7,11 @@ title: GitProHub
 description: A universal GitHub project discovery and showcase platform that automatically finds, indexes, and presents projects through a simple gitprohub.md file added to a repository.
 category: Developer Tools
 status: In Development
-image:
+image:https://gitprohubapi.netlify.app/assets/img/gitprohub-banner.png
 
 ## Links
 
-live: https://gitprohub1.netlify.app/
+live: https://gitprohubapi.netlify.app/
 demo:
 documentation:
 
