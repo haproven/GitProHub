@@ -83,6 +83,68 @@
             transform: none;
         }
 
+        .search-box {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow:
+                0 12px 35px rgba(15, 23, 42, 0.06);
+        }
+
+        .search-title {
+            font-size: 16px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+        }
+
+        #projectInput {
+            flex: 1;
+            min-width: 0;
+            height: 48px;
+            padding: 0 15px;
+            border: 1px solid #dbe1ea;
+            border-radius: 12px;
+            outline: none;
+            background: #f8fafc;
+            color: #111827;
+            font-size: 14px;
+            transition:
+                border-color 0.2s ease,
+                background 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        #projectInput:focus {
+            border-color: #111827;
+            background: #ffffff;
+            box-shadow:
+                0 0 0 3px rgba(17, 24, 39, 0.06);
+        }
+
+        #searchButton {
+            height: 48px;
+            padding: 0 20px;
+            flex-shrink: 0;
+        }
+
+        .hint {
+            margin-top: 10px;
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        .hint strong {
+            color: #334155;
+        }
+
         .api-bar {
             display: flex;
             align-items: center;
@@ -354,6 +416,14 @@
                 align-items: flex-start;
             }
 
+            .search-form {
+                flex-direction: column;
+            }
+
+            #searchButton {
+                width: 100%;
+            }
+
             .project-header {
                 padding: 25px 20px;
             }
@@ -407,13 +477,49 @@
         </div>
 
 
+        <section class="search-box">
+
+            <div class="search-title">
+                Search GitProHub Project
+            </div>
+
+            <div class="search-form">
+
+                <input
+                    type="text"
+                    id="projectInput"
+                    placeholder="USERNAME/REPO"
+                    autocomplete="off"
+                    spellcheck="false"
+                >
+
+                <button
+                    id="searchButton"
+                    type="button"
+                >
+                    Search
+                </button>
+
+            </div>
+
+            <div class="hint">
+                <strong>Hint:</strong>
+                Username/Repo likhein, jaise
+                <strong>haproven/haproid</strong>
+                ya GitHub project link paste karein:
+                <strong>https://github.com/haproven/haproid</strong>
+            </div>
+
+        </section>
+
+
         <div class="api-bar">
 
             <div
                 class="api-url"
                 id="apiUrl"
             >
-                Connecting to GitProHub API...
+                GitProHub API ready
             </div>
 
             <div
@@ -424,7 +530,7 @@
                 <span class="status-dot"></span>
 
                 <span id="statusText">
-                    Connecting...
+                    Ready
                 </span>
 
             </div>
@@ -436,14 +542,16 @@
 
             <div class="message">
 
-                <div class="loading"></div>
+                <div class="message-icon">
+                    🔎
+                </div>
 
                 <div class="message-title">
-                    Loading Project
+                    Search a Project
                 </div>
 
                 <div class="message-text">
-                    GitProHub project data load ho raha hai...
+                    USERNAME/REPO ya GitHub project link enter karke project load karein.
                 </div>
 
             </div>
@@ -476,6 +584,18 @@
             );
 
 
+        const searchButton =
+            document.getElementById(
+                "searchButton"
+            );
+
+
+        const projectInput =
+            document.getElementById(
+                "projectInput"
+            );
+
+
         const apiUrl =
             document.getElementById(
                 "apiUrl"
@@ -492,26 +612,6 @@
             document.getElementById(
                 "statusText"
             );
-
-
-        const params =
-            new URLSearchParams(
-                window.location.search
-            );
-
-
-        const username =
-            (
-                params.get("username") ||
-                ""
-            ).trim();
-
-
-        const repo =
-            (
-                params.get("repo") ||
-                ""
-            ).trim();
 
 
         function setStatus(
@@ -569,43 +669,6 @@
         }
 
 
-        function formatDate(value) {
-
-            if (!value) {
-                return "Not available";
-            }
-
-
-            const date =
-                new Date(value);
-
-
-            if (
-                Number.isNaN(
-                    date.getTime()
-                )
-            ) {
-
-                return escapeHtml(
-                    value
-                );
-
-            }
-
-
-            return escapeHtml(
-                date.toLocaleString(
-                    "en-IN",
-                    {
-                        dateStyle: "medium",
-                        timeStyle: "short"
-                    }
-                )
-            );
-
-        }
-
-
         function safeUrl(value) {
 
             if (
@@ -644,9 +707,183 @@
         }
 
 
-        function getProject(
-            data
-        ) {
+        function parseProjectInput(value) {
+
+            let input =
+                String(
+                    value || ""
+                ).trim();
+
+
+            input =
+                input.replace(
+                    /^["']|["']$/g,
+                    ""
+                ).trim();
+
+
+            if (!input) {
+
+                return null;
+
+            }
+
+
+            input =
+                input.replace(
+                    /^https?:\/\/github\.com\//i,
+                    ""
+                );
+
+
+            input =
+                input.replace(
+                    /^https?:\/\/www\.github\.com\//i,
+                    ""
+                );
+
+
+            input =
+                input.replace(
+                    /^github\.com\//i,
+                    ""
+                );
+
+
+            input =
+                input.replace(
+                    /^www\.github\.com\//i,
+                    ""
+                );
+
+
+            input =
+                input.replace(
+                    /^\/+/,
+                    ""
+                );
+
+
+            input =
+                input.split("?")[0];
+
+            input =
+                input.split("#")[0];
+
+            input =
+                input.replace(
+                    /\/+$/,
+                    ""
+                );
+
+
+            const parts =
+                input
+                    .split("/")
+                    .filter(Boolean);
+
+
+            if (parts.length < 2) {
+
+                return null;
+
+            }
+
+
+            const parsedUsername =
+                parts[0]
+                    .replace(
+                        /^@/,
+                        ""
+                    )
+                    .trim();
+
+
+            const parsedRepo =
+                parts[1]
+                    .trim();
+
+
+            if (
+                !parsedUsername ||
+                !parsedRepo
+            ) {
+
+                return null;
+
+            }
+
+
+            if (
+                !/^[a-zA-Z0-9-]+$/.test(
+                    parsedUsername
+                )
+            ) {
+
+                return null;
+
+            }
+
+
+            if (
+                !/^[a-zA-Z0-9_.-]+$/.test(
+                    parsedRepo
+                )
+            ) {
+
+                return null;
+
+            }
+
+
+            return {
+                username: parsedUsername,
+                repo: parsedRepo
+            };
+
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+
+                return "Not available";
+
+            }
+
+
+            const date =
+                new Date(value);
+
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                return escapeHtml(
+                    value
+                );
+
+            }
+
+
+            return escapeHtml(
+                date.toLocaleString(
+                    "en-IN",
+                    {
+                        dateStyle: "medium",
+                        timeStyle: "short"
+                    }
+                )
+            );
+
+        }
+
+
+        function getProject(data) {
 
             if (
                 data?.project &&
@@ -716,9 +953,7 @@
         }
 
 
-        function getProjectName(
-            project
-        ) {
+        function getProjectName(project) {
 
             return (
                 project?.name ||
@@ -727,16 +962,13 @@
                 project?.github?.name ||
                 project?.repository?.name ||
                 project?.repo ||
-                repo ||
                 "GitProHub Project"
             );
 
         }
 
 
-        function getDescription(
-            project
-        ) {
+        function getDescription(project) {
 
             return (
                 project?.description ||
@@ -750,9 +982,7 @@
         }
 
 
-        function getUsername(
-            project
-        ) {
+        function getUsername(project, fallback) {
 
             return (
                 project?.developer?.username ||
@@ -763,32 +993,28 @@
                 project?.owner?.name ||
                 project?.username ||
                 project?.githubUsername ||
-                username ||
+                fallback ||
                 "Unknown"
             );
 
         }
 
 
-        function getRepository(
-            project
-        ) {
+        function getRepository(project, fallback) {
 
             return (
                 project?.repository?.name ||
                 project?.github?.name ||
                 project?.repo ||
                 project?.repositoryName ||
-                repo ||
+                fallback ||
                 "Unknown"
             );
 
         }
 
 
-        function getLanguage(
-            project
-        ) {
+        function getLanguage(project) {
 
             return (
                 project?.language ||
@@ -800,9 +1026,7 @@
         }
 
 
-        function getStars(
-            project
-        ) {
+        function getStars(project) {
 
             return (
                 project?.stars ??
@@ -817,9 +1041,7 @@
         }
 
 
-        function getForks(
-            project
-        ) {
+        function getForks(project) {
 
             return (
                 project?.forks ??
@@ -835,7 +1057,9 @@
 
 
         function getGithubUrl(
-            project
+            project,
+            username,
+            repo
         ) {
 
             const directUrls = [
@@ -862,36 +1086,24 @@
 
 
                 if (url) {
+
                     return url;
+
                 }
 
             }
 
 
-            const currentUsername =
-                getUsername(
-                    project
-                );
-
-
-            const currentRepository =
-                getRepository(
-                    project
-                );
-
-
             if (
-                currentUsername &&
-                currentUsername !== "Unknown" &&
-                currentRepository &&
-                currentRepository !== "Unknown"
+                username &&
+                repo
             ) {
 
                 return (
                     `https://github.com/${encodeURIComponent(
-                        currentUsername
+                        username
                     )}/${encodeURIComponent(
-                        currentRepository
+                        repo
                     )}`
                 );
 
@@ -903,9 +1115,7 @@
         }
 
 
-        function getLiveUrl(
-            project
-        ) {
+        function getLiveUrl(project) {
 
             const urls = [
                 project?.liveUrl,
@@ -932,7 +1142,9 @@
 
 
                 if (url) {
+
                     return url;
+
                 }
 
             }
@@ -943,9 +1155,7 @@
         }
 
 
-        function getSync(
-            project
-        ) {
+        function getSync(project) {
 
             return (
                 project?.sync ||
@@ -957,7 +1167,9 @@
 
 
         function createProject(
-            project
+            project,
+            inputUsername,
+            inputRepo
         ) {
 
             const projectName =
@@ -974,13 +1186,15 @@
 
             const developer =
                 getUsername(
-                    project
+                    project,
+                    inputUsername
                 );
 
 
             const repository =
                 getRepository(
-                    project
+                    project,
+                    inputRepo
                 );
 
 
@@ -1004,7 +1218,9 @@
 
             const githubUrl =
                 getGithubUrl(
-                    project
+                    project,
+                    developer,
+                    repository
                 );
 
 
@@ -1156,6 +1372,7 @@
                                                 : ""
                                         }
 
+
                                         ${
                                             githubUrl
                                                 ? `
@@ -1248,18 +1465,21 @@
 
         async function loadProject() {
 
-            if (
-                !username ||
-                !repo
-            ) {
+            const parsed =
+                parseProjectInput(
+                    projectInput.value
+                );
+
+
+            if (!parsed) {
 
                 apiUrl.textContent =
-                    "Project parameters missing";
+                    "Project input required";
 
 
                 setStatus(
                     "error",
-                    "Invalid project URL"
+                    "Invalid Project"
                 );
 
 
@@ -1271,24 +1491,35 @@
                         </div>
 
                         <div class="message-title">
-                            Project Parameters Missing
+                            Invalid Project Format
                         </div>
 
                         <div class="message-text">
-                            Username aur repository required hai.
+                            USERNAME/REPO enter karein.
                             <br><br>
                             Example:
                             <br>
-                            ?username=codersusheel&repo=haprocard
+                            <strong>haproven/haproid</strong>
+                            <br><br>
+                            Ya:
+                            <br>
+                            <strong>https://github.com/haproven/haproid</strong>
                         </div>
 
                     </div>
                 `;
 
-
                 return;
 
             }
+
+
+            const username =
+                parsed.username;
+
+
+            const repo =
+                parsed.repo;
 
 
             const endpoint =
@@ -1305,6 +1536,14 @@
 
             refreshButton.disabled =
                 true;
+
+
+            searchButton.disabled =
+                true;
+
+
+            searchButton.textContent =
+                "Loading...";
 
 
             setStatus(
@@ -1396,9 +1635,7 @@
                     );
 
 
-                if (
-                    !project
-                ) {
+                if (!project) {
 
                     throw new Error(
                         "Project data API response mein nahi mila."
@@ -1409,7 +1646,9 @@
 
                 projectContainer.innerHTML =
                     createProject(
-                        project
+                        project,
+                        username,
+                        repo
                     );
 
 
@@ -1418,9 +1657,7 @@
                     "API Connected"
                 );
 
-            } catch (
-                error
-            ) {
+            } catch (error) {
 
                 console.error(
                     "GitProHub API Error:",
@@ -1460,9 +1697,41 @@
                 refreshButton.disabled =
                     false;
 
+
+                searchButton.disabled =
+                    false;
+
+
+                searchButton.textContent =
+                    "Search";
+
             }
 
         }
+
+
+        searchButton.addEventListener(
+            "click",
+            loadProject
+        );
+
+
+        projectInput.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    loadProject();
+
+                }
+
+            }
+        );
 
 
         refreshButton.addEventListener(
@@ -1471,7 +1740,21 @@
         );
 
 
-        loadProject();
+        const pathParts =
+            window.location.pathname
+                .split("/")
+                .filter(Boolean);
+
+
+        if (
+            pathParts.length >= 4 &&
+            pathParts[pathParts.length - 3] === "username" &&
+            pathParts[pathParts.length - 2] === "repo"
+        ) {
+
+            projectInput.value = "";
+
+        }
 
     </script>
 
