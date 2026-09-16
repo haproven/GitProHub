@@ -161,6 +161,7 @@
             line-height: 1.7;
             max-width: 780px;
             font-size: 15px;
+            word-break: break-word;
         }
 
         .badge {
@@ -190,6 +191,7 @@
             border: 1px solid #e5e7eb;
             border-radius: 18px;
             padding: 20px;
+            min-width: 0;
         }
 
         .label {
@@ -243,6 +245,10 @@
             border: 1px solid #e2e8f0;
         }
 
+        .link.secondary:hover {
+            background: #e2e8f0;
+        }
+
         .sync {
             margin-top: 25px;
             padding-top: 22px;
@@ -267,6 +273,7 @@
             border: 1px solid #e5e7eb;
             border-radius: 14px;
             padding: 15px;
+            min-width: 0;
         }
 
         .sync-item .label {
@@ -275,6 +282,7 @@
 
         .sync-item .value {
             font-size: 12px;
+            line-height: 1.5;
         }
 
         .message {
@@ -288,8 +296,45 @@
                 0 15px 40px rgba(15, 23, 42, 0.06);
         }
 
+        .message-icon {
+            font-size: 35px;
+            margin-bottom: 12px;
+        }
+
+        .message-title {
+            color: #111827;
+            font-size: 18px;
+            font-weight: 800;
+            margin-bottom: 7px;
+        }
+
+        .message-text {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
         .message.error {
             color: #dc2626;
+        }
+
+        .message.error .message-title {
+            color: #dc2626;
+        }
+
+        .loading {
+            width: 34px;
+            height: 34px;
+            margin: 0 auto 15px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #111827;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         footer {
@@ -300,6 +345,7 @@
         }
 
         @media (max-width: 700px) {
+
             body {
                 padding: 16px 12px;
             }
@@ -332,6 +378,10 @@
                 align-items: flex-start;
                 flex-direction: column;
             }
+
+            .api-url {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -344,7 +394,7 @@
 
             <div class="brand">
                 GitProHub
-                <span> / Project</span>
+                <span>/ Project</span>
             </div>
 
             <button
@@ -356,35 +406,50 @@
 
         </div>
 
+
         <div class="api-bar">
 
             <div
                 class="api-url"
                 id="apiUrl"
             >
-                Loading API...
+                Connecting to GitProHub API...
             </div>
 
             <div
                 class="status"
                 id="apiStatus"
             >
+
                 <span class="status-dot"></span>
 
                 <span id="statusText">
                     Connecting...
                 </span>
+
             </div>
 
         </div>
 
+
         <section id="projectContainer">
 
             <div class="message">
-                Loading project...
+
+                <div class="loading"></div>
+
+                <div class="message-title">
+                    Loading Project
+                </div>
+
+                <div class="message-text">
+                    GitProHub project data load ho raha hai...
+                </div>
+
             </div>
 
         </section>
+
 
         <footer>
             GitProHub · Powered by Haproven
@@ -392,10 +457,11 @@
 
     </main>
 
+
     <script>
 
         const API_BASE =
-            "https://gitprohub.onrender.com/api/project";
+            "https://gitprohub.onrender.com";
 
 
         const projectContainer =
@@ -435,11 +501,17 @@
 
 
         const username =
-            params.get("username");
+            (
+                params.get("username") ||
+                ""
+            ).trim();
 
 
         const repo =
-            params.get("repo");
+            (
+                params.get("repo") ||
+                ""
+            ).trim();
 
 
         function setStatus(
@@ -464,6 +536,7 @@
 
             statusText.textContent =
                 message;
+
         }
 
 
@@ -492,6 +565,7 @@
                     /'/g,
                     "&#039;"
                 );
+
         }
 
 
@@ -524,24 +598,32 @@
                     "en-IN",
                     {
                         dateStyle: "medium",
-                        timeStyle: "medium"
+                        timeStyle: "short"
                     }
                 )
             );
+
         }
 
 
         function safeUrl(value) {
 
-            if (!value) {
-                return null;
+            if (
+                !value ||
+                typeof value !== "string"
+            ) {
+
+                return "";
+
             }
 
 
             try {
 
                 const url =
-                    new URL(value);
+                    new URL(
+                        value
+                    );
 
 
                 if (
@@ -553,266 +635,393 @@
 
                 }
 
-
-                return null;
-
             } catch {
-
-                return null;
-
             }
+
+
+            return "";
+
         }
 
 
-        function getProjectName(project) {
+        function getProject(
+            data
+        ) {
+
+            if (
+                data?.project &&
+                typeof data.project === "object"
+            ) {
+
+                return data.project;
+
+            }
+
+
+            if (
+                data?.data?.project &&
+                typeof data.data.project === "object"
+            ) {
+
+                return data.data.project;
+
+            }
+
+
+            if (
+                data?.result?.project &&
+                typeof data.result.project === "object"
+            ) {
+
+                return data.result.project;
+
+            }
+
+
+            if (
+                data?.data &&
+                typeof data.data === "object" &&
+                !Array.isArray(data.data)
+            ) {
+
+                return data.data;
+
+            }
+
+
+            if (
+                data?.result &&
+                typeof data.result === "object" &&
+                !Array.isArray(data.result)
+            ) {
+
+                return data.result;
+
+            }
+
+
+            if (
+                typeof data === "object" &&
+                data !== null &&
+                !Array.isArray(data)
+            ) {
+
+                return data;
+
+            }
+
+
+            return null;
+
+        }
+
+
+        function getProjectName(
+            project
+        ) {
 
             return (
                 project?.name ||
+                project?.projectName ||
                 project?.title ||
                 project?.github?.name ||
-                project?.repo ||
                 project?.repository?.name ||
+                project?.repo ||
                 repo ||
                 "GitProHub Project"
             );
+
         }
 
 
-        function getDescription(project) {
+        function getDescription(
+            project
+        ) {
 
             return (
                 project?.description ||
                 project?.summary ||
+                project?.projectDescription ||
                 project?.github?.description ||
+                project?.repository?.description ||
                 "No project description available."
             );
+
         }
 
 
-        function getUsername(project) {
+        function getUsername(
+            project
+        ) {
 
             return (
                 project?.developer?.username ||
                 project?.developer?.login ||
                 project?.github?.owner?.login ||
+                project?.github?.owner?.name ||
                 project?.owner?.login ||
+                project?.owner?.name ||
                 project?.username ||
+                project?.githubUsername ||
                 username ||
                 "Unknown"
             );
+
         }
 
 
-        function getRepository(project) {
+        function getRepository(
+            project
+        ) {
 
             return (
+                project?.repository?.name ||
                 project?.github?.name ||
                 project?.repo ||
-                project?.repository?.name ||
+                project?.repositoryName ||
                 repo ||
                 "Unknown"
             );
+
         }
 
 
-        function getLanguage(project) {
+        function getLanguage(
+            project
+        ) {
 
             return (
-                project?.github?.language ||
                 project?.language ||
+                project?.github?.language ||
+                project?.repository?.language ||
                 "Not specified"
             );
+
         }
 
 
-        function getStars(project) {
+        function getStars(
+            project
+        ) {
 
             return (
-                project?.github?.stargazers_count ??
                 project?.stars ??
+                project?.stargazers_count ??
                 project?.github?.stars ??
+                project?.github?.stargazers_count ??
+                project?.repository?.stars ??
+                project?.repository?.stargazers_count ??
                 0
             );
+
         }
 
 
-        function getForks(project) {
+        function getForks(
+            project
+        ) {
 
             return (
-                project?.github?.forks_count ??
                 project?.forks ??
+                project?.forks_count ??
                 project?.github?.forks ??
+                project?.github?.forks_count ??
+                project?.repository?.forks ??
+                project?.repository?.forks_count ??
                 0
             );
+
         }
 
 
-        function getLiveUrl(project) {
+        function getGithubUrl(
+            project
+        ) {
 
-            return (
-                safeUrl(
-                    project?.liveUrl
-                ) ||
-                safeUrl(
-                    project?.live_url
-                ) ||
-                safeUrl(
-                    project?.live
-                ) ||
-                safeUrl(
-                    project?.website
-                ) ||
-                safeUrl(
-                    project?.demo
-                ) ||
-                safeUrl(
-                    project?.links?.live
-                ) ||
-                safeUrl(
-                    project?.urls?.live
-                )
-            );
-        }
+            const directUrls = [
+                project?.github?.html_url,
+                project?.github?.url,
+                project?.githubUrl,
+                project?.github_url,
+                project?.repositoryUrl,
+                project?.repository_url,
+                project?.repoUrl,
+                project?.repo_url,
+                project?.html_url
+            ];
 
 
-        function getGithubUrl(project) {
+            for (
+                const value of directUrls
+            ) {
 
-            const directUrl =
-                safeUrl(
-                    project?.github?.html_url
-                ) ||
-                safeUrl(
-                    project?.githubUrl
-                ) ||
-                safeUrl(
-                    project?.github_url
-                ) ||
-                safeUrl(
-                    project?.repositoryUrl
-                ) ||
-                safeUrl(
-                    project?.repository_url
-                );
+                const url =
+                    safeUrl(
+                        value
+                    );
 
 
-            if (directUrl) {
-                return directUrl;
+                if (url) {
+                    return url;
+                }
+
             }
 
 
             const currentUsername =
-                getUsername(project);
+                getUsername(
+                    project
+                );
 
 
             const currentRepository =
-                getRepository(project);
+                getRepository(
+                    project
+                );
 
 
             if (
-                currentUsername === "Unknown" ||
-                currentRepository === "Unknown"
+                currentUsername &&
+                currentUsername !== "Unknown" &&
+                currentRepository &&
+                currentRepository !== "Unknown"
             ) {
 
-                return "#";
+                return (
+                    `https://github.com/${encodeURIComponent(
+                        currentUsername
+                    )}/${encodeURIComponent(
+                        currentRepository
+                    )}`
+                );
 
             }
 
 
-            return (
-                `https://github.com/${encodeURIComponent(
-                    currentUsername
-                )}/${encodeURIComponent(
-                    currentRepository
-                )}`
-            );
+            return "";
+
         }
 
 
-        function createProject(project) {
+        function getLiveUrl(
+            project
+        ) {
 
-            const name =
-                escapeHtml(
-                    getProjectName(project)
+            const urls = [
+                project?.liveUrl,
+                project?.live_url,
+                project?.live,
+                project?.website,
+                project?.demo,
+                project?.demoUrl,
+                project?.projectUrl,
+                project?.project_url,
+                project?.links?.live,
+                project?.links?.website
+            ];
+
+
+            for (
+                const value of urls
+            ) {
+
+                const url =
+                    safeUrl(
+                        value
+                    );
+
+
+                if (url) {
+                    return url;
+                }
+
+            }
+
+
+            return "";
+
+        }
+
+
+        function getSync(
+            project
+        ) {
+
+            return (
+                project?.sync ||
+                project?.synchronization ||
+                {}
+            );
+
+        }
+
+
+        function createProject(
+            project
+        ) {
+
+            const projectName =
+                getProjectName(
+                    project
                 );
 
 
             const description =
-                escapeHtml(
-                    getDescription(project)
+                getDescription(
+                    project
                 );
 
 
             const developer =
-                escapeHtml(
-                    getUsername(project)
+                getUsername(
+                    project
                 );
 
 
             const repository =
-                escapeHtml(
-                    getRepository(project)
+                getRepository(
+                    project
                 );
 
 
             const language =
-                escapeHtml(
-                    getLanguage(project)
+                getLanguage(
+                    project
                 );
 
 
             const stars =
-                escapeHtml(
-                    getStars(project)
+                getStars(
+                    project
                 );
 
 
             const forks =
-                escapeHtml(
-                    getForks(project)
+                getForks(
+                    project
+                );
+
+
+            const githubUrl =
+                getGithubUrl(
+                    project
                 );
 
 
             const liveUrl =
-                getLiveUrl(project);
-
-
-            const githubUrl =
-                getGithubUrl(project);
+                getLiveUrl(
+                    project
+                );
 
 
             const sync =
-                project?.sync || {};
+                getSync(
+                    project
+                );
 
 
-            const liveButton =
-                liveUrl
-                    ? `
-                        <a
-                            class="link"
-                            href="${escapeHtml(liveUrl)}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Live Project
-                        </a>
-                    `
-                    : "";
-
-
-            const githubButton =
-                githubUrl &&
-                githubUrl !== "#"
-                    ? `
-                        <a
-                            class="link secondary"
-                            href="${escapeHtml(githubUrl)}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            GitHub Repository
-                        </a>
-                    `
-                    : "";
+            const projectKey =
+                `${developer}/${repository}`;
 
 
             return `
@@ -825,11 +1034,11 @@
                             <div>
 
                                 <h1 class="project-name">
-                                    ${name}
+                                    ${escapeHtml(projectName)}
                                 </h1>
 
                                 <p class="project-description">
-                                    ${description}
+                                    ${escapeHtml(description)}
                                 </p>
 
                             </div>
@@ -854,7 +1063,7 @@
                                 </div>
 
                                 <div class="value">
-                                    ${developer}
+                                    ${escapeHtml(developer)}
                                 </div>
 
                             </div>
@@ -867,7 +1076,7 @@
                                 </div>
 
                                 <div class="value">
-                                    ${repository}
+                                    ${escapeHtml(repository)}
                                 </div>
 
                             </div>
@@ -880,7 +1089,7 @@
                                 </div>
 
                                 <div class="value">
-                                    ${language}
+                                    ${escapeHtml(language)}
                                 </div>
 
                             </div>
@@ -893,7 +1102,7 @@
                                 </div>
 
                                 <div class="value">
-                                    ${stars}
+                                    ⭐ ${escapeHtml(String(stars))}
                                 </div>
 
                             </div>
@@ -906,7 +1115,7 @@
                                 </div>
 
                                 <div class="value">
-                                    ${forks}
+                                    ${escapeHtml(String(forks))}
                                 </div>
 
                             </div>
@@ -919,9 +1128,7 @@
                                 </div>
 
                                 <div class="value">
-                                    ${escapeHtml(
-                                        `${getUsername(project)}/${getRepository(project)}`
-                                    )}
+                                    ${escapeHtml(projectKey)}
                                 </div>
 
                             </div>
@@ -929,13 +1136,45 @@
                         </div>
 
 
-                        <div class="links">
+                        ${
+                            githubUrl || liveUrl
+                                ? `
+                                    <div class="links">
 
-                            ${liveButton}
+                                        ${
+                                            liveUrl
+                                                ? `
+                                                    <a
+                                                        class="link"
+                                                        href="${escapeHtml(liveUrl)}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        Live Project
+                                                    </a>
+                                                `
+                                                : ""
+                                        }
 
-                            ${githubButton}
+                                        ${
+                                            githubUrl
+                                                ? `
+                                                    <a
+                                                        class="link secondary"
+                                                        href="${escapeHtml(githubUrl)}"
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        GitHub Repository
+                                                    </a>
+                                                `
+                                                : ""
+                                        }
 
-                        </div>
+                                    </div>
+                                `
+                                : ""
+                        }
 
 
                         <div class="sync">
@@ -955,7 +1194,8 @@
 
                                     <div class="value">
                                         ${formatDate(
-                                            sync.firstSeenAt
+                                            sync.firstSeenAt ||
+                                            project?.firstSeenAt
                                         )}
                                     </div>
 
@@ -970,7 +1210,8 @@
 
                                     <div class="value">
                                         ${formatDate(
-                                            sync.lastCheckedAt
+                                            sync.lastCheckedAt ||
+                                            project?.lastCheckedAt
                                         )}
                                     </div>
 
@@ -985,7 +1226,9 @@
 
                                     <div class="value">
                                         ${formatDate(
-                                            sync.lastUpdatedAt
+                                            sync.lastUpdatedAt ||
+                                            project?.lastUpdatedAt ||
+                                            project?.updatedAt
                                         )}
                                     </div>
 
@@ -999,6 +1242,7 @@
 
                 </article>
             `;
+
         }
 
 
@@ -1022,26 +1266,37 @@
                 projectContainer.innerHTML = `
                     <div class="message error">
 
-                        Username and repository are required.
+                        <div class="message-icon">
+                            ⚠️
+                        </div>
 
-                        <br><br>
+                        <div class="message-title">
+                            Project Parameters Missing
+                        </div>
 
-                        Example:
-
-                        <br>
-
-                        ?username=codersusheel&repo=haprocard
+                        <div class="message-text">
+                            Username aur repository required hai.
+                            <br><br>
+                            Example:
+                            <br>
+                            ?username=codersusheel&repo=haprocard
+                        </div>
 
                     </div>
                 `;
 
 
                 return;
+
             }
 
 
             const endpoint =
-                `${API_BASE}/${encodeURIComponent(username)}/${encodeURIComponent(repo)}`;
+                `${API_BASE}/api/project/${encodeURIComponent(
+                    username
+                )}/${encodeURIComponent(
+                    repo
+                )}`;
 
 
             apiUrl.textContent =
@@ -1058,6 +1313,24 @@
             );
 
 
+            projectContainer.innerHTML = `
+                <div class="message">
+
+                    <div class="loading"></div>
+
+                    <div class="message-title">
+                        Loading Project
+                    </div>
+
+                    <div class="message-text">
+                        @${escapeHtml(username)}/${escapeHtml(repo)}
+                        load ho raha hai...
+                    </div>
+
+                </div>
+            `;
+
+
             try {
 
                 const response =
@@ -1065,51 +1338,70 @@
                         endpoint,
                         {
                             method: "GET",
-
+                            cache: "no-store",
                             headers: {
                                 "Accept":
                                     "application/json"
-                            },
-
-                            cache: "no-store"
+                            }
                         }
                     );
 
 
-                if (
-                    response.status === 404
-                ) {
+                let data = null;
+
+
+                try {
+
+                    data =
+                        await response.json();
+
+                } catch {
 
                     throw new Error(
-                        "GitProHub project not found"
+                        `Invalid API response (${response.status})`
                     );
 
                 }
 
 
-                if (!response.ok) {
+                if (
+                    !response.ok
+                ) {
 
                     throw new Error(
+                        data?.message ||
+                        data?.error ||
                         `HTTP ${response.status}`
                     );
 
                 }
 
 
-                const data =
-                    await response.json();
-
-
                 if (
-                    !data ||
-                    data.success === false ||
-                    !data.project
+                    data?.success === false
                 ) {
 
                     throw new Error(
                         data?.message ||
                         data?.error ||
-                        "Invalid project response"
+                        "Project not found"
+                    );
+
+                }
+
+
+                const project =
+                    getProject(
+                        data
+                    );
+
+
+                if (
+                    !project
+                ) {
+
+                    throw new Error(
+                        "Project data API response mein nahi mila."
                     );
 
                 }
@@ -1117,7 +1409,7 @@
 
                 projectContainer.innerHTML =
                     createProject(
-                        data.project
+                        project
                     );
 
 
@@ -1126,7 +1418,9 @@
                     "API Connected"
                 );
 
-            } catch (error) {
+            } catch (
+                error
+            ) {
 
                 console.error(
                     "GitProHub API Error:",
@@ -1137,10 +1431,20 @@
                 projectContainer.innerHTML = `
                     <div class="message error">
 
-                        ${escapeHtml(
-                            error?.message ||
-                            "Unable to load project"
-                        )}
+                        <div class="message-icon">
+                            ⚠️
+                        </div>
+
+                        <div class="message-title">
+                            Project Load Failed
+                        </div>
+
+                        <div class="message-text">
+                            ${escapeHtml(
+                                error?.message ||
+                                "Unable to load project."
+                            )}
+                        </div>
 
                     </div>
                 `;
@@ -1157,6 +1461,7 @@
                     false;
 
             }
+
         }
 
 
